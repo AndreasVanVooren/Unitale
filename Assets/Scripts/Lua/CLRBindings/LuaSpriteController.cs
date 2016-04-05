@@ -149,9 +149,39 @@ public class LuaSpriteController {
         this.img = i;
         originalSprite = img.sprite;
         nativeSizeDelta = img.rectTransform.sizeDelta;
-    }
 
-    public void Set(string name)
+
+		//BUG : Recreated bullets are still animated
+		keyframes = img.gameObject.GetComponent<KeyframeCollection>();
+		if (keyframes == null)
+		{
+			//disable the keyframe collection;
+			keyframes = img.gameObject.AddComponent<KeyframeCollection>();
+			keyframes.spr = this;
+			//Debug.Log("Lol");
+		}
+		keyframes.enabled = false;
+		//Debug.Log("Created thing with size delta " + nativeSizeDelta.ToString());
+	}
+
+	// causes the controller to reset its values, ensuring the correct values are used as native width/height
+	public void Reset()
+	{
+		originalSprite = img.sprite;
+		nativeSizeDelta = img.rectTransform.sizeDelta;
+
+		keyframes = img.gameObject.GetComponent<KeyframeCollection>();
+		if (keyframes == null)
+		{
+			//disable the keyframe collection;
+			keyframes = img.gameObject.AddComponent<KeyframeCollection>();
+			keyframes.spr = this;
+			//Debug.Log("Lol");
+		}
+		keyframes.enabled = false;
+	}
+
+	public void Set(string name)
     {
         SpriteUtil.SwapSpriteFromFile(img, name);
         originalSprite = img.sprite;

@@ -52,6 +52,7 @@ public abstract class Projectile : MonoBehaviour
         img.rectTransform.pivot = half;
         self.sizeDelta = img.sprite.rect.size;
         selfAbs = new Rect(self.anchoredPosition.x - self.rect.width / 2, self.anchoredPosition.y - self.rect.height / 2, self.sizeDelta.x, self.sizeDelta.y);
+		ctrl.sprite.Reset();		//ensure correct size, if all goes right, this will break it code completely.
         OnStart();
     }
 
