@@ -1,6 +1,7 @@
 #Unitale ignored directories
 /Assets/Default/
 /Assets/Mods/
+!/Assets/Mods/luckySeven/*
 /Assets/Sprites/ScreenReference/
 /Assets/Scripts/Unused/
 /Assets/Tests/
