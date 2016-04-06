@@ -2,52 +2,61 @@
 using System.Collections;
 
 public class KeyboardInput : UndertaleInput {
-    KeyCode KC_CONFIRM = KeyCode.Z;
-    KeyCode KC_CONFIRM_ALT = KeyCode.Return;
-    KeyCode KC_CANCEL = KeyCode.X;
-    KeyCode KC_CANCEL_ALT = KeyCode.LeftShift;
-    KeyCode KC_CANCEL_ALT2 = KeyCode.RightShift;
-    KeyCode KC_MENU = KeyCode.C;
-    KeyCode KC_MENU_ALT = KeyCode.LeftControl;
-    KeyCode KC_UP = KeyCode.UpArrow;
-    KeyCode KC_DOWN = KeyCode.DownArrow;
-    KeyCode KC_LEFT = KeyCode.LeftArrow;
-    KeyCode KC_RIGHT = KeyCode.RightArrow;
 
     public override UndertaleInput.ButtonState Confirm
     {
-        get { return stateFor(KC_CONFIRM, KC_CONFIRM_ALT); }
+        get { return stateFor("Z"); }
     }
 
     public override UndertaleInput.ButtonState Cancel
     {
-        get { return stateFor(KC_CANCEL, KC_CANCEL_ALT, KC_CANCEL_ALT2); }
+        get { return stateFor("X"); }
     }
 
     public override UndertaleInput.ButtonState Menu
     {
-        get { return stateFor(KC_MENU, KC_MENU_ALT); }
+        get { return stateFor("C"); }
     }
 
     public override UndertaleInput.ButtonState Up
     {
-        get { return stateFor(KC_UP); }
+        get { return stateFor("Up"); }
     }
 
     public override UndertaleInput.ButtonState Down
     {
-        get { return stateFor(KC_DOWN); }
+        get { return stateFor("Down"); }
     }
 
     public override UndertaleInput.ButtonState Left
     {
-        get { return stateFor(KC_LEFT); }
+        get { return stateFor("Left"); }
     }
 
     public override UndertaleInput.ButtonState Right
     {
-        get { return stateFor(KC_RIGHT); }
+        get { return stateFor("Right"); }
     }
+
+	private ButtonState stateFor(string input)
+	{
+		if(Input.GetButtonDown(input))
+		{
+			return ButtonState.PRESSED;
+		}
+		else if (Input.GetButtonUp(input))
+        {
+            return ButtonState.RELEASED;
+        }
+        else if (Input.GetButton(input))
+        {
+            return ButtonState.HELD;
+        }
+        else
+        {
+            return ButtonState.NONE;
+        }
+	}
 
     private ButtonState stateFor(KeyCode c)
     {
