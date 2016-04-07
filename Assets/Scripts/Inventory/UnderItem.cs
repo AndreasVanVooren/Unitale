@@ -12,6 +12,12 @@ public class UnderItem
         dogNumber++;
     }
 
+	public UnderItem(string id, string shortname)
+	{
+		ID = id;
+		ShortName = shortname;
+	}
+
     public string ID { get; private set; }
     public string ShortName { get; private set; }
 
@@ -21,6 +27,10 @@ public class UnderItem
 
     public void inCombatUse()
     {
+		//Do something from lua code
+		//TODO : Figure out how to do something from lua code
+
+
         UIController.instance.ActionDialogResult(new RegularMessage("It's the default handler!\nNot as cool as you hoped."), UIController.UIState.ENEMYDIALOGUE);
     }
 }
