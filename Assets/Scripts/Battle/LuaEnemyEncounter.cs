@@ -55,7 +55,9 @@ internal class LuaEnemyEncounter : EnemyEncounter
         script.Bind("RandomEncounterText", (Func<string>)RandomEncounterText);
         script.Bind("CreateProjectile", (Func<Script, string, float, float, DynValue>)CreateProjectile);
         script.Bind("CreateProjectileAbs", (Func<Script, string, float, float, DynValue>)CreateProjectileAbs);
-        script_ref = script;
+		script.Bind("AddItem", (Action<string,string>)AddItem);
+		script.Bind("RemoveItem", (Action<string>)RemoveItem);
+		script_ref = script;
         return true;
     }
 
@@ -193,7 +195,7 @@ internal class LuaEnemyEncounter : EnemyEncounter
 
         // Attach the controllers to the encounter's enemies table
         DynValue[] enemyStatusCtrl = new DynValue[enemies.Length];
-        Table luaEnemyTable = script.GetVar("enemies").Table;
+        Table luaEnemyTable = enemyScriptsLua.Table;
         for (int i = 0; i < enemyStatusCtrl.Length; i++)
         {
             //enemies[i].luaStatus = new LuaEnemyStatus(enemies[i]);
@@ -202,9 +204,39 @@ internal class LuaEnemyEncounter : EnemyEncounter
         }
         script.SetVar("enemies", DynValue.NewTable(luaEnemyTable));
         musicSource.Play(); // play that funky music
-    }
 
-    public override void HandleItem(UnderItem item)
+		//TEMP : Items in enemy script
+		try
+		{
+			Table items = script.GetVar("items").Table;
+			if (items != null)
+			{
+				Inventory.container.Clear();
+				foreach (var item in items.Pairs)
+				{
+					if (!Inventory.TryAdd(new UnderItem(item.Key.String, item.Value.String))) 
+						break;
+				}
+			}
+		}
+		catch (Exception)
+		{
+			Debug.LogWarning("No items found?");
+		}
+		
+	}
+
+	private void AddItem(string id, string shortName)
+	{
+		Inventory.TryAdd( new UnderItem(id,shortName));
+	}
+
+	private void RemoveItem(string id)
+	{
+		Inventory.RemoveItem(id);
+	}
+
+	public override void HandleItem(UnderItem item)
     {
         if (!CustomItemHandler(item))
             item.inCombatUse();
