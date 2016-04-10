@@ -110,6 +110,18 @@ public class FightUIController : MonoBehaviour
 
     private int getDamage()
     {
+        //first try get damage from custom pre attack handler
+        var dmg = enemy.HandlePreAttack(targetRt.anchoredPosition.x * 2.0f / GetComponent<RectTransform>().rect.width);
+        if (dmg != null)
+        {
+            if (dmg.amount.HasValue)
+            {
+                return Mathf.Abs( dmg.amount.Value);
+            }
+            else return -1;
+        }
+        //ToDo : get miss values and stuff, for now just return absolute value.
+
         float atkMult = getAtkMult();
         if (atkMult < 0)
             return -1;
@@ -254,12 +266,56 @@ public class FightUIController : MonoBehaviour
         targetRt.anchoredPosition = new Vector2(targetRt.anchoredPosition.x + mv, 0);
         if (Finished()) // you didn't press Z or you wouldn't be here
         {
-            enemy.HandleAttack(-1);
-            StationaryMissScript smc = Resources.Load<StationaryMissScript>("Prefabs/StationaryMiss");
-            smc = Instantiate(smc);
-            smc.transform.SetParent(GameObject.Find("Canvas").transform);
-            smc.setXPosition(320 - enePos.x);
+            var dmg = enemy.HandlePreAttack(Mathf.Infinity);
+            var dmgInt = -1;
+            if (dmg != null)
+            {
+                if (dmg.amount.HasValue)
+                {
+                    dmgInt =  Mathf.Abs(dmg.amount.Value);
+                }
+            }
+
+            enemy.HandleAttack(dmgInt);
+
+            if(dmgInt > 0)
+            {
+                //visibly butcher code and don't care about functions. Yet.
+                AudioSource aSrc = GetComponent<AudioSource>();
+                aSrc.clip = AudioClipRegistry.GetSound("hitsound");
+                aSrc.Play();
+
+                string damageTextStr = "[color:ff0000]" + dmgInt;
+
+                int damageTextWidth = (damageTextStr.Length - 14) * 29 + (damageTextStr.Length - 1 - 14) * 3; // lol hardcoded offsets
+                foreach (char c in damageTextStr)
+                    if (c == '1')
+                        damageTextWidth -= 12; // lol hardcoded offsets
+                damageTextRt.position = new Vector2(enePos.x - 0.5f * damageTextWidth, 80 + enePos.y);
+                damageText.setText(new TextMessage(damageTextStr, false, true));
+
+                int newHP = enemy.HP - dmgInt;
+                if (newHP < 0)
+                    newHP = 0;
+                lifeBar.GetComponent<RectTransform>().position = new Vector2(enePos.x, enePos.y + 20);
+                lifeBar.GetComponent<RectTransform>().sizeDelta = new Vector2(enemy.GetComponent<RectTransform>().rect.width, 13);
+                lifeBar.setInstant((float)enemy.HP / (float)enemy.getMaxHP());
+                lifeBar.setLerp((float)enemy.HP / (float)enemy.getMaxHP(), (float)newHP / (float)enemy.getMaxHP());
+                lifeBar.setVisible(true);
+                enemy.doDamage(dmgInt);
+
+                shakeInProgress = true;
+            }
+            else
+            {
+                StationaryMissScript smc = Resources.Load<StationaryMissScript>("Prefabs/StationaryMiss");
+                smc = Instantiate(smc);
+                smc.transform.SetParent(GameObject.Find("Canvas").transform);
+                smc.setXPosition(320 - enePos.x);
+                
+            }
             initFade();
+            
         }
     }
 }
