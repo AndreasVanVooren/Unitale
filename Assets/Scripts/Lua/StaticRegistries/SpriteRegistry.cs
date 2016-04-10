@@ -14,6 +14,7 @@ public static class SpriteRegistry
         key = key.ToLower();
         if (dict.ContainsKey(key))
         {
+            //Debug.LogFormat("Got {0}", key);
             return dict[key];
         }
         return null;
@@ -48,6 +49,7 @@ public static class SpriteRegistry
                 continue;
             }
             dict.Add(imageName, SpriteUtil.fromFile(file.FullName));
+            
         }
     }
 }

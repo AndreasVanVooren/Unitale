@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class LuaSpriteController {
@@ -23,6 +23,9 @@ public class LuaSpriteController {
     private float yScale = 1.0f;
     private Sprite originalSprite;
     private KeyframeCollection keyframes;
+
+    private List<LuaSpriteController> children = new List<LuaSpriteController>();
+    private LuaSpriteController parent;
 
     public float x
     {
@@ -122,7 +125,7 @@ public class LuaSpriteController {
         get { return internalRotation.z; }
         set {
             internalRotation.z = Math.mod(value, 360);
-            img.rectTransform.eulerAngles = internalRotation;
+            img.rectTransform.localEulerAngles = internalRotation;
         }
     }
 
@@ -189,9 +192,23 @@ public class LuaSpriteController {
         Scale(xScale, yScale);
     }
 
+    public void Set(string name, string sprName)
+    {
+        SpriteUtil.SwapSpriteFromFile(img, name, sprName);
+        originalSprite = img.sprite;
+        nativeSizeDelta = new Vector2(img.sprite.texture.width, img.sprite.texture.height);
+        Scale(xScale, yScale);
+    }
+
     public void SetParent(LuaSpriteController parent)
     {
         img.transform.SetParent(parent.img.transform);
+        //remove child from previous parent
+        if(this.parent != null)
+            this.parent.children.Remove(this);
+        this.parent = parent;
+        //add child to new parent
+        parent.children.Add(this);
     }
 
     public void SetPivot(float x, float y)
@@ -209,6 +226,11 @@ public class LuaSpriteController {
         xScale = xs;
         yScale = ys;
         img.rectTransform.sizeDelta = new Vector2(nativeSizeDelta.x * xScale, nativeSizeDelta.y * yScale);
+        for (int i = 0; i < children.Count; i++)
+        {
+            //Debug.Log("Scaling child");
+            children[i].Scale(xs, ys);
+        }
     }
 
     public void SetAnimation(string[] frames)

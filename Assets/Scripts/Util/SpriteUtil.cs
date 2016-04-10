@@ -24,9 +24,39 @@ public static class SpriteUtil
             //enemyImg.SetNativeSize();
             img.rectTransform.sizeDelta = new Vector2(newSprite.texture.width, newSprite.texture.height);
         }
-        catch (Exception)
+        catch (Exception e)
         {
             // TODO do something I guess
+            Debug.LogError("Error loading sprite");
+            Debug.LogException(e);
+        }
+    }
+
+    //Xml variant
+    public static void SwapSpriteFromFile(MonoBehaviour target, string filename, string spriteName)
+    {
+        try
+        {
+            Sprite newSprite = SpriteRegistry.Get(filename + "_" + spriteName);
+            if (newSprite == null)
+            {
+                var sprites = fromFileXml(FileLoader.pathToModFile("Sprites/" + filename + ".png"));
+                for (int i = 0; sprites != null && i < sprites.Length; ++i)
+                {
+                    SpriteRegistry.Set(filename+ "_" +sprites[i].name, sprites[i]);
+                }
+            }
+
+            Image img = target.GetComponent<Image>();
+            img.sprite = newSprite;
+            //enemyImg.SetNativeSize();
+            img.rectTransform.sizeDelta = new Vector2(newSprite.texture.width, newSprite.texture.height);
+        }
+        catch (Exception e)
+        {
+            // TODO do something I guess
+            Debug.LogError("Error loading sprite");
+            Debug.LogException(e);
         }
     }
 
@@ -101,12 +131,38 @@ public static class SpriteUtil
         {
             XmlDocument xmld = new XmlDocument();
             xmld.Load(fi.FullName);
-            if (xmld["spritesheet"] != null && "single".Equals(xmld["spritesheet"].GetAttribute("type")))
+            if (xmld["spritesheet"] != null && xmld["spritesheet"].GetAttribute("type").Equals("single"))
             {
                 return spriteWithXml(xmld["spritesheet"].FirstChild, newSprite);
             }
         }
         return newSprite;
+    }
+
+    public static Sprite[] fromFileXml(string filename)
+    {
+        Sprite newSprite = new Sprite();
+        Texture2D SpriteTexture = new Texture2D(1, 1);
+        SpriteTexture.LoadImage(FileLoader.getBytesFrom(filename));
+        SpriteTexture.filterMode = FilterMode.Point;
+        SpriteTexture.wrapMode = TextureWrapMode.Clamp;
+        newSprite = Sprite.Create(SpriteTexture, new Rect(0, 0, SpriteTexture.width, SpriteTexture.height), new Vector2(0, 0), PIXELS_PER_UNIT);
+        //definitive XML loading
+        FileInfo fi = new FileInfo(Path.ChangeExtension(filename, "xml"));
+        if (fi.Exists)
+        {
+            XmlDocument xmld = new XmlDocument();
+            xmld.Load(fi.FullName);
+            XmlElement sheet = xmld["spritesheet"];
+            if (sheet != null && sheet.GetAttribute("type").Equals("multiple"))
+            {
+                //return spriteWithXml(xmld["spritesheet"].FirstChild, newSprite);
+                return atlasFromXml(sheet, newSprite);
+            }
+        }
+        //return newSprite;
+        UnitaleUtil.displayLuaError("[XML document]", "You're trying to load a spritesheet, but no spritesheet was found.");
+        return null;
     }
 
     public static LuaSpriteController MakeIngameSprite(string filename)
@@ -115,6 +171,17 @@ public static class SpriteUtil
         if (!string.IsNullOrEmpty(filename))
         {
             SwapSpriteFromFile(i, filename);
+        }
+        i.transform.SetParent(GameObject.Find("BelowArenaLayer").transform, true); //TODO layering
+        return new LuaSpriteController(i);
+    }
+
+    public static LuaSpriteController MakeIngameSprite(string filename, string spritename)
+    {
+        Image i = GameObject.Instantiate<Image>(SpriteRegistry.GENERIC_SPRITE_PREFAB);
+        if (!string.IsNullOrEmpty(filename) && !string.IsNullOrEmpty(spritename))
+        {
+            SwapSpriteFromFile(i, filename, spritename);
         }
         i.transform.SetParent(GameObject.Find("BelowArenaLayer").transform, true); //TODO layering
         return new LuaSpriteController(i);

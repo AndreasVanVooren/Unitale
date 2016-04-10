@@ -47,6 +47,7 @@ public static class LuaScriptBinder
         script.Globals["SetGlobal"] = (Action<Script, string, DynValue>)LuaScriptBinder.Set;
         script.Globals["GetGlobal"] = (Func<Script, string, DynValue>)LuaScriptBinder.Get;
         script.Globals["CreateSprite"] = (Func<string, LuaSpriteController>)SpriteUtil.MakeIngameSprite;
+        script.Globals["CreateSpriteFromSheet"] = (Func<string, string, LuaSpriteController>)SpriteUtil.MakeIngameSprite;
         script.Globals["BattleDialog"] = (Action<DynValue>)LuaEnemyEncounter.BattleDialog;
         script.Globals["Encounter"] = (ScriptWrapper)LuaEnemyEncounter.script_ref;
         script.Globals["DEBUG"] = (Action<string>)UserDebugger.instance.userWriteLine;
