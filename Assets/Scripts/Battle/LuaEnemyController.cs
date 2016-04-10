@@ -282,6 +282,31 @@ public class LuaEnemyController : EnemyController
         }
     }
 
+    public override Dmg HandlePreAttack(float rateToCenter)
+    {
+        //return base.HandlePreAttack(rateToCenter);
+        //Debug.Log(rateToCenter);
+        var val = TryCallReturn("HandlePreAttack", new DynValue[] { DynValue.NewNumber(rateToCenter) });
+        if (val != null)
+        {
+            switch (val.Type)
+            {
+                case DataType.Void:
+                    return null;
+                case DataType.Nil:
+                    return new Dmg(null);
+                case DataType.Number:
+                    return new Dmg(val.Number);
+                default:
+                    UnitaleUtil.displayLuaError(scriptName, "Received type " + val.Type + " from HandlePreAttack.\nThis function can only return Void (default), Nil(Miss),\nor a number (which is converted to an integer)");
+                    return null;
+            }
+            
+        }
+            
+        return null;
+    }
+
     public override void HandleAttack(int hitStatus)
     {
         TryCall("HandleAttack", new DynValue[] { DynValue.NewNumber(hitStatus) });
@@ -348,6 +373,27 @@ public class LuaEnemyController : EnemyController
         {
             UnitaleUtil.displayLuaError(scriptName, ex.DecoratedMessage);
             return true;
+        }
+    }
+
+    //Because it's better to just create a new function than to break every other occurence.
+    public DynValue TryCallReturn(string func, DynValue[] param = null)
+    {
+        try
+        {
+            DynValue sval = script.GetVar(func);
+            if (sval == null || sval.Type == DataType.Nil)
+                return null;
+            if (param != null)
+                return script.Call(func, param);
+            else
+                return script.Call(func);
+            //return true;
+        }
+        catch (InterpreterException ex)
+        {
+            UnitaleUtil.displayLuaError(scriptName, ex.DecoratedMessage);
+            return null;
         }
     }
 

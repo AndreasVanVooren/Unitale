@@ -315,7 +315,7 @@ internal class LuaEnemyEncounter : EnemyEncounter
     // /</summary>
     // /<param name="item">Item to be checked for custom action</param>
     // /<returns>true if a custom action should be executed for given item, false if the default action should happen</returns>
-    protected virtual bool CustomItemHandler(UnderItem item)
+    protected override bool CustomItemHandler(UnderItem item)
     {
         return CallOnSelfOrChildren("HandleItem", new DynValue[] { DynValue.NewString(item.ID) });
     }

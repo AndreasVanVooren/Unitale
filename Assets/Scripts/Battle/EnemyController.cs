@@ -2,6 +2,20 @@
 
 public class EnemyController : MonoBehaviour
 {
+    public class Dmg
+    {
+        public Dmg(int? val) { amount = val; } 
+
+        public Dmg(double? val)
+        {
+            if (val.HasValue)
+                amount = (int)System.Math.Round(val.Value);
+            else amount = null;
+        }
+
+        public int? amount; //null if miss, neg if healing, pos if hurting;
+    }
+
     internal Sprite textBubbleSprite;
 
     internal Vector2 textBubblePos;
@@ -51,6 +65,19 @@ public class EnemyController : MonoBehaviour
             HandleCheck();
         else
             HandleCustomCommand(cmd);
+    }
+
+    //Function fires before damage is calculated. Including this function in your LUA causes 
+    //rateToCenter = -1: exact left side hit, multiplier should be equal to 1 (0?)
+    //rateToCenter = 0 : exact center hit, since this relies on perfect game timing, never assume this. mult gets bonus from 2 to 2.2
+    //rateToCenter = 1 : exact right side hit, multiplier should be equal to 1
+    //rateToCenter = N/A, +inf or -inf : missed
+    //for return value, if there is no function, call void in a function to indicate regular damage calcs, nil to indicate misses, and 0 to indicate no damage.
+    //NOTE: due to the current nature of damage, healing damage also hurts, zero damage is a miss
+    public virtual Dmg HandlePreAttack(float rateToCenter)
+    {
+        ui.ActionDialogResult(new RegularMessage("Your pre-attack handler\ris missing."), UIController.UIState.ENEMYDIALOGUE);
+        return null;
     }
 
     // hitstatus -1: you didn't press anything while attacking
