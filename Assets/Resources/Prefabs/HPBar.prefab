@@ -10,6 +10,7 @@ GameObject:
   - 224: {fileID: 22437200}
   - 222: {fileID: 22241516}
   - 114: {fileID: 11400118}
+  - 114: {fileID: 11462556}
   m_Layer: 5
   m_Name: HPBarFill
   m_TagString: Untagged
@@ -43,8 +44,24 @@ GameObject:
   - 224: {fileID: 22497238}
   - 222: {fileID: 22202776}
   - 114: {fileID: 11447768}
+  - 114: {fileID: 11499032}
   m_Layer: 5
   m_Name: HPBarBG
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &176442
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 22470982}
+  m_Layer: 5
+  m_Name: HPTextParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -119,6 +136,36 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &11462556
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 145618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b6761159c8f6224a8a895abea10dd25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SetNativeSize: 0
+  SpritePath: UI/sq_white
+  Loop: 0
+  SoundPath: 
+--- !u!114 &11499032
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 171708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b6761159c8f6224a8a895abea10dd25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SetNativeSize: 0
+  SpritePath: UI/sq_white
+  Loop: 0
+  SoundPath: 
 --- !u!222 &22202776
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -147,7 +194,24 @@ RectTransform:
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: .5}
+  m_Pivot: {x: 0, y: 0.5}
+--- !u!224 &22470982
+RectTransform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176442}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 22471536}
+  m_RootOrder: 2
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: 14, y: 14}
+  m_SizeDelta: {x: 15, y: 15}
+  m_Pivot: {x: 0, y: 0}
 --- !u!224 &22471536
 RectTransform:
   m_ObjectHideFlags: 1
@@ -160,13 +224,14 @@ RectTransform:
   m_Children:
   - {fileID: 22497238}
   - {fileID: 22437200}
+  - {fileID: 22470982}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_AnchorMin: {x: 1, y: .5}
-  m_AnchorMax: {x: 1, y: .5}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 8, y: 0}
   m_SizeDelta: {x: 25, y: 20}
-  m_Pivot: {x: 0, y: .5}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!224 &22497238
 RectTransform:
   m_ObjectHideFlags: 1
@@ -183,7 +248,7 @@ RectTransform:
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: .5}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
