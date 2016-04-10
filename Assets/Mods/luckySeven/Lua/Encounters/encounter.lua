@@ -9,6 +9,7 @@ enemies = {"happy"}
 
 enemypositions = {{0,0},{-50, 80},{50, -80},{-50, -80},{50, 80}}
 
+happyAnim = nil;
 dialogue = nil
 
 -- A custom list with attacks to choose from. Actual selection happens in EnemyDialogueEnding(). Put here in case you want to use it.
@@ -46,7 +47,8 @@ function EncounterStarting()
     --Be careful that you use different variable names as you have here, because the encounter's will be overwritten otherwise!
     --You can also use that to your benefit if you want to share a bunch of variables with multiple encounters.
     --require "Animations/it_anim" 
-	require "Animations/separate_anim" 
+	happyAnim = require "Animations/happy_anim";
+	require "Animations/separate_anim" ;
 	--dialogue =  require "Animations/itDialogue_anim"
 	
 	--enemypositions[1] = {0, 0};
@@ -62,7 +64,7 @@ function Konami()
 	
 	if(codeTimer > 0)then
 		codeTimer = codeTimer - Time.dt;
-	else
+	elseif (successes <= 10)then
 		successes = 0;
 	end
 
@@ -98,15 +100,16 @@ function Konami()
 		codeTimer = 0.5;
 	elseif(successes == 10 and Input.Menu == 1) then
 		DEBUG("Konami");
+		successes = 11
 		AddItem("CHARA", "OtherItm");
-	elseif(
+	elseif((
 	Input.Up == 1 or 
 	Input.Down == 1 or
 	Input.Left == 1 or 
 	Input.Right == 1 or
 	Input.Confirm == 1 or 
 	Input.Cancel == 1 or
-	Input.Menu == 1 )then
+	Input.Menu == 1 )and successes <= 10)then
 		successes = 0;
 	end
 	
@@ -116,6 +119,10 @@ end
 function Update()
 	SeparateAnim();
 	Konami();
+	
+	if(happyAnim ~= nil)then
+		happyAnim.Update();
+	end
 	
 end
 

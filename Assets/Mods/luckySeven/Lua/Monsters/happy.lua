@@ -1,19 +1,46 @@
 -- A basic monster script skeleton you can copy and modify for your own creations.
-comments = {"Smells like sound.", "NAR_RESPONSE_EXTEND.zip\rcannot be found.", "Flaming gasoline jets out\rfrom its many orifices."}
-commands = {"Check","Feed", "Debate", "Love"}
-randomdialogue = {"[font:sans][voice:v_sans]why even\nbother?\n\nwhy even\nbother?"}
+comments = {
+	"It's tearing at itself.", 
+	"Piercing screams echo through\rthe area.", 
+	"It undulates rhythmically.",
+	"Smells like rotting meat.",
+	"The snow is falling."
+};
 
-sprite = "Happy/temp" --Always PNG. Extension is added automatically.
-name = "ERR_NAME_NOT_FOUND"
-hp = 100
+commands = {"Check","Bathe", "Run", "Hug"};
+randomdialogue = {"[font:sans][voice:v_sans]why even\nbother?\n\nwhy even\nbother?"};
+
+sprite = "empty"; --Always PNG. Extension is added automatically.
+name = "ERR_NAME_NOT_FOUND";
+hp = 777;
 --atk = "#"
 --def = "#"
 --check = "You can't. It's all going to\rend. It's all going to end."
-dialogbubble = "right" -- See documentation for what bubbles you have available.
-cancheck = false
-canspare = false
+dialogbubble = "right"; -- See documentation for what bubbles you have available.
+cancheck = false;
+canspare = false;
 --snowThrowCount = 0;
 --SetGlobal("angry", false);
+
+animRef = nil;
+
+isHugged = false;
+batheCount = 0;
+
+--Comes before damage is actually calculated, and can replace damage calculation entirely
+--Parameters :
+--	+ rateToCenter => The position ratio of the target cursor relative to the center of the UI thing. Goes from -1 (left) to 1 (right)
+--Return values : 
+--	+ void (end function without returning a value, or do return;) => Use default behaviour
+--	+ nil (explicitly state return nil;) => Miss target;
+--  + number (eg. return 5) => damage taken, in the future damage healed, but this isn't implemented yet.
+--		=> The damage value is automatically rounded to the nearest integer value.
+--  + anything else (eg. return "Bepis") => throws error.
+function HandlePreAttack(rateToCenter)
+	--if(not(rateToCenter < math.huge and rateToCenter > -math.huge and rateToCenter == rateToCenter))then
+	--	DEBUG("To infinity");
+	--end
+end
 
 -- Happens after the slash animation but before 
 function HandleAttack(attackstatus)
@@ -21,19 +48,26 @@ function HandleAttack(attackstatus)
         -- player pressed fight but didn't press Z afterwards
     else
         -- player did actually attack
-		hp = hp + attackstatus;
+		--hp = hp + attackstatus;
+		--isHugged
     end
 end
  
 -- This handles the commands; all-caps versions of the commands list you have above.
 function HandleCustomCommand(command)
 	if command == "CHECK" then
-		BattleDialog({"???_??? ATK -"..math.random(100000000,999999999) ..math.random(100000000,999999999).."\nLooks tasty."});
-    elseif command == "FEED" then
-		BattleDialog("TODO.");
-    elseif command == "DEBATE" then
+		BattleDialog({"???_??? ATK -"..math.random(100000000,999999999) ..math.random(100000000,999999999)..math.random(100000000,999999999).."\nLooks tasty."});
+    elseif command == "BATHE" then
+		if(isHugged) then
+			BattleDialog("TODO.");
+		else
+			BattleDialog("It won't let you.");
+		end
+		
+    elseif command == "RUN" then
 		BattleDialog({"TODO."});
-    elseif command == "LOVE" then
+    elseif command == "HUG" then
+		isHugged = true;
 		BattleDialog({"TODO."});
     end
     --currentdialogue = {"[font:sans]" .. currentdialogue[1]}
