@@ -39,7 +39,19 @@ public class LuaSpriteController {
         set { img.rectTransform.anchoredPosition = new Vector2(img.rectTransform.anchoredPosition.x, value); }
     }
 
-    public float xscale
+	public float xAbs
+	{
+		get { return img.rectTransform.position.x; }
+		set { img.rectTransform.position = new Vector2(value, img.rectTransform.position.y); }
+	}
+
+	public float yAbs
+	{
+		get { return img.rectTransform.position.y; }
+		set { img.rectTransform.position = new Vector2(img.rectTransform.position.x, value); }
+	}
+
+	public float xscale
     {
         get { return xScale; }
         set { 
@@ -122,14 +134,25 @@ public class LuaSpriteController {
 
     public float rotation
     {
-        get { return internalRotation.z; }
+        get { return img.rectTransform.eulerAngles.z; }
         set {
-            internalRotation.z = Math.mod(value, 360);
+			var zDiff = img.rectTransform.eulerAngles.z - value;
+            internalRotation.z = Math.mod(internalRotation.z - zDiff, 360);
             img.rectTransform.localEulerAngles = internalRotation;
         }
     }
 
-    /*
+	public float localRotation
+	{
+		get { return internalRotation.z; }
+		set
+		{
+			internalRotation.z = Math.mod(value, 360);
+			img.rectTransform.localEulerAngles = internalRotation;
+		}
+	}
+
+	/*
     public bool filter
     {
         get { return img.sprite.texture.filterMode != FilterMode.Point; }
@@ -147,7 +170,7 @@ public class LuaSpriteController {
     }
     */
 
-    public LuaSpriteController(Image i)
+	public LuaSpriteController(Image i)
     {
         this.img = i;
         originalSprite = img.sprite;
@@ -221,16 +244,21 @@ public class LuaSpriteController {
         img.rectTransform.anchorMax = new Vector2(x, y);
     }
 
-    public void Scale(float xs, float ys)
+    public void Scale(float xs, float ys, bool alsoScaleChildren = false)
     {
         xScale = xs;
         yScale = ys;
         img.rectTransform.sizeDelta = new Vector2(nativeSizeDelta.x * xScale, nativeSizeDelta.y * yScale);
-        for (int i = 0; i < children.Count; i++)
-        {
-            //Debug.Log("Scaling child");
-            children[i].Scale(xs, ys);
-        }
+
+		if(alsoScaleChildren)
+		{
+
+			for (int i = 0; i < children.Count; i++)
+			{
+				//Debug.Log("Scaling child");
+				children[i].Scale(xs, ys,true);
+			}
+		}
     }
 
     public void SetAnimation(string[] frames)
