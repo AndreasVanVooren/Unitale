@@ -27,6 +27,8 @@ animRef = nil;
 isHugged = false;
 batheCount = 0;
 
+headHealth = {111,111,111,111,111,111,111};
+
 --Comes before damage is actually calculated, and can replace damage calculation entirely
 --Parameters :
 --	+ rateToCenter => The position ratio of the target cursor relative to the center of the UI thing. Goes from -1 (left) to 1 (right)
@@ -37,9 +39,12 @@ batheCount = 0;
 --		=> The damage value is automatically rounded to the nearest integer value.
 --  + anything else (eg. return "Bepis") => throws error.
 function HandlePreAttack(rateToCenter)
+	--This line of code is to change behaviour when you don't press the Z button in time.
 	--if(not(rateToCenter < math.huge and rateToCenter > -math.huge and rateToCenter == rateToCenter))then
 	--	DEBUG("To infinity");
 	--end
+	
+	-- Compare RateToCenter to deduce which head is hit. Then KILL THAT HEAD.
 end
 
 -- Happens after the slash animation but before 
@@ -50,6 +55,13 @@ function HandleAttack(attackstatus)
         -- player did actually attack
 		--hp = hp + attackstatus;
 		--isHugged
+		hp = headHealth[1]+
+			 headHealth[2]+
+			 headHealth[3]+
+			 headHealth[4]+
+			 headHealth[5]+
+			 headHealth[6]+
+			 headHealth[7];
     end
 end
  
