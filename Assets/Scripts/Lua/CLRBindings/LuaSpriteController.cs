@@ -318,7 +318,9 @@ public class LuaSpriteController {
     public void Remove()
     {
         GameObject.Destroy(img.gameObject);
-        img = null;
+		parent.children.Remove(this);
+		this.parent = null;
+		img = null;
     }
 
     internal void UpdateAnimation()
