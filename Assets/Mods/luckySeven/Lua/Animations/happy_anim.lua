@@ -9,11 +9,15 @@ local happyAnim = {};
 --------------------------------
 --Script Variable Initialization
 --------------------------------
-
 local timeStart = Time.time;
 local timeActive = 0;
 
-local sprung = false;
+local shakeTime = 0;
+local maxShakeTime = 0;
+local maxShakeOffset = 4;
+
+local springTimer = 0;
+local sprung = 0;
 local swaying = true;
 
 --note anchors and pivots are all values I got by fucking around in the Unity editor
@@ -137,9 +141,9 @@ local function CreateHead(X, Y, pivotX, pivotY, withJaw, hasEye)
 	return { head, eye, jaw };
 end
 	
---local head1 = CreateHead(-7.7, 75.57988, 0.5, -0.27, true,0);
---head1[1].SetParent(torso);
---head1[1].y = 12.3;
+local head1 = CreateHead(-7.7, 75.57988, 0.5, -0.27, true,0);
+head1[1].SetParent(torso);
+head1[1].y = 12.3;
 local head2 = nil --CreateHead(-64.6, 39.6, 0.5, 1, true);
 local head3 = nil --CreateHead(80.6, 77.9, 0.5, -0.27, true);
 local head4 = nil --CreateHead(80.6, 77.9, 0.5, -0.27, true);
@@ -151,106 +155,14 @@ local looseHeadParts = {} --format : { {headpart, velocityX, velocityY} }
 
 legs.Scale(1.6,1.6, true);
 
-
-
-local function LetShitGoDown()
-	--reset timer
-	timeStart = Time.time;
-	
-	--create bones
-	neck = CreateSprite("Happy/tempSprites/neckBone");
-	neck.SetParent(torso);
-	neck.SetAnchor(0.425,0.579);
-	neck.SetPivot(0.3,0);
-	neck.MoveTo(0,0);
-	
-	armNeckTop = CreateSprite("Happy/tempSprites/armNeckTopTop")
-	armNeckTop.SetParent(neck);
-	armNeckTop.SetAnchor(0.17,0.8914);
-	armNeckTop.SetPivot(0.4729,0.0253);
-	armNeckTop.MoveTo(0,0);
-	
-	armNeckHiR = CreateSprite("Happy/tempSprites/armNeckUpperR")
-	armNeckHiR.SetParent(neck);
-	armNeckHiR.SetAnchor(0.8943, 0.9286);
-	armNeckHiR.SetPivot(0.171, 0.0798);
-	armNeckHiR.MoveTo(0,0);
-	
-	armNeckL = CreateSprite("Happy/tempSprites/armNeckL")
-	armNeckL.SetParent(neck);
-	armNeckL.SetAnchor(0.17, 0.57);
-	armNeckL.SetPivot(0.994, 0.374);
-	armNeckL.MoveTo(0,0);
-	armNeckL.localRotation = armNeckLRot;
-	
-	armNeckLoR = CreateSprite("Happy/tempSprites/armNeckLowerR")
-	armNeckLoR.SetParent(neck);
-	armNeckLoR.SetAnchor(0.93939, 0.8914);
-	armNeckLoR.SetPivot(0.10067, 0.9942);
-	armNeckLoR.MoveTo(0,0);
-	
-	armUp1 = CreateSprite("Happy/tempSprites/armUpper");
-	armUp1.SetParent(torso);
-	armUp1.SetAnchor(0.6792037, 0.3424562);
-	armUp1.SetPivot(0.5, 1);
-	armUp1.MoveTo(0,0);
-	
-	armUp2 = CreateSprite("Happy/tempSprites/armUpper2");
-	armUp2.SetParent(torso);
-	armUp2.SetAnchor(0.78, 0.52);
-	armUp2.SetPivot(0.5, 0.935167);
-	armUp2.MoveTo(-2.5,2);
-	armUp2.localRotation = armUp2Rot;
-	
-	armLo1 = CreateSprite("Happy/tempSprites/armLower");
-	armLo1.SetParent(armUp1);
-	armLo1.SetAnchor(0.3888889, 0.06450538);
-	armLo1.SetPivot(0.06965858, 0.8420351);
-	armLo1.MoveTo(0,0);
-	
-	armLo2 = CreateSprite("Happy/tempSprites/armLower2");
-	armLo2.SetParent(armUp2);
-	armLo2.SetAnchor(0.5, 0.14);
-	armLo2.SetPivot(0.5, 0.02837969);
-	armLo2.MoveTo(0,0);
-	armLo2.localRotation = armLo2Rot;
-	
-	armLoL = CreateSprite("Happy/tempSprites/armLowerL");
-	armLoL.SetParent(torso);
-	armLoL.SetAnchor(0.22,0.965)
-	armLoL.SetPivot(1,0.733);
-	armLoL.MoveTo(0.4,0);
-	
-	hand1 = CreateSprite("Happy/tempSprites/hand1");
-	hand1.SetParent(armLo1);
-	hand1.SetAnchor(0.984, 0.495);
-	hand1.SetPivot(0.1571406, 0.17743);
-	hand1.MoveTo(0,0);
-	
-	hand2 = CreateSprite("Happy/tempSprites/hand2");
-	hand2.SetParent(armLo2);
-	hand2.SetAnchor(0.8, 0.948);
-	hand2.SetPivot(0.5, 0.06390622);
-	hand2.MoveTo(0,0);
-	hand2.localRotation = hand2Rot;
-	
-	--create heads
-	head2 = CreateHead(-64.6, 39.6, 0.5, 1, true); -- armLoL
-	head3 = CreateHead(0,0, 0.5, -0.27, true); --arm2
-	head4 = CreateHead(0,0, 0.5, -0.27, true,2); --neckTop
-	head5 = CreateHead(0,0, 0.5, -0.27, true); --neckarmRTop
-	head6 = CreateHead(0,0, 0.5, 0, false); --neckArmL
-	head7 = CreateHead(0,0, 0.5, 0, false); --neckArmRBot
-	
-	--create bone frag projectiles springing from thing
-	
-	Audio.LoadFile("Happy_Loop");
-	legs.Scale(1.6,1.6, true);
-	sprung = true;
-	SetGlobal("isSprung", false);
+function happyAnim.Shake(dt)
+	dt = dt or 0.5;
+	maxShakeTime = dt;
+	shakeTime = dt;
 end
 
-LetShitGoDown();
+
+--LetShitGoDown();
 local function PositionHead(head, target, dispX, dispY, rotOffset)
 	if (head == nil)then
 		DEBUG("No valid head has been passed through")
@@ -267,6 +179,161 @@ local function PositionHead(head, target, dispX, dispY, rotOffset)
 	head[1].MoveToAbs( target.xAbs + x, target.yAbs + y  );
 end
 
+
+local function UpdateSpring()
+	springTimer = springTimer - Time.dt;
+	
+	if(springTimer <=0)then
+		if(sprung ~= 0)then
+			springTimer = 0.5;
+			timeStart = Time.time;
+		end
+		if(sprung == 1)then
+			sprung = 2;
+			--neck
+			neck = CreateSprite("Happy/tempSprites/neckBone");
+			neck.SetParent(torso);
+			neck.SetAnchor(0.425,0.579);
+			neck.SetPivot(0.3,0);
+			neck.MoveTo(0,0);
+			
+			armNeckTop = CreateSprite("Happy/tempSprites/armNeckTopTop")
+			armNeckTop.SetParent(neck);
+			armNeckTop.SetAnchor(0.17,0.8914);
+			armNeckTop.SetPivot(0.4729,0.0253);
+			armNeckTop.MoveTo(0,0);
+			
+			head4 = CreateHead(0,0, 0.5, -0.27, true,2); --neckTop
+			
+			legs.Scale(1.6,1.6, true);
+			
+			PositionHead(head4, armNeckTop, 0, 20, 0);
+			happyAnim.Shake(0.25);	--for some reason these kinds of func defines need a ptr to the module. Just stick with it.
+			
+			if(head1 ~= nil)then
+				head1[1].Remove();
+				head1[3].Remove();
+				head1 = nil;
+			end
+		elseif(sprung ==2 )then
+			sprung = 3;
+			--left arm
+			armLoL = CreateSprite("Happy/tempSprites/armLowerL");
+			armLoL.SetParent(torso);
+			armLoL.SetAnchor(0.22,0.965)
+			armLoL.SetPivot(1,0.733);
+			armLoL.MoveTo(0.4,0);
+			
+			head2 = CreateHead(-64.6, 39.6, 0.5, 1, true); -- armLoL
+			
+			legs.Scale(1.6,1.6, true);
+			
+			PositionHead(head2, armLoL,-45,-45, 0);
+			happyAnim.Shake(0.25);
+		elseif(sprung ==3 )then
+			sprung = 4;
+			
+			armUp1 = CreateSprite("Happy/tempSprites/armUpper");
+			armUp1.SetParent(torso);
+			armUp1.SetAnchor(0.6792037, 0.3424562);
+			armUp1.SetPivot(0.5, 1);
+			armUp1.MoveTo(0,0);
+			
+			armLo1 = CreateSprite("Happy/tempSprites/armLower");
+			armLo1.SetParent(armUp1);
+			armLo1.SetAnchor(0.3888889, 0.06450538);
+			armLo1.SetPivot(0.06965858, 0.8420351);
+			armLo1.MoveTo(0,0);
+			
+			armUp2 = CreateSprite("Happy/tempSprites/armUpper2");
+			armUp2.SetParent(torso);
+			armUp2.SetAnchor(0.78, 0.52);
+			armUp2.SetPivot(0.5, 0.935167);
+			armUp2.MoveTo(-2.5,2);
+			armUp2.localRotation = armUp2Rot;
+			
+			armLo2 = CreateSprite("Happy/tempSprites/armLower2");
+			armLo2.SetParent(armUp2);
+			armLo2.SetAnchor(0.5, 0.14);
+			armLo2.SetPivot(0.5, 0.02837969);
+			armLo2.MoveTo(0,0);
+			armLo2.localRotation = armLo2Rot;
+			
+			hand1 = CreateSprite("Happy/tempSprites/hand1");
+			hand1.SetParent(armLo1);
+			hand1.SetAnchor(0.984, 0.495);
+			hand1.SetPivot(0.1571406, 0.17743);
+			hand1.MoveTo(0,0);
+			
+			hand2 = CreateSprite("Happy/tempSprites/hand2");
+			hand2.SetParent(armLo2);
+			hand2.SetAnchor(0.8, 0.948);
+			hand2.SetPivot(0.5, 0.06390622);
+			hand2.MoveTo(0,0);
+			hand2.localRotation = hand2Rot;
+			
+			head3 = CreateHead(0,0, 0.5, -0.27, true); --arm2
+			
+			legs.Scale(1.6,1.6, true);
+			
+			PositionHead(head3, hand2, 0, 3, 0);
+			happyAnim.Shake(0.25);
+		elseif(sprung ==4 )then
+			sprung = 5;
+			armNeckL = CreateSprite("Happy/tempSprites/armNeckL")
+			armNeckL.SetParent(neck);
+			armNeckL.SetAnchor(0.17, 0.57);
+			armNeckL.SetPivot(0.994, 0.374);
+			armNeckL.MoveTo(0,0);
+			armNeckL.localRotation = armNeckLRot;
+			
+			head6 = CreateHead(0,0, 0.5, 0, false); --neckArmL
+			
+			legs.Scale(1.6,1.6, true);
+			
+			PositionHead(head6,armNeckL,-60,5,180);
+			happyAnim.Shake(0.25);
+		elseif(sprung ==5 )then
+			sprung = 6;
+			
+			armNeckHiR = CreateSprite("Happy/tempSprites/armNeckUpperR")
+			armNeckHiR.SetParent(neck);
+			armNeckHiR.SetAnchor(0.8943, 0.9286);
+			armNeckHiR.SetPivot(0.171, 0.0798);
+			armNeckHiR.MoveTo(0,0);
+			
+			head5 = CreateHead(0,0, 0.5, -0.27, true); --neckarmRTop
+			
+			
+			armNeckLoR = CreateSprite("Happy/tempSprites/armNeckLowerR")
+			armNeckLoR.SetParent(neck);
+			armNeckLoR.SetAnchor(0.93939, 0.8914);
+			armNeckLoR.SetPivot(0.10067, 0.9942);
+			armNeckLoR.MoveTo(0,0);
+			
+			head7 = CreateHead(0,0, 0.5, 0, false); --neckArmRBot
+			
+			
+			legs.Scale(1.6,1.6, true);
+			
+			PositionHead(head5,armNeckHiR,25,30,-60);
+			PositionHead(head7,armNeckLoR,25,-15,-20);
+			happyAnim.Shake(0.25);
+		end
+	end
+end
+
+local function LetShitGoDown()
+	--reset timer
+	timeStart = Time.time;
+	
+	Audio.LoadFile("Happy_Loop");
+	legs.Scale(1.6,1.6, true);
+	sprung = 1;
+	swaying = true;
+	SetGlobal("isSprung", true);
+end
+
 --tentacle thing in bounds : armLol (2)
 --tentacle thing out of bounds : hand2 (3)
 --burst arms : arm neck top (4)
@@ -275,7 +342,7 @@ end
 --lasers any  = right lower (7)
 
 local function UpdateHeads()
-	PositionHead(head2, armLoL,-35,-40, 0);
+	PositionHead(head2, armLoL,-45,-45, 0);
 	PositionHead(head3, hand2, 0, 3, 0);
 	PositionHead(head4, armNeckTop, 0, 20, 0);
 	PositionHead(head5,armNeckHiR,25,30,-60);
@@ -347,6 +414,39 @@ function happyAnim.ToggleSway(newState)
 	
 end
 
+function KillHeadLoc(head)
+	table.insert(looseHeadParts, {head[1],-5, 0});
+	if(head[3] == nil) return;
+	head[3].SetParent(legs);
+	table.insert(looseHeadParts, {head1[3], 5, 0});
+end
+
+function happyAnim.KillHead(index)
+	if(index == 1)then
+		KillHeadLoc(head1);
+		head1 = nil;
+	elseif(index == 2)then
+		KillHeadLoc(head2);
+		head2 = nil;
+	elseif(index == 3)then
+		KillHeadLoc(head3);
+		head3 = nil;
+	elseif(index == 4)then
+		KillHeadLoc(head4);
+		head4 = nil;
+	elseif(index == 5)then
+		KillHeadLoc(head5);
+		head5 = nil;
+	elseif(index == 6)then
+		KillHeadLoc(head6);
+		head6 = nil;
+	elseif(index == 7)then
+		KillHeadLoc(head7);
+		head7 = nil;
+	
+	end
+end
+
 function happyAnim.ToggleHand()
 	if(hand == nil)then
 		hand1 = CreateSprite("Happy/tempSprites/hand1");
@@ -382,20 +482,63 @@ local function UpdateEye(eyeRef, index, isSmall)
 	end
 end
 
+local function UpdateDeadItems()
+	for	i=1, (#looseHeadParts)do
+		--get displacement
+		local x = looseHeadParts[i][1].xAbs;
+		local y = looseHeadParts[i][1].yAbs;
+		x = x + looseHeadParts[i][2] * Time.dt;
+		y = y + looseHeadParts[i][3] * Time.dt;
+		
+		--apply gravity for next update
+		looseHeadParts[i][3] = looseHeadParts[i][3] + (Time.dt * -9.81);
+		
+		--check if we need to invert gravity for bouncing
+		if(y < 240)then
+			looseHeadParts[i][2] = looseHeadParts[i][2] / 3;
+			looseHeadParts[i][3] = -looseHeadParts[i][3] / 3;
+			y = 240;
+		end
+		
+		--final move
+		looseHeadParts[i][1].MoveToAbs(x,y);
+		
+		
+		
+		
+		
+	end
+end
+
 local function UpdateEyes()
 	if(eyeAnimationTimers[1] > 0)then
 		eyeAnimationTimers[1] = eyeAnimationTimers[1] - Time.dt;
 	elseif(eyeState[1] == true)then
 		eyeState[1] = false;
 		torsEye.StopAnimation();
+		torsEye.Set("Happy/tempSprites/eyes/torsEyeOpen");
 	end
-
-	UpdateEye(head2[2],2);
-	UpdateEye(head3[2],3);
-	UpdateEye(head4[2],4);
-	UpdateEye(head5[2],5);
-	UpdateEye(head6[2],6);
-	UpdateEye(head7[2],7);
+	
+	if(sprung > 5)then
+		if(head2 ~= nil)then
+			UpdateEye(head2[2],2);
+		end
+		if(head3 ~= nil)then
+			UpdateEye(head3[2],3);
+		end
+		if(head4 ~= nil)then
+			UpdateEye(head4[2],4);
+		end
+		if(head5 ~= nil)then
+			UpdateEye(head5[2],5);
+		end
+		if(head6 ~= nil)then
+			UpdateEye(head6[2],6);
+		end
+		if(head7 ~= nil)then
+			UpdateEye(head7[2],7);
+		end
+	end
 end
 --NOTE TO SELF: index starts at 2
 local function ShowEyeLoc(eyeRef, index, isSmall)
@@ -448,14 +591,33 @@ end
 function happyAnim.Update()
 	timeActive = Time.time - timeStart;
 
-	if (sprung) then
+	if (sprung >5) then
 		AnimateBigPap();
-	else
+	elseif(sprung == 0) then
 		GentleSway();
+	else
+		UpdateSpring();
+	end
+	
+	if(shakeTime > 0)then
+		local xOffset = math.random(-maxShakeOffset, maxShakeOffset ) * (shakeTime/maxShakeTime);
+		local yOffset = math.random(-maxShakeOffset, maxShakeOffset ) * (shakeTime/maxShakeTime);
+		legs.MoveTo(320 + xOffset, 240 + yOffset);
+		shakeTime = shakeTime - Time.dt;
+		if(shakeTime <=0)then
+			legs.MoveTo(320 , 240 );
+		end
 	end
 
 	UpdateEyes();
 end
+
+function happyAnim.SpringUp()
+
+	--DEBUG("Yo intro");
+	LetShitGoDown();
+end
+
 
 ---------------------
 --Module return value

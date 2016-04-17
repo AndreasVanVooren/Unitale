@@ -2,7 +2,7 @@
 music = "Happy_Intro" --Always OGG. Extension is added automatically. Remove the first two lines for custom music.
 encountertext = "Everything's H A P P Y ." --Modify as necessary. It will only be read out in the action select screen.
 nextwaves = {"waveNull"}
-wavetimer = 4.0
+wavetimer = 0.0
 arenasize = {240, 130}
 
 enemies = {"happy"}
@@ -25,11 +25,18 @@ function EnteringState(newState, oldState)
 	end
 	
 	if (newState == "ENEMYDIALOGUE") then 
-		if(not hasSpeech) then
+		
+		if(enemies[1].GetVar("feelsAttacked") == true)then
+			--DEBUG("yee haw");
+			enemies[1].SetVar("feelsAttacked",false);
+			BattleDialog({
+				"[waitall:3][func:PrepareSpring]You shouldn't have done that.",
+				"[waitall:3][noskip]Everything's [waitall:8][func:Spring]H A P P Y ."
+				});
+		elseif(not hasSpeech) then
 			State("DEFENDING");
-		else
-			
 		end
+		
 	elseif(newState == "ACTIONSELECT")then
 		
 	end
@@ -162,7 +169,7 @@ function HandleSpare()
 end
 
 items = {}; --use items like dictionary : items["KEY"] = "Value"
-items["LOCKET"]
+items["LOCKET"] = "INV_LOCKET";
 
 function HandleItem(ItemID)
 	
@@ -178,16 +185,21 @@ function HandleItem(ItemID)
 		
 		if(GetGlobal("isSprung") == false)then
 			BattleDialog({
-				"You hold the Locket in the air[waitall:4]...\r[w:8]\n[waitall:2]You shouldn't have done that."
+				"[noskip][waitall:2]You hold the Locket in the air...[w:8]\n[func:PrepareSpring]It seems to remember something...",
+				"[waitall:3][noskip]Everything's [waitall:8][func:Spring]H A P P Y ."
 			});
-		else
-
+		elseif(GetGlobal("isSprung") == true)then	--just make sure it isn't nil
+			if(enemies[1].GetVar("batheCount") < 2)then
+			
+			else
+				BattleDialog({
+					"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
+					"...you choke on the foul air."
+				});
+			end
 		end
 
-		BattleDialog({
-				"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
-				"...you choke on the foul air."
-			});
+		
 		
 			--State("ACTIONSELECT")
 			--encountertext = "The Sanstrosity seems content."
@@ -378,11 +390,16 @@ end
 
 function PrepareSpring()
 	Audio.Stop();
+	happyAnim.ShowEye(1);
+	happyAnim.ToggleSway(false);
 	--enableTorseye
 end
 
 function Spring()
-
+	--DEBUG("sadfasdf");
+	happyAnim.SpringUp();
+	--change attacks, set wave timer
+	wavetimer = 4.0;
 end
 
 function DieDark()

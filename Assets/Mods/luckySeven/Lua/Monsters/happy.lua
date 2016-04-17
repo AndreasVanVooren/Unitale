@@ -30,6 +30,8 @@ batheCount = 0;
 
 headHealth = {111,111,111,111,111,111,111};
 
+feelsAttacked = false;
+
 --Comes before damage is actually calculated, and can replace damage calculation entirely
 --Parameters :
 --	+ rateToCenter => The position ratio of the target cursor relative to the center of the UI thing. Goes from -1 (left) to 1 (right)
@@ -38,14 +40,44 @@ headHealth = {111,111,111,111,111,111,111};
 --	+ nil (explicitly state return nil;) => Miss target;
 --  + number (eg. return 5) => damage taken, in the future damage healed, but this isn't implemented yet.
 --		=> The damage value is automatically rounded to the nearest integer value.
---  + anything else (eg. return "Bepis") => throws error.
+--  + anything else (eg. return string "Bepis") => throws error.
 function HandlePreAttack(rateToCenter)
 	--This line of code is to change behaviour when you don't press the Z button in time.
 	--if(not(rateToCenter < math.huge and rateToCenter > -math.huge and rateToCenter == rateToCenter))then
 	--	DEBUG("To infinity");
 	--end
 	
-	-- Compare RateToCenter to deduce which head is hit. Then KILL THAT HEAD.
+	--keep standard on miss behaviour
+	if(not(rateToCenter < math.huge and rateToCenter > -math.huge and rateToCenter == rateToCenter))then
+		return nil;
+	end
+	
+	if(GetGlobal("isSprung") == false)then
+		--just do normal calculations
+		
+		local mult = (2-math.abs(rateToCenter));
+		if(math.abs(rateToCenter) < 12/115)then
+			mult = 2.2;
+		end
+		
+		local dmg = math.ceil ( (29 + math.random()*2) * mult);
+		
+		headHealth[1] = headHealth[1] - dmg;
+		
+		if(headHealth[1] <= 0)then
+			dmg = dmg + headHealth[1];
+			
+			feelsAttacked = true;
+		end
+			
+		return dmg;
+	elseif(GetGlobal("isSprung") == true)then
+		-- Compare RateToCenter to deduce which head is hit. Then KILL THAT HEAD.
+		local dmg = (29 + math.random()*2);
+		return dmg;
+	end
+	
+	return "YOU DUN FUCKED UP"
 end
 
 -- Happens after the slash animation but before 
