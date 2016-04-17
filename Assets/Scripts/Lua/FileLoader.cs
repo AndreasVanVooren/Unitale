@@ -21,7 +21,7 @@ public static class FileLoader
             { // OSX has stuff bundled in .app things
                 SysDepDataRoot = rootInfo.Parent.Parent.FullName;
             }
-            else if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.OSXEditor)
+            else if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.OSXEditor || Application.platform = RuntimePlatform.LinuxEditor)
             {
                 // everything is fine
             }
