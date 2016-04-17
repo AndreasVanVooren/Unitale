@@ -17,18 +17,20 @@ public static class FileLoader
             DirectoryInfo rootInfo = new DirectoryInfo(Application.dataPath);
             string SysDepDataRoot = rootInfo.FullName;
 
+			#if !UNITY_EDITOR	//Preprocessor coding, because code seemed to only be valid on linux, and this cancels the problem out entirely.
             if (Application.platform == RuntimePlatform.OSXPlayer)
             { // OSX has stuff bundled in .app things
                 SysDepDataRoot = rootInfo.Parent.Parent.FullName;
             }
-            else if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.OSXEditor || Application.platform = RuntimePlatform.LinuxEditor)
-            {
-                // everything is fine
-            }
+            //else if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.OSXEditor)
+            //{
+            //    // everything is fine
+            //}
             else
             {
                 SysDepDataRoot = rootInfo.Parent.FullName;
             }
+			#endif
             return SysDepDataRoot;
         }
     }
