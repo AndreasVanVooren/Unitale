@@ -28,7 +28,7 @@ torso.SetPivot(0.37,0);
 torso.SetParent(legs);
 torso.MoveTo(0,0);
 
-local torsEye = CreateSprite("Happy/tempSprites/torsEye");
+local torsEye = CreateSprite("Happy/tempSprites/eyes/torsEyeClosed");
 --torso.SetAnchor(0.455,1);
 --torso.SetPivot(0.37,0);
 torsEye.SetParent(torso);
@@ -247,6 +247,7 @@ local function LetShitGoDown()
 	Audio.LoadFile("Happy_Loop");
 	legs.Scale(1.6,1.6, true);
 	sprung = true;
+	SetGlobal("isSprung", false);
 end
 
 LetShitGoDown();
@@ -274,7 +275,7 @@ end
 --lasers any  = right lower (7)
 
 local function UpdateHeads()
-	PositionHead(head2, armLoL,-40,-50, 0);
+	PositionHead(head2, armLoL,-35,-40, 0);
 	PositionHead(head3, hand2, 0, 3, 0);
 	PositionHead(head4, armNeckTop, 0, 20, 0);
 	PositionHead(head5,armNeckHiR,25,30,-60);
@@ -337,16 +338,6 @@ local function GentleSway()
 	end
 end
 
-function happyAnim.Update()
-	timeActive = Time.time - timeStart;
-
-	if (sprung) then
-		AnimateBigPap();
-	else
-		GentleSway();
-	end
-end
-
 function happyAnim.ToggleSway(newState)
 	if(newState == nil)then
 		swaying = not swaying;
@@ -369,13 +360,19 @@ function happyAnim.ToggleHand()
 	end
 end
 
-local eyeAnimationTimers = {"bepis",-1,-1,-1,-1,-1,-1};
+local eyeState = {false, false,false,false,false,false,false};
+local eyeAnimationTimers = {-1,-1,-1,-1,-1,-1,-1};
 
-local function UpdateEye(eyeRef, isSmall)
+local function UpdateEye(eyeRef, index, isSmall)
 	isSmall = isSmall or true;
 	
 	--deduce direction
-	
+	if(eyeAnimationTimers[index] > 0)then
+		eyeAnimationTimers[index] = eyeAnimationTimers[index] - Time.dt;
+	elseif(eyeState[index] == true)then
+		eyeState[index] = false;
+		eyeRef.StopAnimation();
+	end
 	--set;
 	if(isSmall)then
 		eyeRef.Set("Happy/tempSprites/eyes/eyeSmallOpen");
@@ -386,36 +383,80 @@ local function UpdateEye(eyeRef, isSmall)
 end
 
 local function UpdateEyes()
+	if(eyeAnimationTimers[1] > 0)then
+		eyeAnimationTimers[1] = eyeAnimationTimers[1] - Time.dt;
+	elseif(eyeState[1] == true)then
+		eyeState[1] = false;
+		torsEye.StopAnimation();
+	end
 
+	UpdateEye(head2[2],2);
+	UpdateEye(head3[2],3);
+	UpdateEye(head4[2],4);
+	UpdateEye(head5[2],5);
+	UpdateEye(head6[2],6);
+	UpdateEye(head7[2],7);
 end
 --NOTE TO SELF: index starts at 2
-local function ShowEyeP(eyeRef, isSmall)
+local function ShowEyeLoc(eyeRef, index, isSmall)
 	isSmall = isSmall or true;
 	
 	if(isSmall)then
-		eyeRef.Set("Happy/tempSprites/eyes/eyeOpen");
-		
+		--eyeRef.Set("Happy/tempSprites/eyes/eyeOpen");
+		eyeRef.SetAnimation({
+				"Happy/tempSprites/eyes/eyeOpening1",
+				"Happy/tempSprites/eyes/eyeOpening2",
+				"Happy/tempSprites/eyes/eyeOpen",
+			});--plays 1 frame for 1/30 
+		eyeAnimationTimers[index] = 3/30;
 	else
-		
+		--eyeRef.Set("Happy/tempSprites/eyes/eyeOpen");
+		eyeRef.SetAnimation({
+				"Happy/tempSprites/eyes/eyeSmallOpening",
+				"Happy/tempSprites/eyes/eyeSmallOpen",
+			});--plays 1 frame for 1/30 
+		eyeAnimationTimers[index] = 2/30;
 	end
-	
+
+	eyeState[index] = true;
 end
 
+--Note : bit contrived, put in head array?
 function happyAnim.ShowEye(index)
-	if(index == 2)then
-		ShowEyeP(head2[2]);
+	if(index == 1)then
+		torsEye.SetAnimation({"Happy/tempSprites/eyes/torsEyeOpening1",
+				"Happy/tempSprites/eyes/torsEyeOpening2",
+				"Happy/tempSprites/eyes/torsEyeOpen",});
+		torsEye.Set("Happy/tempSprites/eyes/torsEyeOpen");
+		eyeAnimationTimers[index] = 3/30;
+		eyeState[index] = true;
+	elseif(index == 2)then
+		ShowEyeLoc(head2[2],2);
 	elseif(index == 3)then
-		ShowEyeP(head3[2]);
+		ShowEyeLoc(head3[2],3);
 	elseif(index == 4)then
-		ShowEyeP(head4[2]);
+		ShowEyeLoc(head4[2],4);
 	elseif(index == 5)then
-		ShowEyeP(head5[2]);
+		ShowEyeLoc(head5[2],5);
 	elseif(index == 6) then
-		ShowEyeP(head6[2]);
+		ShowEyeLoc(head6[2],6);
 	elseif(index == 7) then
-		ShowEyeP(head7[2]);
+		ShowEyeLoc(head7[2],7);
 	end
 end
+
+function happyAnim.Update()
+	timeActive = Time.time - timeStart;
+
+	if (sprung) then
+		AnimateBigPap();
+	else
+		GentleSway();
+	end
+
+	UpdateEyes();
+end
+
 ---------------------
 --Module return value
 ---------------------

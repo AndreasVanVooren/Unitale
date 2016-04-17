@@ -1,9 +1,9 @@
 -- An animation demo with a rotating Sans head.
 music = "Happy_Intro" --Always OGG. Extension is added automatically. Remove the first two lines for custom music.
 encountertext = "Everything's H A P P Y ." --Modify as necessary. It will only be read out in the action select screen.
-nextwaves = {"waveBones"}
+nextwaves = {"waveNull"}
 wavetimer = 4.0
-arenasize = {155, 130}
+arenasize = {240, 130}
 
 enemies = {"happy"}
 
@@ -13,11 +13,7 @@ happyAnim = nil;
 dialogue = nil
 
 -- A custom list with attacks to choose from. Actual selection happens in EnemyDialogueEnding(). Put here in case you want to use it.
-possible_attacks = {
-"waveBones", 
-"waveHeart",
-"waveGaster",
-"waveBottomBones"}
+possible_attacks = {"waveNull"}
 
 hasSpeech = false;
 
@@ -166,11 +162,11 @@ function HandleSpare()
 end
 
 items = {}; --use items like dictionary : items["KEY"] = "Value"
-items["DIO"] = "TotesItm";
+items["LOCKET"]
 
 function HandleItem(ItemID)
 	
-	if(ItemID == "DOGTEST1")then
+	if(ItemID == "LOCKET")then
 		--Locket, this is how you end battle.
 		--music ="the locket"
 		--Audio.LoadFile(music);
@@ -180,6 +176,14 @@ function HandleItem(ItemID)
 		--PlaySeparate();
 		--return;
 		
+		if(GetGlobal("isSprung") == false)then
+			BattleDialog({
+				"You hold the Locket in the air[waitall:4]...\r[w:8]\n[waitall:2]You shouldn't have done that."
+			});
+		else
+
+		end
+
 		BattleDialog({
 				"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
 				"...you choke on the foul air."
@@ -370,6 +374,15 @@ end
 
 function Spare()
 	State("DONE");
+end
+
+function PrepareSpring()
+	Audio.Stop();
+	--enableTorseye
+end
+
+function Spring()
+
 end
 
 function DieDark()

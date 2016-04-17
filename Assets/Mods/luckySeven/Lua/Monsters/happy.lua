@@ -20,7 +20,8 @@ dialogbubble = "right"; -- See documentation for what bubbles you have available
 cancheck = false;
 canspare = false;
 --snowThrowCount = 0;
---SetGlobal("angry", false);
+
+SetGlobal("isSprung", false);
 
 animRef = nil;
 
