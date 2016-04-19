@@ -23,14 +23,14 @@ canspare = false;
 
 SetGlobal("isSprung", false);
 
-animRef = nil;
-
 isHugged = false;
 batheCount = 0;
 
 headHealth = {111,111,111,111,111,111,111};
 
 feelsAttacked = false;
+feelsDeaded = false;
+hasDied = false;
 
 --Comes before damage is actually calculated, and can replace damage calculation entirely
 --Parameters :
@@ -66,6 +66,9 @@ function HandlePreAttack(rateToCenter)
 		
 		if(headHealth[1] <= 0)then
 			dmg = dmg + headHealth[1];
+			headHealth[1] = 0;
+			
+			--animRef.KillHead(1);
 			
 			feelsAttacked = true;
 		end
@@ -73,8 +76,51 @@ function HandlePreAttack(rateToCenter)
 		return dmg;
 	elseif(GetGlobal("isSprung") == true)then
 		-- Compare RateToCenter to deduce which head is hit. Then KILL THAT HEAD.
-		local dmg = (29 + math.random()*2);
-		return dmg;
+		local dmg = math.floor(29 + math.random()*2);
+		
+		local ind = 0;
+		if(rateToCenter > -0.934 and rateToCenter < -0.814)then
+			ind = 2;
+		elseif(rateToCenter > -0.536 and rateToCenter < -0.426)then
+			ind = 3;
+		elseif(rateToCenter > -0.27 and rateToCenter < -0.106)then
+			ind = 4;
+		elseif(rateToCenter > 0.142 and rateToCenter < 0.326)then
+			ind = 5;
+		elseif(rateToCenter > 0.484 and rateToCenter < 0.614)then
+			ind = 6;
+		elseif(rateToCenter > 0.80 and rateToCenter < 0.926)then
+			ind = 7;
+		end
+		
+		if(ind ~= 0)then
+		
+			if(headHealth[ind] > 0)then
+				headHealth[ind] = headHealth[ind] - dmg;
+				if(headHealth[ind] <= 0)then
+					dmg = dmg + headHealth[ind];
+					headHealth[ind] = 0;
+				end
+				
+				hp = headHealth[1]+
+					headHealth[2]+
+					headHealth[3]+
+					headHealth[4]+
+					headHealth[5]+
+					headHealth[6]+
+					headHealth[7];
+		
+				if(hp == 0)then
+					feelsDeaded = true;
+				end
+				
+				return dmg;
+			else
+				return nil;
+			end
+		else
+			return nil;
+		end
 	end
 	
 	return "YOU DUN FUCKED UP"
@@ -88,6 +134,8 @@ function HandleAttack(attackstatus)
         -- player did actually attack
 		--hp = hp + attackstatus;
 		--isHugged
+		
+		
 		hp = headHealth[1]+
 			 headHealth[2]+
 			 headHealth[3]+
@@ -95,7 +143,33 @@ function HandleAttack(attackstatus)
 			 headHealth[5]+
 			 headHealth[6]+
 			 headHealth[7];
+		
+		if(hp == 0)then
+			feelsDeaded = true;
+		end
+			
+		for	i=1, (#headHealth) do
+			if(headHealth[i] <= 0)then
+				Encounter.Call("KillHead",i);
+			end
+		end
+		
+		Encounter.Call("Shake",0.5);
     end
+end
+ 
+function Cheat()
+	headHealth[2] = 0;
+	headHealth[3] = 0;
+	headHealth[4] = 0;
+	headHealth[5] = 1;
+	headHealth[6] = 0;
+	headHealth[7] = 0;
+	for	i=1, (#headHealth) do
+		if(headHealth[i] <= 0)then
+			Encounter.Call("KillHead",i);
+		end
+	end
 end
  
 -- This handles the commands; all-caps versions of the commands list you have above.
@@ -118,4 +192,10 @@ function HandleCustomCommand(command)
     --currentdialogue = {"[font:sans]" .. currentdialogue[1]}
     --BattleDialog({"You selected " .. command .. "."})
     
+end
+
+--Empty onDeath to get the battle dialog playing
+function OnDeath()
+	Encounter.Call("State", "ENEMYDIALOGUE");
+	hasDied = true;
 end

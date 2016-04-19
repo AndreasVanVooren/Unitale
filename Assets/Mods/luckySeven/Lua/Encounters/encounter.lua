@@ -3,7 +3,7 @@ music = "Happy_Intro" --Always OGG. Extension is added automatically. Remove the
 encountertext = "Everything's H A P P Y ." --Modify as necessary. It will only be read out in the action select screen.
 nextwaves = {"waveNull"}
 wavetimer = 0.0
-arenasize = {240, 130}
+arenasize = {260, 130}
 
 enemies = {"happy"}
 
@@ -22,18 +22,29 @@ function EnteringState(newState, oldState)
 	
 	elseif(oldState == "ACTIONSELECT") then
 	
+	elseif(oldState == "DEFENDING")then
+		ToggleSway(true);
 	end
 	
 	if (newState == "ENEMYDIALOGUE") then 
-		
+		--DEBUG("ASDFSADF");
 		if(enemies[1].GetVar("feelsAttacked") == true)then
 			--DEBUG("yee haw");
 			enemies[1].SetVar("feelsAttacked",false);
 			BattleDialog({
-				"[waitall:3][func:PrepareSpring]You shouldn't have done that.",
+				"[waitall:3][noskip][func:PrepareSpring]You shouldn't have done that.",
 				"[waitall:3][noskip]Everything's [waitall:8][func:Spring]H A P P Y ."
 				});
+			EnemyDialogueEnding();
+		elseif(enemies[1].GetVar("feelsDeaded") == true)then
+			enemies[1].SetVar("feelsDeaded",false);
+			DEBUG("Can't take sky or somehting");
+			BattleDialog({
+				"[func:Deaded]It's dying...",
+				});
 		elseif(not hasSpeech) then
+			
+			EnemyDialogueEnding();
 			State("DEFENDING");
 		end
 		
@@ -55,7 +66,8 @@ function EncounterStarting()
 	--dialogue =  require "Animations/itDialogue_anim"
 	
 	--enemypositions[1] = {0, 0};
-	enemies[1].Call("SetActive",true);
+	--enemies[1].Call("SetActive",true);
+	--enemies[1].SetVar("animRef", happyAnim);
 	Player.name = "";
 	--Player.lv = 1;
 	maxhp = 16 + 4 * Player.lv;
@@ -127,6 +139,10 @@ function Update()
 		happyAnim.Update();
 	end
 	
+	if(Input.Menu == 1)then
+		enemies[1].Call("Cheat");
+	end
+	
 end
 
 function EnemyDialogueEnding()
@@ -185,16 +201,27 @@ function HandleItem(ItemID)
 		
 		if(GetGlobal("isSprung") == false)then
 			BattleDialog({
-				"[noskip][waitall:2]You hold the Locket in the air...[w:8]\n[func:PrepareSpring]It seems to remember something...",
+				"[noskip][waitall:4]You hold the Locket in the air...[w:8]\n[func:PrepareSpring]It seems to remember something...",
 				"[waitall:3][noskip]Everything's [waitall:8][func:Spring]H A P P Y ."
 			});
 		elseif(GetGlobal("isSprung") == true)then	--just make sure it isn't nil
-			if(enemies[1].GetVar("batheCount") < 2)then
-			
-			else
+		
+			if(enemies[1].GetVar("hasDied") == true)then
+				PlayMusic("Happy_Fuckit")
+				BattleDialog({
+					"BEPIS",
+					"[noskip][novoice][func:State,DONE]"
+				});
+			elseif(enemies[1].GetVar("batheCount") < 2)then
 				BattleDialog({
 					"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
 					"...you choke on the foul air."
+				});
+			else
+				BattleDialog({
+					"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
+					"...you reach out to the SOULS.",
+						"[noskip][novoice][func:State,DONE]"
 				});
 			end
 		end
@@ -395,11 +422,38 @@ function PrepareSpring()
 	--enableTorseye
 end
 
+function ToggleSway(bool)
+	happyAnim.ToggleSway(bool);
+end
+
+function ToggleHand()
+	happyAnim.ToggleHand();
+end
+
+function Deaded()
+	Audio.LoadFile("Happy_Intro");
+	Audio.Pitch(0.5);
+	happyAnim.ShowEye(1);
+	happyAnim.ToggleSway(false);
+	--enableTorseye
+	wavetimer = 0;
+	possible_attacks = {"waveNull"};
+end
+
 function Spring()
 	--DEBUG("sadfasdf");
 	happyAnim.SpringUp();
 	--change attacks, set wave timer
-	wavetimer = 4.0;
+	wavetimer = 999;	--gonna manually end wave;
+	possible_attacks = {"waveCombat"};
+end
+
+function KillHead(index)
+	happyAnim.KillHead(index);
+end
+
+function Shake(amount)
+	happyAnim.Shake(amount);
 end
 
 function DieDark()
