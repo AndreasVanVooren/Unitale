@@ -51,6 +51,18 @@ public class LuaSpriteController {
 		set { img.rectTransform.position = new Vector2(img.rectTransform.position.x, value); }
 	}
 
+	public float absx
+	{
+		get { return xAbs; }
+		set { xAbs = value; }
+	}
+
+	public float absy
+	{
+		get { return yAbs; }
+		set { yAbs = value; }
+	}
+
 	public float xscale
     {
         get { return xScale; }
