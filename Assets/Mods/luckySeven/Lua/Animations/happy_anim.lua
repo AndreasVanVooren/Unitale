@@ -547,11 +547,11 @@ local function UpdateEye(eyeRef, index, isSmall)
 		--oh no another square root noooooooo
 		local length =  math.sqrt(x*x-y*y);
 		
-		--x = x/length; --cos get
+		local c = x/length; --cos get
 		local s = y/length; --sin get
 		
 		--oh no all the taxing operations y u do dis
-		local angle = math.asin(s); --note : in rad
+		local angle = math.atan2(s,c); --note : in rad
 		
 		angle = angle + math.pi/2; --rotate 90 degrees to check it properly
 		
