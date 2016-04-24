@@ -141,7 +141,7 @@ function UpdateWave2()
 		
 		waveCounter = waveCounter + 1;
 		
-		waveBullets1[2] = 1.5 - (0.3*waveCounter) + (math.random() * .5);
+		waveBullets1[2] = 1.5 - (0.3*waveCounter) + (math.random() * 0.5);
 		waveBullets1[3] = x;
 		waveBullets1[4] = y;
 		waveBullets1[5] = rotSpeed + 10;
