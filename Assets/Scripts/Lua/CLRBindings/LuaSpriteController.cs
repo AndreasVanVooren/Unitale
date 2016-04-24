@@ -261,7 +261,7 @@ public class LuaSpriteController {
         xScale = xs;
         yScale = ys;
         img.rectTransform.sizeDelta = new Vector2(nativeSizeDelta.x * xScale, nativeSizeDelta.y * yScale);
-
+		Debug.LogFormat ("Scaling : size = {0}, scale children = {1}, transform scale : {2}", img.rectTransform.sizeDelta, alsoScaleChildren, img.transform.localScale);
 		if(alsoScaleChildren)
 		{
 
