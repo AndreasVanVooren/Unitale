@@ -7,10 +7,21 @@ namespace SpriteLayout
 	[CustomEditor(typeof(Transform))]
 	public class SpriteLayoutTransformInspector : Editor
 	{
+		//SerializedProperty locPos;
+		//SerializedProperty locRot;
+		//SerializedProperty locScale;
+
+		void OnEnable()
+		{
+			//locPos = serializedObject.FindProperty("localPosition");
+			//locRot = serializedObject.FindProperty("localRotation");
+			//locScale = serializedObject.FindProperty("localScale");
+		}
+
 		public override void OnInspectorGUI()
 		{
 			var t = (Transform)target;
-
+			
 			var spr = t.GetComponent<SpriteLayoutBase>();
 
 			if (spr != null)
@@ -41,13 +52,30 @@ namespace SpriteLayout
 				}
 				spr.Pivot = EditorGUILayout.Vector2Field("Pivot", spr.Pivot);
 
+				if (GUI.changed)
+				{
+					EditorUtility.SetDirty(spr);
+				}
+
 				return;
 			}
 
+			serializedObject.Update();
+
+			//EditorGUILayout.PropertyField(locPos,new GUIContent("Position"));
+			//EditorGUILayout.PropertyField(locRot, new GUIContent("Rotation"));
+			//EditorGUILayout.PropertyField(locScale, new GUIContent("Scale"));
+			
 			t.localPosition = EditorGUILayout.Vector3Field("Position", t.localPosition);
 			t.localRotation = Quaternion.Euler(EditorGUILayout.Vector3Field("Rotation", t.localRotation.eulerAngles));
 			t.localScale = EditorGUILayout.Vector3Field("Scale", t.localScale);
 			//DrawDefaultInspector();
+
+			//serializedObject.ApplyModifiedProperties();
+			if(GUI.changed)
+			{
+				EditorUtility.SetDirty( t );
+			}
 		}
 	}
 
@@ -56,19 +84,19 @@ namespace SpriteLayout
 	{
 		public override void OnInspectorGUI()
 		{
-			base.OnInspectorGUI();
-
-			var tgt = (SpriteLayoutBase)target;
-
-			if (tgt.transform.parent == null || tgt.transform.GetComponentInParent<SpriteLayoutBase>() == null)
-			{
-				EditorGUILayout.LabelField("Needs parent sprite for anchoring");
-			}
-			else
-			{
-				tgt.Anchor = EditorGUILayout.Vector2Field("Anchor", tgt.Anchor);
-			}
-			tgt.Pivot = EditorGUILayout.Vector2Field("Pivot", tgt.Pivot);
+			//base.OnInspectorGUI();
+			//
+			//var tgt = (SpriteLayoutBase)target;
+			//
+			//if (tgt.transform.parent == null || tgt.transform.GetComponentInParent<SpriteLayoutBase>() == null)
+			//{
+			//	EditorGUILayout.LabelField("Needs parent sprite for anchoring");
+			//}
+			//else
+			//{
+			//	tgt.Anchor = EditorGUILayout.Vector2Field("Anchor", tgt.Anchor);
+			//}
+			//tgt.Pivot = EditorGUILayout.Vector2Field("Pivot", tgt.Pivot);
 		}
 	}
 
@@ -83,7 +111,7 @@ namespace SpriteLayout
 		//protected delegate void OnPropertyChangeAnch();
 		//protected delegate void OnPropertyChangePiv();
 
-		private Vector3 _localPosition;
+		[SerializeField] private Vector3 _localPosition;
 		public Vector3 LocalPosition
 		{
 			get { return _localPosition; }
@@ -96,7 +124,7 @@ namespace SpriteLayout
 			}
 		}
 
-		private Quaternion _localRotation;
+		[SerializeField] private Quaternion _localRotation;
 		public Quaternion LocalRotation
 		{
 			get { return _localRotation; }
@@ -110,7 +138,7 @@ namespace SpriteLayout
 			}
 		}
 
-		private Vector3 _localScale = new Vector3(1.0f, 1.0f, 1.0f);
+		[SerializeField] private Vector3 _localScale = new Vector3(1.0f, 1.0f, 1.0f);
 		public Vector3 LocalScale
 		{
 			get { return _localScale; }
@@ -125,8 +153,8 @@ namespace SpriteLayout
 		//private SpriteRenderer _renderer;
 		//private Sprite _mySprite;
 
-		protected Vector2 _initialDimensions = new Vector2(1, 1);
-		private Vector2 _dimensions = new Vector2(1, 1);
+		[SerializeField] protected Vector2 _initialDimensions = new Vector2(1, 1);
+		[SerializeField] private Vector2 _dimensions = new Vector2(1, 1);
 		public Vector2 Dimensions
 		{
 			get { return _dimensions; }
@@ -168,7 +196,7 @@ namespace SpriteLayout
 		/// <summary>
 		/// The anchor, aka where this sprite attaches to on its parent
 		/// </summary>
-		private Vector2 _anchor = new Vector2(0.5f, 0.5f);
+		[SerializeField] private Vector2 _anchor = new Vector2(0.5f, 0.5f);
 		public Vector2 Anchor
 		{
 			get { return _anchor; }
@@ -176,7 +204,7 @@ namespace SpriteLayout
 			{
 				if (_anchor == value)
 					return;
-				var pSprite = GetComponentInParent<SpriteLayout>();
+				var pSprite = GetComponentInParent<SpriteLayoutImage>();
 				if (pSprite == null)
 				{
 					//Debug.Log("parent null");
@@ -221,7 +249,7 @@ namespace SpriteLayout
 		/// <summary>
 		/// The pivot.
 		/// </summary>
-		private Vector2 _pivot = new Vector2(0.5f, 0.5f);
+		[SerializeField] private Vector2 _pivot = new Vector2(0.5f, 0.5f);
 		public Vector2 Pivot
 		{
 			get { return _pivot; }
@@ -262,7 +290,7 @@ namespace SpriteLayout
 
 			}
 		}
-
+		[SerializeField]
 		public SpriteLayoutBase Parent
 		{ get; protected set; }
 

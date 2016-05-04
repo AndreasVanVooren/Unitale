@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System.Collections;
 
 namespace SpriteLayout
@@ -9,9 +10,18 @@ namespace SpriteLayout
 		Circle,
 	}
 
+	[CustomEditor(typeof(SpriteLayoutImage))]
+	public class SpriteLayoutImageInspector : Editor
+	{
+		public override void OnInspectorGUI()
+		{
+			//base.OnInspectorGUI();
+		}
+	}
+
 	[RequireComponent(typeof(SpriteRenderer))]
 	[ExecuteInEditMode]
-	public class SpriteLayout : SpriteLayoutBase
+	public class SpriteLayoutImage : SpriteLayoutBase
 	{
 		private SpriteRenderer _renderer;
 		private Sprite _mySprite;

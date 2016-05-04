@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public static class SpriteUtil
 {
-    public const float PIXELS_PER_UNIT = 100.0f;
+    public const float PIXELS_PER_UNIT = 1.0f;
     public static void SwapSpriteFromFile(MonoBehaviour target, string filename)
     {
         try
