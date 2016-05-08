@@ -15,7 +15,7 @@ public class ProjectileController
     public ProjectileController(Projectile p)
     {
         this.p = p;
-        this.spr = new LuaSpriteController(p.GetComponent<UnityEngine.UI.Image>());
+        this.spr = new LuaSpriteController(p.GetComponent<SpriteLayout.SpriteLayoutImage>());
     }
 
     public float x

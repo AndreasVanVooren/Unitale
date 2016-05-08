@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using SpriteLayout;
 
 // The base projectile class. All projectiles, including new/combined types, should inherit from this.
 public abstract class Projectile : MonoBehaviour
@@ -43,14 +44,14 @@ public abstract class Projectile : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
-        Image img = GetComponent<Image>();
-        img.color = Color.white;
-        img.rectTransform.eulerAngles = Vector3.zero;
+		SpriteLayoutImage img = GetComponent<SpriteLayoutImage>();
+        img.Color = Color.white;
+        img.EulerAngles = Vector3.zero;
         Vector2 half = new Vector2(0.5f, 0.5f);
-        img.rectTransform.anchorMax = half;
-        img.rectTransform.anchorMin = half;
-        img.rectTransform.pivot = half;
-        self.sizeDelta = img.sprite.rect.size;
+        img.Anchor = half;
+        img.Pivot = half;
+		img.AttachCollider (ColliderType.Rect);
+        self.sizeDelta = img.Sprite.rect.size;
         selfAbs = new Rect(self.anchoredPosition.x - self.rect.width / 2, self.anchoredPosition.y - self.rect.height / 2, self.sizeDelta.x, self.sizeDelta.y);
 		ctrl.sprite.Reset();		//ensure correct size, if all goes right, this will break it code completely.
         OnStart();
@@ -145,4 +146,6 @@ public abstract class Projectile : MonoBehaviour
             return true;
         return false;
     }
+
+
 }

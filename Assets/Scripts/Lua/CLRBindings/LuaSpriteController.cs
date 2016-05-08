@@ -250,12 +250,11 @@ public class LuaSpriteController {
 
     public void SetPivot(float x, float y)
     {
-        img.rectTransform.pivot = new Vector2(x, y);
+        img.Pivot = new Vector2(x, y);
     }
 
     public void SetAnchor(float x, float y){
-        img.rectTransform.anchorMin = new Vector2(x, y);
-        img.rectTransform.anchorMax = new Vector2(x, y);
+        img.Anchor = new Vector2(x, y);
     }
 
     public void Scale(float xs, float ys, bool alsoScaleChildren = false)
@@ -361,9 +360,9 @@ public class LuaSpriteController {
             s = k.sprite;
         }
 
-        if (img.sprite != s)
+        if (img.Sprite != s)
         {
-            img.sprite = s;
+			img.Sprite = s;
         }
     }
 

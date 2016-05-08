@@ -180,7 +180,7 @@ public static class SpriteUtil
 
     public static LuaSpriteController MakeIngameSprite(string filename, string spritename)
     {
-        Image i = GameObject.Instantiate<Image>(SpriteRegistry.GENERIC_SPRITE_PREFAB);
+		SpriteLayoutImage i = GameObject.Instantiate<SpriteLayoutImage>(SpriteRegistry.GENERIC_SPRITE_PREFAB);
         if (!string.IsNullOrEmpty(filename) && !string.IsNullOrEmpty(spritename))
         {
             SwapSpriteFromFile(i, filename, spritename);
