@@ -26,6 +26,24 @@ namespace SpriteLayout
 		private SpriteRenderer _renderer;
 		private Sprite _mySprite;
 
+        public Sprite Sprite
+        {
+            get { return _renderer.sprite; }
+            set { _renderer.sprite = value; }
+        }
+
+        public Color Color
+        {
+            get { return _renderer.color; }
+            set { _renderer.color = value; }
+        }
+
+        public int SortingOrder
+        {
+            get { return _renderer.sortingOrder; }
+            set { _renderer.sortingOrder = value; }
+        }
+
 		protected override void Initialize()
 		{
 			base.Initialize();

@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using SpriteLayout;
 
 public class LuaSpriteController {
-    private Image _img;
-    internal Image img { 
+    private SpriteLayoutImage _img;
+    internal SpriteLayoutImage img { 
         get {
             if (_img == null)
             {
@@ -17,8 +18,8 @@ public class LuaSpriteController {
         }
         set { _img = value; }
     }
-    private Vector2 nativeSizeDelta;
-    private Vector3 internalRotation = Vector3.zero;
+    //private Vector2 nativeSizeDelta;
+    //private Vector3 internalRotation = Vector3.zero;
     private float xScale = 1.0f;
     private float yScale = 1.0f;
     private Sprite originalSprite;
@@ -29,26 +30,26 @@ public class LuaSpriteController {
 
     public float x
     {
-        get { return img.rectTransform.anchoredPosition.x; }
-        set { img.rectTransform.anchoredPosition = new Vector2(value, img.rectTransform.anchoredPosition.y); }
+        get { return img.LocalPosition.x; }
+        set { img.LocalPosition = new Vector2(value, img.LocalPosition.y); }
     }
 
     public float y
     {
-        get { return img.rectTransform.anchoredPosition.y; }
-        set { img.rectTransform.anchoredPosition = new Vector2(img.rectTransform.anchoredPosition.x, value); }
+        get { return img.LocalPosition.y; }
+        set { img.LocalPosition = new Vector2(img.LocalPosition.x, value); }
     }
 
 	public float xAbs
 	{
-		get { return img.rectTransform.position.x; }
-		set { img.rectTransform.position = new Vector2(value, img.rectTransform.position.y); }
+		get { return img.Position.x; }
+        set { img.Position = new Vector2(value, img.Position.y); }
 	}
 
 	public float yAbs
 	{
-		get { return img.rectTransform.position.y; }
-		set { img.rectTransform.position = new Vector2(img.rectTransform.position.x, value); }
+        get { return img.Position.y; }
+        set { img.Position = new Vector2(img.Position.x, value); }
 	}
 
 	public float absx
@@ -88,12 +89,12 @@ public class LuaSpriteController {
 
     public float width
     {
-        get { return img.mainTexture.width; }
+        get { return img.Width; }
     }
 
     public float height
     {
-        get { return img.mainTexture.height; }
+        get { return img.Height; }
     }
 
     internal bool animcomplete
@@ -121,7 +122,7 @@ public class LuaSpriteController {
     }
 
     public float[] color {
-        get { return new float[] { img.color.r, img.color.g, img.color.b }; }
+        get { return new float[] { img.Color.r, img.Color.g, img.Color.b }; }
         set {
             if (value.Length != 3)
             {
@@ -129,38 +130,39 @@ public class LuaSpriteController {
             }
             else
             {
-                img.color = new Color(value[0], value[1], value[2]);
+                img.Color = new Color(value[0], value[1], value[2]);
+
             }
         }
     }
 
     public float alpha
     {
-        get { return img.color.a; }
+        get { return img.Color.a; }
         set
         {
             float valClamped = Mathf.Clamp01(value);
-            img.color = new Color(img.color.r, img.color.g, img.color.b, valClamped);
+            img.Color = new Color(img.Color.r, img.Color.g, img.Color.b, valClamped);
         }
     }
 
     public float rotation
     {
-        get { return img.rectTransform.eulerAngles.z; }
+        get { return img.EulerAngles.z; }
         set {
-			var zDiff = img.rectTransform.eulerAngles.z - value;
-            internalRotation.z = Math.mod(internalRotation.z - zDiff, 360);
-            img.rectTransform.localEulerAngles = internalRotation;
+            //var zDiff = img.EulerAngles.z - value;
+            img.EulerAngles.z = Math.mod(value, 360);
+            //img.rectTransform.localEulerAngles = internalRotation;
         }
     }
 
 	public float localRotation
 	{
-		get { return internalRotation.z; }
+        get { return img.LocalEulerAngles.z; }
 		set
 		{
-			internalRotation.z = Math.mod(value, 360);
-			img.rectTransform.localEulerAngles = internalRotation;
+            img.LocalEulerAngles.z = Math.mod(value, 360);
+			//img.LocalRotation = internalRotation;
 		}
 	}
 
@@ -182,11 +184,11 @@ public class LuaSpriteController {
     }
     */
 
-	public LuaSpriteController(Image i)
+	public LuaSpriteController(SpriteLayoutImage i)
     {
         this.img = i;
-        originalSprite = img.sprite;
-        nativeSizeDelta = img.rectTransform.sizeDelta;
+        originalSprite = img.Sprite;
+        //nativeSizeDelta = img.Dimensions;
 
 
 		//BUG : Recreated bullets are still animated
@@ -205,8 +207,8 @@ public class LuaSpriteController {
 	// causes the controller to reset its values, ensuring the correct values are used as native width/height
 	public void Reset()
 	{
-		originalSprite = img.sprite;
-		nativeSizeDelta = img.rectTransform.sizeDelta;
+		originalSprite = img.Sprite;
+		//nativeSizeDelta = img.Dimensions;
 
 		keyframes = img.gameObject.GetComponent<KeyframeCollection>();
 		if (keyframes == null)
@@ -222,16 +224,16 @@ public class LuaSpriteController {
 	public void Set(string name)
     {
         SpriteUtil.SwapSpriteFromFile(img, name);
-        originalSprite = img.sprite;
-        nativeSizeDelta = new Vector2(img.sprite.texture.width, img.sprite.texture.height);
+        originalSprite = img.Sprite;
+        //nativeSizeDelta = new Vector2(img.sprite.texture.width, img.sprite.texture.height);
         Scale(xScale, yScale);
     }
 
     public void Set(string name, string sprName)
     {
         SpriteUtil.SwapSpriteFromFile(img, name, sprName);
-        originalSprite = img.sprite;
-        nativeSizeDelta = new Vector2(img.sprite.texture.width, img.sprite.texture.height);
+        originalSprite = img.Sprite;
+        //nativeSizeDelta = new Vector2(img.sprite.texture.width, img.sprite.texture.height);
         Scale(xScale, yScale);
     }
 
@@ -258,17 +260,20 @@ public class LuaSpriteController {
 
     public void Scale(float xs, float ys, bool alsoScaleChildren = false)
     {
-        xScale = xs;
-        yScale = ys;
-        img.rectTransform.sizeDelta = new Vector2(nativeSizeDelta.x * xScale, nativeSizeDelta.y * yScale);
-		Debug.LogFormat ("Scaling : size = {0}, scale children = {1}, transform scale : {2}", img.rectTransform.sizeDelta, alsoScaleChildren, img.transform.localScale);
-		if(alsoScaleChildren)
+        //xScale = xs;
+        //yScale = ys;
+        //img.rectTransform.sizeDelta = new Vector2(nativeSizeDelta.x * xScale, nativeSizeDelta.y * yScale);
+		//Debug.LogFormat ("Scaling : size = {0}, scale children = {1}, transform scale : {2}", img.rectTransform.sizeDelta, alsoScaleChildren, img.transform.localScale);
+
+        img.LocalScale = new Vector2(xs, ys);
+        Debug.LogFormat ("Scaling : size = {0}, scale children = {1}, transform scale : {2}", img.LocalScale, alsoScaleChildren, img.transform.localScale);
+		if(!alsoScaleChildren)
 		{
 
 			for (int i = 0; i < children.Count; i++)
 			{
 				//Debug.Log("Scaling child");
-				children[i].Scale(xs, ys,true);
+				children[i].Scale(1/xs, 1/ys,false);
 			}
 		}
     }
@@ -303,28 +308,35 @@ public class LuaSpriteController {
         if (keyframes != null)
         {
             keyframes.enabled = false;
-            img.sprite = originalSprite;
+            img.Sprite = originalSprite;
         }
     }
 
     public void MoveTo(float x, float y)
     {
-        img.rectTransform.anchoredPosition = new Vector2(x, y);
+        img.LocalPosition = new Vector2(x, y);
     }
 
     public void MoveToAbs(float x, float y)
     {
-        img.rectTransform.position = new Vector2(x, y);
+        img.Position = new Vector2(x, y);
     }
 
     public void SendToTop()
     {
-        img.rectTransform.SetAsLastSibling(); // in unity, the lowest UI component in the hierarchy renders last
+        Debug.Log("[LuaSpriteController::SendToTop] TODO");
+        //img.rectTransform.SetAsLastSibling(); // in unity, the lowest UI component in the hierarchy renders last
     }
 
     public void SendToBottom()
     {
-        img.rectTransform.SetAsFirstSibling();
+        Debug.Log("[LuaSpriteController::SendToBottom] TODO");
+        //img.rectTransform.SetAsFirstSibling();
+    }
+
+    public void SetSortOrder(int orderVal)
+    {
+        
     }
 
     public void Remove()

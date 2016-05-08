@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+
+using SpriteLayout;
+
 using UnityEngine;
 using UnityEngine.UI;
 
 public static class SpriteRegistry
 {
     private static Dictionary<string, Sprite> dict = new Dictionary<string, Sprite>();
-    public static Image GENERIC_SPRITE_PREFAB;
+    public static SpriteLayoutImage GENERIC_SPRITE_PREFAB;
     public static Sprite EMPTY_SPRITE;
 
     public static Sprite Get(string key)
@@ -28,7 +31,7 @@ public static class SpriteRegistry
     public static void init()
     {
         dict.Clear();
-        GENERIC_SPRITE_PREFAB = Resources.Load<Image>("Prefabs/generic_sprite");
+        GENERIC_SPRITE_PREFAB = Resources.Load<SpriteLayoutImage>("Prefabs/generic_sprite");
         EMPTY_SPRITE = Sprite.Create(new Texture2D(1, 1), new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f));
         EMPTY_SPRITE.name = "blank";
         string modPath = FileLoader.pathToModFile("Sprites");

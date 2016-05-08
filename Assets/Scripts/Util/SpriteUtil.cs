@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+
+using SpriteLayout;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,11 +21,10 @@ public static class SpriteUtil
                 newSprite = fromFile(FileLoader.pathToModFile("Sprites/" + filename + ".png"));
                 SpriteRegistry.Set(filename, newSprite);
             }
-
-            Image img = target.GetComponent<Image>();
-            img.sprite = newSprite;
+            SpriteLayoutImage img = target.GetComponent<SpriteLayoutImage>();
+            img.Sprite = newSprite;
             //enemyImg.SetNativeSize();
-            img.rectTransform.sizeDelta = new Vector2(newSprite.texture.width, newSprite.texture.height);
+            img.ResetDimensions( new Vector2(newSprite.bounds.size, newSprite.bounds.size));
         }
         catch (Exception e)
         {
@@ -47,10 +49,10 @@ public static class SpriteUtil
                 }
             }
 
-            Image img = target.GetComponent<Image>();
-            img.sprite = newSprite;
+            SpriteLayoutImage img = target.GetComponent<SpriteLayoutImage>();
+            img.Sprite = newSprite;
             //enemyImg.SetNativeSize();
-            img.rectTransform.sizeDelta = new Vector2(newSprite.texture.width, newSprite.texture.height);
+            img.ResetDimensions (new Vector2(newSprite.bounds.size, newSprite.bounds.size));
         }
         catch (Exception e)
         {
@@ -167,7 +169,7 @@ public static class SpriteUtil
 
     public static LuaSpriteController MakeIngameSprite(string filename)
     {
-        Image i = GameObject.Instantiate<Image>(SpriteRegistry.GENERIC_SPRITE_PREFAB);
+        SpriteLayoutImage i = GameObject.Instantiate<SpriteLayoutImage>(SpriteRegistry.GENERIC_SPRITE_PREFAB);
         if (!string.IsNullOrEmpty(filename))
         {
             SwapSpriteFromFile(i, filename);
