@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
+using SpriteLayout;
 
 public class FightUIController : MonoBehaviour
 {
@@ -40,11 +40,11 @@ public class FightUIController : MonoBehaviour
         {
             if (child.name == "FightUILine")
             {
-                line = new LuaSpriteController(child.GetComponent<Image>());
+                line = new LuaSpriteController(child.GetComponent<SpriteLayoutImage>());
             }
             else if (child.name == "SliceAnim")
             {
-                slice = new LuaSpriteController(child.GetComponent<Image>());
+                slice = new LuaSpriteController(child.GetComponent<SpriteLayoutImage>());
             }
             else if (child.name == "DamageNumber")
             {
@@ -93,7 +93,7 @@ public class FightUIController : MonoBehaviour
     {
         Color c = Color.white;
         c.a = a;
-        GetComponent<Image>().color = c;
+        GetComponent<SpriteLayoutImage>().Color = c;
     }
 
     public void StopAction()

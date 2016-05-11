@@ -24,7 +24,7 @@ public static class SpriteUtil
             SpriteLayoutImage img = target.GetComponent<SpriteLayoutImage>();
             img.Sprite = newSprite;
             //enemyImg.SetNativeSize();
-            img.ResetDimensions( new Vector2(newSprite.bounds.size, newSprite.bounds.size));
+            img.ResetDimensions( newSprite.bounds.size);
         }
         catch (Exception e)
         {
@@ -52,7 +52,7 @@ public static class SpriteUtil
             SpriteLayoutImage img = target.GetComponent<SpriteLayoutImage>();
             img.Sprite = newSprite;
             //enemyImg.SetNativeSize();
-            img.ResetDimensions (new Vector2(newSprite.bounds.size, newSprite.bounds.size));
+            img.ResetDimensions (newSprite.bounds.size);
         }
         catch (Exception e)
         {

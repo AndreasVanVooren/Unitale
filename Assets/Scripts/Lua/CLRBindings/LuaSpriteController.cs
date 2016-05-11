@@ -150,10 +150,12 @@ public class LuaSpriteController {
     {
         get { return img.EulerAngles.z; }
         set {
-            //var zDiff = img.EulerAngles.z - value;
-            img.EulerAngles.z = Math.mod(value, 360);
-            //img.rectTransform.localEulerAngles = internalRotation;
-        }
+			//var zDiff = img.EulerAngles.z - value;
+			var euler = img.EulerAngles;
+			euler.z = Math.mod(value, 360);
+			img.EulerAngles = euler;
+			//img.rectTransform.localEulerAngles = internalRotation;
+		}
     }
 
 	public float localRotation
@@ -161,7 +163,9 @@ public class LuaSpriteController {
         get { return img.LocalEulerAngles.z; }
 		set
 		{
-            img.LocalEulerAngles.z = Math.mod(value, 360);
+			var euler = img.LocalEulerAngles;
+			euler.z = Math.mod(value, 360);
+			img.LocalEulerAngles = euler;
 			//img.LocalRotation = internalRotation;
 		}
 	}
@@ -353,7 +357,7 @@ public class LuaSpriteController {
             return;
         }
         Keyframe k = keyframes.getCurrent();
-        Sprite s = SpriteRegistry.GENERIC_SPRITE_PREFAB.sprite;
+        Sprite s = SpriteRegistry.GENERIC_SPRITE_PREFAB.Sprite;
         
         if (k != null)
         {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
+using SpriteLayout;
 
 /// <summary>
 /// The fairly hacky and somewhat unmaintainable Game Over behaviour class. Written in a hurry as it probably wasn't going to get replaced anytime soon.
@@ -12,7 +12,7 @@ public class GameOverBehavior : MonoBehaviour {
     private GameObject heartShardPrefab;
     private string[] heartShardAnim = new string[] { "UI/Battle/heartshard_0", "UI/Battle/heartshard_1", "UI/Battle/heartshard_2", "UI/Battle/heartshard_3" };
     private TextManager gameOverTxt;
-    private Image gameOverImage;
+    private SpriteLayoutImage gameOverImage;
     private RectTransform[] heartShardInstances = new RectTransform[0];
     private Vector2[] heartShardRelocs;
     private LuaSpriteController[] heartShardCtrl;
@@ -41,9 +41,9 @@ public class GameOverBehavior : MonoBehaviour {
         gameOverTxt = GameObject.Find("TextParent").GetComponent<TextManager>();
         heartbreak = AudioClipRegistry.GetSound("heartbeatbreaker");
         heartsplode = AudioClipRegistry.GetSound("heartsplosion");
-        gameOverImage = GameObject.Find("GameOver").GetComponent<Image>();
+        gameOverImage = GameObject.Find("GameOver").GetComponent<SpriteLayoutImage>();
         heartPos = gameObject.GetComponent<RectTransform>().position;
-        heartColor = gameObject.GetComponent<Image>().color;
+        heartColor = gameObject.GetComponent<SpriteLayoutImage>().Color;
         gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
         gameOverMusic = Camera.main.GetComponent<AudioSource>();
         started = true;
@@ -52,7 +52,7 @@ public class GameOverBehavior : MonoBehaviour {
     void Awake()
     {
         Application.LoadLevel("GameOver");
-        this.gameObject.GetComponent<Image>().enabled = true; // abort the blink animation if it was playing
+        this.gameObject.GetComponent<SpriteLayoutImage>().enabled = true; // abort the blink animation if it was playing
     }
 
 	// Update is called once per frame
@@ -68,25 +68,25 @@ public class GameOverBehavior : MonoBehaviour {
             brokenHeartPrefab = Instantiate(brokenHeartPrefab);
             brokenHeartPrefab.transform.SetParent(this.gameObject.transform);
             brokenHeartPrefab.GetComponent<RectTransform>().position = heartPos;
-            brokenHeartPrefab.GetComponent<Image>().color = heartColor;
-            gameObject.GetComponent<Image>().enabled = false;
+            brokenHeartPrefab.GetComponent<SpriteLayoutImage>().Color = heartColor;
+            gameObject.GetComponent<SpriteLayoutImage>().enabled = false;
             breakHeartAfter = 999.0f;
         }
 
         if (internalTimer > explodeHeartAfter)
         {
             AudioSource.PlayClipAtPoint(heartsplode, Camera.main.transform.position, 0.75f);
-            brokenHeartPrefab.GetComponent<Image>().enabled = false;
+            brokenHeartPrefab.GetComponent<SpriteLayoutImage>().enabled = false;
             heartShardInstances = new RectTransform[6];
             heartShardRelocs = new Vector2[6];
             heartShardCtrl = new LuaSpriteController[6];
             for (int i = 0; i < heartShardInstances.Length; i++)
             {
                 heartShardInstances[i] = Instantiate(heartShardPrefab).GetComponent<RectTransform>();
-                heartShardCtrl[i] = new LuaSpriteController(heartShardInstances[i].GetComponent<Image>());
+                heartShardCtrl[i] = new LuaSpriteController(heartShardInstances[i].GetComponent<SpriteLayoutImage>());
                 heartShardInstances[i].transform.SetParent(this.gameObject.transform);
                 heartShardInstances[i].GetComponent<RectTransform>().position = heartPos;
-                heartShardInstances[i].GetComponent<Image>().color = heartColor;
+                heartShardInstances[i].GetComponent<SpriteLayoutImage>().Color = heartColor;
                 heartShardRelocs[i] = UnityEngine.Random.insideUnitCircle * 100.0f;
                 heartShardCtrl[i].Set(heartShardAnim[0]);
                 heartShardCtrl[i].SetAnimation(heartShardAnim, 1 / 5f);
@@ -121,7 +121,7 @@ public class GameOverBehavior : MonoBehaviour {
 
         if (!done)
         {
-            gameOverImage.color = new Color(1, 1, 1, gameOverFadeTimer);
+            gameOverImage.Color = new Color(1, 1, 1, gameOverFadeTimer);
             if (gameOverAfter >= 999.0f && gameOverFadeTimer < 1.0f)
             {
                 gameOverFadeTimer += Time.deltaTime / 2;
@@ -148,7 +148,7 @@ public class GameOverBehavior : MonoBehaviour {
         }
         else if (exiting && gameOverFadeTimer > 0.0f)
         {
-            gameOverImage.color = new Color(1, 1, 1, gameOverFadeTimer);
+            gameOverImage.Color = new Color(1, 1, 1, gameOverFadeTimer);
             if (gameOverFadeTimer > 0.0f)
             {
                 gameOverFadeTimer -= Time.deltaTime / 2;

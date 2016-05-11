@@ -22,7 +22,7 @@ public class LuaPlayerStatus
     public LuaPlayerStatus(PlayerController p)
     {
         this.player = p;
-        spr = new LuaSpriteController(p.GetComponent<UnityEngine.UI.Image>());
+        spr = new LuaSpriteController(p.GetComponent<SpriteLayout.SpriteLayoutImage>());
     }
 
     /// <summary>
