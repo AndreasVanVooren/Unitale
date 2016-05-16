@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using SpriteLayout;
 
 /// <summary>
 /// Behaviour attached to the arena used to resize it.
@@ -16,8 +17,8 @@ public class ArenaSizer : MonoBehaviour
     [HideInInspector]
     public static LuaArenaStatus luaStatus { get; private set; } // The Lua Arena object on the C# side
 
-    private RectTransform outer; // RectTransform of the slightly larger white box under the arena (it's the border).
-    private RectTransform inner; // RectTransform of the inner part of the arena.
+    private SpriteLayoutBase outer; // RectTransform of the slightly larger white box under the arena (it's the border).
+    private SpriteLayoutBase inner; // RectTransform of the inner part of the arena.
     private int pxPerSecond = 100 * 10; // How many pixels per second the arena should resize
 
     private float currentX; // Current width of the arena as it is resizing
@@ -32,10 +33,14 @@ public class ArenaSizer : MonoBehaviour
     {
         // unlike the player we really dont want this on two components at the same time
         if (instance != null)
-            throw new InvalidOperationException("Currently, the ArenaSizer may only be attached to one object.");
+        {
+            Debug.LogError("Currently, the ArenaSizer may only be attached to one object.");
+            Destroy(this);
+            return;
+        }
 
-        outer = GameObject.Find("arena_border_outer").GetComponent<RectTransform>();
-        inner = GameObject.Find("arena").GetComponent<RectTransform>();
+        outer = GameObject.Find("arena_border_outer").GetComponent<SpriteLayoutBase>();
+        inner = GameObject.Find("arena").GetComponent<SpriteLayoutBase>();
         newX = currentX;
         newY = currentY;
         instance = this;
@@ -49,10 +54,10 @@ public class ArenaSizer : MonoBehaviour
 
     private void LateStart()
     {
-        arenaAbs = new Rect(inner.position.x - inner.rect.width / 2, inner.position.y - inner.rect.height / 2, inner.rect.width, inner.rect.height);
-        arenaCenter = RTUtil.AbsCenterOf(inner);
-        currentX = inner.rect.width;
-        currentY = inner.rect.height;
+        arenaAbs = new Rect(inner.Position.x - inner.Width / 2, inner.Position.y - inner.Height / 2, inner.Width, inner.Height);
+        arenaCenter = inner.Center;
+        currentX = inner.Width;
+        currentY = inner.Height;
     }
 
     /// <summary>
@@ -144,12 +149,12 @@ public class ArenaSizer : MonoBehaviour
     /// <param name="arenaY">New height</param>
     private void applyResize(float arenaX, float arenaY)
     {
-        inner.sizeDelta = new Vector2(arenaX, arenaY);
-        outer.sizeDelta = new Vector2(arenaX + 10, arenaY + 10);
-        arenaAbs.x = inner.position.x - inner.rect.width / 2;
-        arenaAbs.y = inner.position.y - inner.rect.height / 2;
-        arenaAbs.width = inner.rect.width;
-        arenaAbs.height = inner.rect.height;
+        inner.Dimensions = new Vector2(arenaX, arenaY);
+        outer.Dimensions = new Vector2(arenaX + 10, arenaY + 10);
+        arenaAbs.x = inner.Position.x - inner.Width / 2;
+        arenaAbs.y = inner.Position.y - inner.Height / 2;
+        arenaAbs.width = inner.Width;
+        arenaAbs.height = inner.Height;
         arenaCenter = new Vector2(inner.transform.position.x, inner.transform.position.y);
     }
 }

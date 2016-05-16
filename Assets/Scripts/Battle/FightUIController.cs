@@ -34,28 +34,37 @@ public class FightUIController : MonoBehaviour
 
     public int Damage { get; private set; } // retrieve after finishing to get real damage number
 
+    public GameObject FightUILineObj;
+    public GameObject SliceAnimObj;
+    public GameObject DamageNumberObj;
+    public GameObject HPBarObj;
+
     private void Awake()
     {
-        foreach (Transform child in gameObject.transform)
-        {
-            if (child.name == "FightUILine")
-            {
-                line = new LuaSpriteController(child.GetComponent<SpriteLayoutImage>());
-            }
-            else if (child.name == "SliceAnim")
-            {
-                slice = new LuaSpriteController(child.GetComponent<SpriteLayoutImage>());
-            }
-            else if (child.name == "DamageNumber")
-            {
-                damageText = child.GetComponent<TextManager>();
-            }
-
-            else if (child.name == "HPBar")
-            {
-                lifeBar = child.GetComponent<LifeBarController>();
-            }
-        }
+//        foreach (Transform child in gameObject.transform)
+//        {
+//            if (child.name == "FightUILine")
+//            {
+//                line = new LuaSpriteController(child.GetComponent<SpriteLayoutImage>());
+//            }
+//            else if (child.name == "SliceAnim")
+//            {
+//                slice = new LuaSpriteController(child.GetComponent<SpriteLayoutImage>());
+//            }
+//            else if (child.name == "DamageNumber")
+//            {
+//                damageText = child.GetComponent<TextManager>();
+//            }
+//
+//            else if (child.name == "HPBar")
+//            {
+//                lifeBar = child.GetComponent<LifeBarController>();
+//            }
+//        }
+        line = new LuaSpriteController(FightUILineObj.GetComponent<SpriteLayoutImage>());
+        slice = new LuaSpriteController(SliceAnimObj.GetComponent<SpriteLayoutImage>());
+        damageText = DamageNumberObj.GetComponent<TextManager>();
+        lifeBar = HPBarObj.GetComponent<LifeBarController>();
 
         damageTextRt = damageText.GetComponent<RectTransform>();
     }

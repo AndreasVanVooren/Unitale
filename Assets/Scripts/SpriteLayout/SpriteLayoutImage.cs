@@ -29,7 +29,12 @@ namespace SpriteLayout
         public Sprite Sprite
         {
             get { return _renderer.sprite; }
-            set { _renderer.sprite = value; }
+            set 
+            { 
+                _renderer.sprite = value; 
+                _mySprite = value;
+                _initialDimensions = _mySprite.bounds.size;
+            }
         }
 
         public Color Color

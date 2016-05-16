@@ -113,13 +113,6 @@ namespace SpriteLayout
 	[ExecuteInEditMode]
 	public class SpriteLayoutBase : MonoBehaviour
 	{
-		//protected delegate void OnPropertyChangeLocPos();
-		//protected delegate void OnPropertyChangeLocRot();
-		//protected delegate void OnPropertyChangeLocScale();
-		//protected delegate void OnPropertyChangeWidth();
-		//protected delegate void OnPropertyChangeHeight();
-		//protected delegate void OnPropertyChangeAnch();
-		//protected delegate void OnPropertyChangePiv();
 
 		[SerializeField] private Vector3 _localPosition = Vector3.zero;
 		public Vector3 LocalPosition
@@ -138,7 +131,18 @@ namespace SpriteLayout
             set
             {
                 var diff = value - Position;
+                //Take into account that LocalPosition set already resets position
                 LocalPosition += diff;
+            }
+        }
+
+        //Position and local position properties offset the actual transform using pivots and stuff.
+        //This just requests the true center.
+        public Vector3 Center
+        {
+            get
+            {
+                return transform.position;
             }
         }
 
