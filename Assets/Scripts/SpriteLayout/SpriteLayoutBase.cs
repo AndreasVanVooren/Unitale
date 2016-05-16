@@ -46,11 +46,11 @@ namespace SpriteLayout
 
                     if(spr.Parent == null || t.parent == null || parents.Length <= 1)
                     {
-                        if(t.GetComponentInParent<SpriteLayoutBase>() == spr)
-                        {
-                            Debug.Log(t.GetComponentInParent<SpriteLayoutBase>().GetInstanceID());
-                            Debug.Log(spr.GetInstanceID());
-                        }
+//                        if(t.GetComponentInParent<SpriteLayoutBase>() == spr)
+//                        {
+//                            //Debug.Log(t.GetComponentInParent<SpriteLayoutBase>().GetInstanceID());
+//                            //Debug.Log(spr.GetInstanceID());
+//                        }
                         EditorGUILayout.LabelField("Needs parent for anchoring");
                     }
                     else
@@ -121,16 +121,14 @@ namespace SpriteLayout
 		//protected delegate void OnPropertyChangeAnch();
 		//protected delegate void OnPropertyChangePiv();
 
-		[SerializeField] private Vector3 _localPosition;
+		[SerializeField] private Vector3 _localPosition = Vector3.zero;
 		public Vector3 LocalPosition
 		{
 			get { return _localPosition; }
 			set
 			{
-
 				_localPosition = value;
-
-				transform.localPosition = value + (Vector3)NormalizedAnchor;
+				ResetPosition ();
 			}
 		}
 
@@ -140,28 +138,29 @@ namespace SpriteLayout
             set
             {
                 var diff = value - Position;
-                _localPosition += diff;
+                LocalPosition += diff;
             }
         }
 
-		[SerializeField] private Quaternion _localRotation;
+        [SerializeField] private Quaternion _localRotation = Quaternion.identity;
 		public Quaternion LocalRotation
 		{
 			get { return _localRotation; }
 			set
 			{
 				_localRotation = value;
-
-				Vector2 dir = _localRotation * NormalizedPivot;
-
-				transform.localPosition = (Vector3)(NormalizedAnchor - dir) + LocalPosition;
+				ResetRotation ();
+				ResetPosition ();
 			}
 		}
 
         public Vector3 LocalEulerAngles
         {
             get { return LocalRotation.eulerAngles; }
-            set { LocalRotation = Quaternion.Euler( value ); }
+            set 
+			{ 
+				LocalRotation = Quaternion.Euler( value ); 
+			}
         }
 
         public Quaternion Rotation
@@ -184,29 +183,72 @@ namespace SpriteLayout
             }
         }
 
-		[SerializeField] private Vector3 _localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        [SerializeField] private Vector3 _localScale = Vector3.one;
 		public Vector3 LocalScale
 		{
 			get { return _localScale; }
 			set
 			{
 				_localScale = value;
-
-				//transform.localPosition = 
+				ResetScale ();
+				ResetPosition ();
 			}
 		}
+
+        public Vector3 Scale
+        {
+            get
+            {
+                Vector3 scale = Vector3.one;
+
+                SpriteLayoutBase obj = this;
+                do
+                {
+                    scale.Scale(obj.LocalScale);
+                    var temp = obj.Parent;
+                    if (temp == null)
+                    {
+                        var parents = GetComponentsInParent<SpriteLayoutBase>();
+                        if (parents.Length > 1)
+                            temp = parents[1];
+                    }
+                    obj = temp;
+                }
+                while (obj != null);  
+
+                return scale;
+            }
+            set
+            {
+                SpriteLayoutBase p = Parent;
+                if (p == null)
+                {
+                    var parents = GetComponentsInParent<SpriteLayoutBase>();
+                    if (parents.Length > 1)
+                        p = parents[1];
+                }
+                var parentScale = p.Scale;
+                var scale = value;
+                scale.x *= 1 / parentScale.x;
+                scale.y *= 1 / parentScale.y;
+                scale.z *= 1 / parentScale.z;
+                LocalScale = scale;
+            }
+        }
 
 		//private SpriteRenderer _renderer;
 		//private Sprite _mySprite;
 
-		[SerializeField] protected Vector2 _initialDimensions = new Vector2(1, 1);
-		[SerializeField] private Vector2 _dimensions = new Vector2(1, 1);
+        [SerializeField] protected Vector2 _initialDimensions = Vector2.one;
+		[SerializeField] private Vector2 _dimensions = Vector2.one;
 		public Vector2 Dimensions
 		{
 			get { return _dimensions; }
 			set
 			{
 				_dimensions = value;
+				ResetScale ();
+				ResetPosition ();
 			}
 		}
 
@@ -220,10 +262,9 @@ namespace SpriteLayout
 			get { return Dimensions.x; }
 			set 
 			{ 
-				var scale = transform.localScale;
-				scale.x = value / _initialDimensions.x;
-				transform.localScale = scale;
-				Dimensions = new Vector2(value, _dimensions.y);
+				Dimensions = new Vector2(value, _dimensions.y); 
+				ResetScale ();
+				ResetPosition ();
 			}
 		}
 
@@ -232,17 +273,16 @@ namespace SpriteLayout
 			get { return Dimensions.y; }
 			set 
 			{
-				var scale = transform.localScale;
-				scale.y *= value / _initialDimensions.y;
-				transform.localScale = scale;
 				Dimensions = new Vector2(_dimensions.x, value); 
+				ResetScale ();
+				ResetPosition ();
 			}
 		}
 
 		/// <summary>
 		/// The anchor, aka where this sprite attaches to on its parent
 		/// </summary>
-		[SerializeField] private Vector2 _anchor = new Vector2(0.5f, 0.5f);
+        [SerializeField] private Vector2 _anchor = new Vector2(0.5f, 0.5f);
 		public Vector2 Anchor
 		{
 			get { return _anchor; }
@@ -250,26 +290,21 @@ namespace SpriteLayout
 			{
 				if (_anchor == value)
 					return;
-				var pSprite = GetComponentInParent<SpriteLayoutImage>();
+				var pSprite = Parent;
 				if (pSprite == null)
 				{
 					//Debug.Log("parent null");
-					return;
+					var parents = GetComponentsInParent<SpriteLayoutBase>();
+					if (parents.Length > 1)
+						pSprite = parents[1];
+					else return;
 				}
-
-				Vector3 anch = NormalizedAnchor;
-
-				Vector3 diff = transform.localPosition - anch;
-				//Debug.Log(diff);
 				_anchor = value;
-
-				anch = NormalizedAnchor;
-
-				transform.localPosition = diff + anch;
+				ResetPosition ();
 			}
 		}
 
-		public Vector2 NormalizedAnchor
+		public Vector2 AnchorVector
 		{
 			get
 			{
@@ -295,7 +330,7 @@ namespace SpriteLayout
 		/// <summary>
 		/// The pivot.
 		/// </summary>
-		[SerializeField] private Vector2 _pivot = new Vector2(0.5f, 0.5f);
+        [SerializeField, HideInInspector] private Vector2 _pivot = new Vector2(0.5f, 0.5f);
 		public Vector2 Pivot
 		{
 			get { return _pivot; }
@@ -303,23 +338,12 @@ namespace SpriteLayout
 			{
 				//_mySprite.pivot = value;
 				//if (_mySprite != null)
-				{
-					Vector2 diff = value - _pivot;
-					//diff.x -= 0.5f;
-					//diff.y -= 0.5f;
-					diff.Scale(Dimensions);
-					diff.Scale(LocalScale);
-					diff = LocalRotation * diff;
-
-					Vector3 pos = transform.localPosition + (Vector3)diff;
-					transform.localPosition = pos;
-				}
-
 				_pivot = value;
+				ResetPosition ();
 			}
 		}
 
-		public Vector2 NormalizedPivot
+		public Vector2 PivotVector
 		{
 			get
 			{
@@ -336,21 +360,64 @@ namespace SpriteLayout
 
 			}
 		}
-		[SerializeField]
+        [SerializeField, HideInInspector]
 		public SpriteLayoutBase Parent
 		{ get; protected set; }
 
 
 		protected virtual void Initialize()
 		{
-			if(transform.parent == null)
-			{
-				Debug.Log("NO PARENTS!");
-			}
+//			if(transform.parent == null)
+//			{
+//				Debug.Log("NO PARENTS!");
+//			}
 			var parents = GetComponentsInParent<SpriteLayoutBase>();
 			if (parents.Length > 1)	//check if there is a gameobject.
 				Parent = parents[1];
 			if (Parent == this) Parent = null;
+		}
+
+		protected void ResetScale()
+		{
+			Vector3 newScale = new Vector3();
+
+            newScale.x = Width / _initialDimensions.x * LocalScale.x;
+            newScale.y = Height / _initialDimensions.y * LocalScale.y;
+            newScale.z = LocalScale.z;
+
+            var pSprite = Parent;
+            if(pSprite == null)
+            {
+                var parents = GetComponentsInParent<SpriteLayoutBase>();
+                if (parents.Length > 1)
+                {
+                    pSprite = parents[1];
+                }
+            }
+            
+            Vector3 parentInvDimRate = Vector3.one;
+            if (pSprite != null)
+            {
+                parentInvDimRate.x = pSprite._initialDimensions.x / pSprite.Width;
+                parentInvDimRate.y = pSprite._initialDimensions.y / pSprite.Height;
+            }
+
+            newScale.Scale(parentInvDimRate);
+
+			transform.localScale = newScale;
+		}
+
+		protected void ResetRotation()
+		{
+			transform.localRotation = LocalRotation;
+		}
+
+		protected void ResetPosition()
+		{
+            Vector3 newPos = (Vector3)AnchorVector + LocalPosition;
+            Vector3 piv = LocalRotation * PivotVector;
+            newPos += piv;
+            transform.localPosition = newPos;
 		}
 
 		// Use this for initialization

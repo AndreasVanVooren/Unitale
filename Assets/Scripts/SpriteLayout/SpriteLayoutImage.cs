@@ -44,12 +44,19 @@ namespace SpriteLayout
             set { _renderer.sortingOrder = value; }
         }
 
+        public bool RendererEnabled
+        {
+            get { return _renderer.enabled; }
+            set { _renderer.enabled = value; }
+        }
+
 		protected override void Initialize()
 		{
 			base.Initialize();
 			_renderer =GetComponent<SpriteRenderer>();
 			_mySprite = _renderer.sprite;
-			_initialDimensions = Dimensions = _mySprite.bounds.size;
+            if(_mySprite != null)
+			    _initialDimensions = Dimensions = _mySprite.bounds.size;
 		}
 
 		// Use this for initialization
@@ -59,7 +66,8 @@ namespace SpriteLayout
 			//transform.
 		}
 
-		public void AttachCollider(ColliderType type)
+
+        public void AttachCollider(ColliderType type)
 		{
 			switch (type)
 			{
@@ -80,6 +88,13 @@ namespace SpriteLayout
 					break;
 			}
 		}
+
+        public void AttachRectCollider(float xOffset, float yOffset, float xSize, float ySize)
+        {
+            var collider = this.gameObject.AddComponent<BoxCollider2D>();
+            collider.offset = new Vector2(xOffset, yOffset);
+            collider.size = new Vector2(xSize,ySize);
+        }
 
 		// Update is called once per frame
 		void Update()

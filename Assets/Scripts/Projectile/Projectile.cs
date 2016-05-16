@@ -142,10 +142,24 @@ public abstract class Projectile : MonoBehaviour
     public virtual bool HitTest()
     {
         UpdateHitRect();
-        if (selfAbs.Overlaps(PlayerController.instance.playerAbs))
-            return true;
+        //if (selfAbs.Overlaps(PlayerController.instance.playerAbs))
+        //   return true;
         return false;
     }
 
+    void OnCollisionStay2D(Collision2D other)
+    {
+        
 
+        //if it is the player
+        if (other.gameObject.CompareTag("Player"))
+        {
+            
+        }
+        //if it is another projectile
+        else
+        {
+            
+        }
+    }
 }

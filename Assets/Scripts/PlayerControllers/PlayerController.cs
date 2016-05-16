@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.UI;
+using SpriteLayout;
 
 public class PlayerController : MonoBehaviour
 {
@@ -24,8 +24,8 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// absolute position of the player on screen, used mainly by projectiles for collision detection
     /// </summary>
-    [HideInInspector]
-    public Rect playerAbs;
+//    [HideInInspector]
+//    public Rect playerAbs;
 
     /// <summary>
     /// take a wild guess
@@ -85,7 +85,7 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// the Image of the player
     /// </summary>
-    private Image selfImg;
+    private SpriteLayoutImage selfImg;
 
     /// <summary>
     /// contains a Soul type that affects what player movement does
@@ -235,15 +235,15 @@ public class PlayerController : MonoBehaviour
         }
 
         // set player position on screen
-        self.anchoredPosition = new Vector2(xPos, yPos);
-        // modify the player rectangle position so projectiles know where it is
-        playerAbs.x = self.anchoredPosition.x - self.rect.size.x / 2 + hitboxInset;
-        playerAbs.y = self.anchoredPosition.y - self.rect.size.y / 2 + hitboxInset;
+//        self.anchoredPosition = new Vector2(xPos, yPos);
+//        // modify the player rectangle position so projectiles know where it is
+//        playerAbs.x = self.anchoredPosition.x - self.rect.size.x / 2 + hitboxInset;
+//        playerAbs.y = self.anchoredPosition.y - self.rect.size.y / 2 + hitboxInset;
     }
 
     public void SetSoul(AbstractSoul s)
     {
-        selfImg.color = s.color;
+        selfImg.Color = s.color;
         soul = s;
         // if still holding X keep the slow applied
         if (InputUtil.Held(GlobalControls.input.Cancel))
@@ -258,8 +258,9 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         self = GetComponent<RectTransform>();
-        selfImg = GetComponent<Image>();
-        playerAbs = new Rect(0, 0, selfImg.sprite.texture.width - hitboxInset * 2, selfImg.sprite.texture.height - hitboxInset * 2);
+        selfImg = GetComponent<SpriteLayoutImage>();
+//        playerAbs = new Rect(0, 0, selfImg.sprite.texture.width - hitboxInset * 2, selfImg.sprite.texture.height - hitboxInset * 2);
+        selfImg.AttachCollider(ColliderType.Circle);
         instance = this;
         playerAudio = GetComponent<AudioSource>();
         hurtSound = AudioClipRegistry.GetSound("hurtsound");
@@ -374,15 +375,15 @@ public class PlayerController : MonoBehaviour
             invulTimer -= Time.deltaTime;
             if (invulTimer % blinkCycleSeconds > blinkCycleSeconds / 2.0f)
             {
-                selfImg.enabled = false;
+                selfImg.RendererEnabled = false;
             }
             else
             {
-                selfImg.enabled = true;
+                selfImg.RendererEnabled = true;
             }
 
             if (invulTimer <= 0.0f)
-                selfImg.enabled = true;
+                selfImg.RendererEnabled = true;
         }
     }
 }
