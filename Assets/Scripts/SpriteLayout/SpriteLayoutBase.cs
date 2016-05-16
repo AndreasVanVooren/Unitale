@@ -107,6 +107,12 @@ namespace SpriteLayout
 			//	tgt.Anchor = EditorGUILayout.Vector2Field("Anchor", tgt.Anchor);
 			//}
 			//tgt.Pivot = EditorGUILayout.Vector2Field("Pivot", tgt.Pivot);
+			if(GUILayout.Button("Make Image"))
+			{
+				var slb = ((SpriteLayoutBase)target);
+				var img = slb.gameObject.AddComponent<SpriteLayoutImage>();
+				img.InitFromOther(slb);
+			}
 		}
 	}
 
@@ -179,7 +185,14 @@ namespace SpriteLayout
 
         public Vector3 EulerAngles
         {
-            get{return transform.parent.eulerAngles + LocalEulerAngles;}
+            get
+            {
+                if (transform == null || transform.parent == null)
+                {
+                    return LocalEulerAngles;
+                }
+                return transform.parent.eulerAngles + LocalEulerAngles;
+            }
             set
             {
                 var diff = value - EulerAngles;
@@ -251,6 +264,12 @@ namespace SpriteLayout
 			set
 			{
 				_dimensions = value;
+				#if UNITY_EDITOR
+				if(!EditorApplication.isPlaying)
+				{
+					_initialDimensions = value;
+				}
+				#endif
 				ResetScale ();
 				ResetPosition ();
 			}
@@ -368,6 +387,20 @@ namespace SpriteLayout
 		public SpriteLayoutBase Parent
 		{ get; protected set; }
 
+		public void InitFromOther(SpriteLayoutBase b)
+		{
+			this._anchor = b._anchor;
+			this._dimensions = b._dimensions;
+			this._initialDimensions = b._initialDimensions;
+			this._localPosition = b._localPosition;
+			this._localRotation = b._localRotation;
+			this._localScale = b._localScale;
+			this._pivot = b._pivot;
+			this.Parent = b.Parent;
+			this.ResetScale();
+			this.ResetRotation();
+			this.ResetPosition();
+		}
 
 		protected virtual void Initialize()
 		{

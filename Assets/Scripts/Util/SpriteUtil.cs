@@ -22,6 +22,10 @@ public static class SpriteUtil
                 SpriteRegistry.Set(filename, newSprite);
             }
             SpriteLayoutImage img = target.GetComponent<SpriteLayoutImage>();
+			if(img == null)
+			{
+				throw new NullReferenceException("COULDN'T FIND SPRITELAYOUTIMAGE");
+			}
             img.Sprite = newSprite;
             //enemyImg.SetNativeSize();
             img.ResetDimensions( newSprite.bounds.size);
@@ -29,7 +33,7 @@ public static class SpriteUtil
         catch (Exception e)
         {
             // TODO do something I guess
-            Debug.LogError("Error loading sprite");
+            Debug.LogError("Error loading sprite",target);
             Debug.LogException(e);
         }
     }

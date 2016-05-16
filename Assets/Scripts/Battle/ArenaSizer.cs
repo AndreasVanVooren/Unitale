@@ -26,6 +26,8 @@ public class ArenaSizer : MonoBehaviour
     internal float newX; // Desired width of the arena; internal so the Lua Arena object may refer to it (lazy)
     internal float newY; // Desired height of the arena; internal so the Lua Arena object may refer to it (lazy)
 
+    public GameObject ArenaBorderOuter;
+    public GameObject Arena;
     /// <summary>
     /// Initialization.
     /// </summary>
@@ -34,13 +36,13 @@ public class ArenaSizer : MonoBehaviour
         // unlike the player we really dont want this on two components at the same time
         if (instance != null)
         {
-            Debug.LogError("Currently, the ArenaSizer may only be attached to one object.");
+            Debug.LogError("Currently, the ArenaSizer may only be attached to one object.",this.gameObject);
             Destroy(this);
             return;
         }
 
-        outer = GameObject.Find("arena_border_outer").GetComponent<SpriteLayoutBase>();
-        inner = GameObject.Find("arena").GetComponent<SpriteLayoutBase>();
+        outer = ArenaBorderOuter.GetComponent<SpriteLayoutBase>();
+        inner = Arena.GetComponent<SpriteLayoutBase>();
         newX = currentX;
         newY = currentY;
         instance = this;

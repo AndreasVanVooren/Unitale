@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// the player's RectTransform
     /// </summary>
-    internal RectTransform self;
+    internal SpriteLayoutBase self;
 
     /// <summary>
     /// how long does it take to do a full blink (appear+disappear), in seconds
@@ -184,8 +184,8 @@ public class PlayerController : MonoBehaviour
     // modify absolute player position, accounting for walls
     public void ModifyPosition(float xMove, float yMove, bool ignoreBounds)
     {
-        float xPos = self.anchoredPosition.x + xMove;
-        float yPos = self.anchoredPosition.y + yMove;
+        float xPos = self.LocalPosition.x + xMove;
+        float yPos = self.LocalPosition.y + yMove;
 
         SetPosition(xPos, yPos, ignoreBounds);
     }
@@ -197,8 +197,8 @@ public class PlayerController : MonoBehaviour
         soulDir *= Time.deltaTime;
 
         // reusing the direction Vector2 for position to save ourselves the creation of a new object
-        float oldXPos = self.anchoredPosition.x;
-        float oldYPos = self.anchoredPosition.y;
+        float oldXPos = self.LocalPosition.x;
+        float oldYPos = self.LocalPosition.y;
         ModifyPosition(soulDir.x, soulDir.y, false);
         MovementDelta(oldXPos, oldYPos);
     }
@@ -215,22 +215,22 @@ public class PlayerController : MonoBehaviour
         // check if new position would be out of arena bounds, and modify accordingly if it is
         if (!ignoreBounds)
         {
-            if (xPos < arenaBounds.position.x - arenaBounds.sizeDelta.x / 2 + self.rect.size.x / 2)
+            if (xPos < arenaBounds.position.x - arenaBounds.sizeDelta.x / 2 + self.Width / 2)
             {
-                xPos = arenaBounds.position.x - arenaBounds.sizeDelta.x / 2 + self.rect.size.x / 2;
+                xPos = arenaBounds.position.x - arenaBounds.sizeDelta.x / 2 + self.Width / 2;
             }
-            else if (xPos > arenaBounds.position.x + arenaBounds.sizeDelta.x / 2 - self.rect.size.x / 2)
+            else if (xPos > arenaBounds.position.x + arenaBounds.sizeDelta.x / 2 - self.Width / 2)
             {
-                xPos = arenaBounds.position.x + arenaBounds.sizeDelta.x / 2 - self.rect.size.x / 2;
+                xPos = arenaBounds.position.x + arenaBounds.sizeDelta.x / 2 - self.Width / 2;
             }
 
-            if (yPos < arenaBounds.position.y - arenaBounds.sizeDelta.y / 2 + self.rect.size.y / 2)
+            if (yPos < arenaBounds.position.y - arenaBounds.sizeDelta.y / 2 + self.Height / 2)
             {
-                yPos = arenaBounds.position.y - arenaBounds.sizeDelta.y / 2 + self.rect.size.y / 2;
+                yPos = arenaBounds.position.y - arenaBounds.sizeDelta.y / 2 + self.Height / 2;
             }
-            else if (yPos > arenaBounds.position.y + arenaBounds.sizeDelta.y / 2 - self.rect.size.y / 2)
+            else if (yPos > arenaBounds.position.y + arenaBounds.sizeDelta.y / 2 - self.Height / 2)
             {
-                yPos = arenaBounds.position.y + arenaBounds.sizeDelta.y / 2 - self.rect.size.y / 2;
+                yPos = arenaBounds.position.y + arenaBounds.sizeDelta.y / 2 - self.Height / 2;
             }
         }
 
@@ -257,7 +257,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        self = GetComponent<RectTransform>();
+        self = GetComponent<SpriteLayoutBase>();
         selfImg = GetComponent<SpriteLayoutImage>();
 //        playerAbs = new Rect(0, 0, selfImg.sprite.texture.width - hitboxInset * 2, selfImg.sprite.texture.height - hitboxInset * 2);
         selfImg.AttachCollider(ColliderType.Circle);
@@ -332,8 +332,8 @@ public class PlayerController : MonoBehaviour
 
     private void MovementDelta(float oldX, float oldY)
     {
-        float xDelta = self.anchoredPosition.x - oldX;
-        float yDelta = self.anchoredPosition.y - oldY;
+        float xDelta = self.LocalPosition.x - oldX;
+        float yDelta = self.LocalPosition.y - oldY;
 
         // if the position is the same, the player hasnt moved - by doing it like this we account
         // for things like being moved by external factors like being shoved by boundaries

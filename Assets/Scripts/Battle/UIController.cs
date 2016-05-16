@@ -2,6 +2,7 @@
 using MoonSharp.Interpreter;
 using UnityEngine;
 using UnityEngine.UI;
+using SpriteLayout;
 
 /// <summary>
 /// The class responsible for making some people lose faith in the project. In very dire need of refactoring, 
@@ -18,6 +19,9 @@ public class UIController : MonoBehaviour
 {
     public static UIController instance;
     internal TextManager textmgr;
+
+	
+	public GameObject FightUIGO;
 
     private static Sprite actB1;
     private static Sprite fightB1;
@@ -153,7 +157,7 @@ public class UIController : MonoBehaviour
         {
             textmgr.destroyText();
             PlayerController.instance.SetPosition(320, 160, false);
-            PlayerController.instance.GetComponent<Image>().enabled = true;
+            PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = true;
             fightBtn.overrideSprite = null;
             actBtn.overrideSprite = null;
             itemBtn.overrideSprite = null;
@@ -178,13 +182,13 @@ public class UIController : MonoBehaviour
         {
             case UIState.ATTACKING:
                 textmgr.destroyText();
-                PlayerController.instance.GetComponent<Image>().enabled = false;
+                PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = false;
                 fightUI.Init(encounter.enabledEnemies[selectedEnemy]);
                 break;
 
             case UIState.ACTIONSELECT:
                 PlayerController.instance.setControlOverride(true);
-                PlayerController.instance.GetComponent<Image>().enabled = true;
+                PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = true;
                 setPlayerOnAction(action);
                 textmgr.setPause(ArenaSizer.instance.isResizeInProgress());
                 textmgr.setCaller(encounter.script); // probably not necessary due to ActionDialogResult changes
@@ -284,11 +288,11 @@ public class UIController : MonoBehaviour
                 break;
 
             case UIState.DIALOGRESULT:
-                PlayerController.instance.GetComponent<Image>().enabled = false;
+                PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = false;
                 break;
 
             case UIState.ENEMYDIALOGUE:
-                PlayerController.instance.GetComponent<Image>().enabled = true;
+                PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = true;
                 ArenaSizer.instance.Resize(155, 130);
                 encounter.CallOnSelfOrChildren("EnemyDialogueStarting");
                 monDialogues = new TextManager[encounter.enabledEnemies.Length];
@@ -594,7 +598,7 @@ public class UIController : MonoBehaviour
                 }
                 else if (selectedMercy == 1)
                 {
-                    PlayerController.instance.GetComponent<Image>().enabled = false;
+                    PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = false;
                     AudioClip yay = AudioClipRegistry.GetSound("runaway");
                     AudioSource.PlayClipAtPoint(yay, Camera.main.transform.position);
                     string fittingLine = "";
@@ -941,6 +945,11 @@ public class UIController : MonoBehaviour
     private void Start()
     {
         textmgr = GameObject.Find("TextManager").GetComponent<TextManager>();
+		if(textmgr == null)
+		{
+			Debug.LogError("NO TEXTMANAGER");
+			return;
+		}
         textmgr.setEffect(new TwitchEffect(textmgr));
         encounter = FindObjectOfType<LuaEnemyEncounter>();
 
@@ -955,7 +964,7 @@ public class UIController : MonoBehaviour
 
         ArenaSizer.instance.ResizeImmediate(ArenaSizer.UIWidth, ArenaSizer.UIHeight);
         PlayerController.instance.setControlOverride(true);
-        fightUI = GameObject.Find("FightUI").GetComponent<FightUIController>();
+        fightUI = FightUIGO.GetComponent<FightUIController>();
         fightUI.gameObject.SetActive(false);
 
         bindEncounterScriptInteraction();

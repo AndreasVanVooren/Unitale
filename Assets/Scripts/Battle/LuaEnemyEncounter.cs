@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
 using UnityEngine;
+using SpriteLayout;
 
 internal class LuaEnemyEncounter : EnemyEncounter
 {
@@ -188,9 +189,9 @@ internal class LuaEnemyEncounter : EnemyEncounter
             enemies[i] = enemyInstances[i].GetComponent<LuaEnemyController>();
             enemies[i].scriptName = enemyScriptsLua.Table.Get(i + 1).String;
             if (i < enemyPositions.Length)
-                enemies[i].GetComponent<RectTransform>().anchoredPosition = enemyPositions[i];
+                enemies[i].GetComponent<SpriteLayoutBase>().LocalPosition = enemyPositions[i];
             else
-                enemies[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 1);
+                enemies[i].GetComponent<SpriteLayoutBase>().LocalPosition = new Vector2(0, 1);
         }
 
         // Attach the controllers to the encounter's enemies table
