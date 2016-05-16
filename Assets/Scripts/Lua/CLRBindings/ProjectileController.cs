@@ -74,10 +74,10 @@ public class ProjectileController
 
     public void UpdatePosition()
     {
-        this.x = p.self.anchoredPosition.x - ArenaSizer.arenaCenter.x;
-        this.y = p.self.anchoredPosition.y - ArenaSizer.arenaCenter.y;
-        this.absx = p.self.anchoredPosition.x;
-        this.absy = p.self.anchoredPosition.y;
+        this.x = p.self.LocalPosition.x - ArenaSizer.arenaCenter.x;
+        this.y = p.self.LocalPosition.y - ArenaSizer.arenaCenter.y;
+        this.absx = p.self.LocalPosition.x;
+        this.absy = p.self.LocalPosition.y;
     }
 
     public void Remove()
@@ -92,7 +92,7 @@ public class ProjectileController
 
     public void Move(float x, float y)
     {
-        MoveToAbs(p.self.anchoredPosition.x + x, p.self.anchoredPosition.y + y);
+        MoveToAbs(p.self.LocalPosition.x + x, p.self.LocalPosition.y + y);
     }
 
     public void MoveTo(float x, float y)
@@ -106,17 +106,19 @@ public class ProjectileController
         {
             throw new MoonSharp.Interpreter.ScriptRuntimeException("Attempted to move a removed bullet. You can use a bullet's isactive property to check if it has been removed.");
         }
-        p.self.anchoredPosition = new Vector2(x, y);
+        p.self.LocalPosition = new Vector2(x, y);
     }
 
     public void SendToTop()
     {
-        p.self.SetAsLastSibling(); // in unity, the lowest UI component in the hierarchy renders last
+        //p.self.SetAsLastSibling(); // in unity, the lowest UI component in the hierarchy renders last
+        ((SpriteLayout.SpriteLayoutImage)p.self).SortingOrder = 999;
     }
 
     public void SendToBottom()
     {
-        p.self.SetAsFirstSibling();
+        //p.self.SetAsFirstSibling();
+        ((SpriteLayout.SpriteLayoutImage)p.self).SortingOrder = -999;
     }
 
     public void SetVar(string name, DynValue value)

@@ -24,9 +24,9 @@ public abstract class Projectile : MonoBehaviour
     private static float zIndexCurrent = Z_INDEX_INITIAL;
      */
 
-    protected internal RectTransform self; // RectTransform of this projectile
+    protected internal SpriteLayoutBase self; // RectTransform of this projectile
     protected internal ProjectileController ctrl; // come to think of it protected internal is pretty useless atm
-    protected Rect selfAbs; // Rectangle containing position and size of this projectile
+    //protected Rect selfAbs; // Rectangle containing position and size of this projectile
 
     private bool currentlyVisible = true; // Used to keep track of whether this object is currently visible to potentially save time in SetRenderingActive().
 
@@ -35,7 +35,7 @@ public abstract class Projectile : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        self = GetComponent<RectTransform>();
+        self = GetComponent<SpriteLayoutBase>();
         ctrl = new ProjectileController(this);
     }
 
@@ -51,8 +51,8 @@ public abstract class Projectile : MonoBehaviour
         img.Anchor = half;
         img.Pivot = half;
 		img.AttachCollider (ColliderType.Rect);
-        self.sizeDelta = img.Sprite.rect.size;
-        selfAbs = new Rect(self.anchoredPosition.x - self.rect.width / 2, self.anchoredPosition.y - self.rect.height / 2, self.sizeDelta.x, self.sizeDelta.y);
+        self.Dimensions = img.Sprite.rect.size;
+        //selfAbs = new Rect(self.anchoredPosition.x - self.rect.width / 2, self.anchoredPosition.y - self.rect.height / 2, self.sizeDelta.x, self.sizeDelta.y);
 		ctrl.sprite.Reset();		//ensure correct size, if all goes right, this will break it code completely.
         OnStart();
     }
@@ -101,8 +101,8 @@ public abstract class Projectile : MonoBehaviour
     /// </summary>
     public virtual void UpdateHitRect()
     {
-        selfAbs.x = self.position.x - self.rect.width / 2;
-        selfAbs.y = self.position.y - self.rect.height / 2;
+        //selfAbs.x = self.position.x - self.rect.width / 2;
+        //selfAbs.y = self.position.y - self.rect.height / 2;
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public abstract class Projectile : MonoBehaviour
     /// <returns>The rectangle surrounding this projectile.</returns>
     public Rect getRect()
     {
-        return selfAbs;
+        return Rect.MinMaxRect(-1, -1, 1, 1);//selfAbs;
     }
 
     /// <summary>

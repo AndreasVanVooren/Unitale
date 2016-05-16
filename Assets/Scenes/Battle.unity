@@ -1758,6 +1758,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a91ef8095a607e34b90bda1f89e683c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ArenaBorderOuter: {fileID: 0}
+  Arena: {fileID: 0}
 --- !u!1 &1078329491
 GameObject:
   m_ObjectHideFlags: 0
@@ -3699,6 +3701,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a91ef8095a607e34b90bda1f89e683c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ArenaBorderOuter: {fileID: 2057661439}
+  Arena: {fileID: 1669544033}
 --- !u!1 &2088050293
 GameObject:
   m_ObjectHideFlags: 0

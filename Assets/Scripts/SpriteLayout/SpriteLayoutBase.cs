@@ -179,7 +179,14 @@ namespace SpriteLayout
 
         public Vector3 EulerAngles
         {
-            get{return transform.parent.eulerAngles + LocalEulerAngles;}
+            get
+            {
+                if (transform == null || transform.parent == null)
+                {
+                    return LocalEulerAngles;
+                }
+                return transform.parent.eulerAngles + LocalEulerAngles;
+            }
             set
             {
                 var diff = value - EulerAngles;

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using SpriteLayout;
 
 /// <summary>
 /// The bullet pool where Projectiles are drawn from for performance reasons.
@@ -33,7 +34,7 @@ public class BulletPool : MonoBehaviour
     {
         Projectile lp = Instantiate(bPrefab);
         lp.transform.SetParent(transform);
-        lp.GetComponent<RectTransform>().position = new Vector2(-999, -999); // move offscreen to be safe, but shouldn't be necessary
+        lp.GetComponent<SpriteLayoutBase>().Position = new Vector2(-999, -999); // move offscreen to be safe, but shouldn't be necessary
         pool.Enqueue(lp);
         lp.gameObject.SetActive(false);
     }
@@ -57,7 +58,7 @@ public class BulletPool : MonoBehaviour
     /// <param name="p">Projectile to return</param>
     public void Requeue(Projectile p)
     {
-        p.GetComponent<RectTransform>().position = new Vector2(-999, -999);
+        p.GetComponent<SpriteLayoutBase>().Position = new Vector2(-999, -999);
         p.gameObject.SetActive(false);
         pool.Enqueue(p);
     }

@@ -1,17 +1,18 @@
 ﻿using MoonSharp.Interpreter;
 using UnityEngine;
-using UnityEngine.UI;
+using SpriteLayout;
 
 public class LuaProjectile : Projectile
 {
     internal Script owner; //TODO convert to ScriptWrapper, observe performance influence
-    
+
     public override void OnStart()
     {
-        self.sizeDelta = GetComponent<Image>().sprite.rect.size;
-        selfAbs.width = self.rect.width;
-        selfAbs.height = self.rect.height;
-        GetComponent<Image>().enabled = true;
+        //self.Dimensions = GetComponent<Image>().sprite.rect.size;
+        //selfAbs.width = self.rect.width;
+        //selfAbs.height = self.rect.height;
+        //GetComponent<Image>().enabled = true;
+        ((SpriteLayoutImage)self).RendererEnabled = true;
     }
 
     public void setSprite(string name)
