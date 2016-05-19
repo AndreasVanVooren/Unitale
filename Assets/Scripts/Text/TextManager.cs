@@ -1,12 +1,13 @@
 ﻿using System;
 using MoonSharp.Interpreter;
 using UnityEngine;
-using UnityEngine.UI;
+//using UnityEngine.UI;
+using SpriteLayout;
 
 // TODO less code duplicate-y way of pulling commands out of the text.
 public class TextManager : MonoBehaviour
 {
-    internal Image[] letterReferences;
+    internal SpriteLayoutImage[] letterReferences;
     internal Vector2[] letterPositions;
 
     private UnderFont default_charset = null;
@@ -17,7 +18,7 @@ public class TextManager : MonoBehaviour
     private int currentCharacter = 0;
     private bool displayImmediate = false;
     private bool currentSkippable = true;
-    private RectTransform self;
+    private SpriteLayoutBase self;
     private Vector2 offset;
     private bool offsetSet = false;
     private float currentX;
@@ -69,7 +70,7 @@ public class TextManager : MonoBehaviour
 
     private void Awake()
     {
-        self = gameObject.GetComponent<RectTransform>();
+        self = gameObject.GetComponent<SpriteLayoutBase>();
         letterSound = gameObject.AddComponent<AudioSource>();
         letterSound.playOnAwake = false;
         // setFont(SpriteFontRegistry.F_UI_DIALOGFONT);
@@ -153,8 +154,8 @@ public class TextManager : MonoBehaviour
         timePerLetter = singleFrameTiming;
         letterTimer = 0.0f;
         destroyText();
-        currentX = self.position.x + offset.x;
-        currentY = self.position.y + offset.y - Charset.LineSpacing;
+        currentX = self.Position.x + offset.x;
+        currentY = self.Position.y + offset.y - Charset.LineSpacing;
         currentCharacter = 0;
         this.displayImmediate = textQueue[line].ShowImmediate;
         spawnText();
@@ -198,7 +199,7 @@ public class TextManager : MonoBehaviour
     private void spawnText()
     {
         string currentText = textQueue[currentLine].Text;
-        letterReferences = new Image[currentText.Length];
+        letterReferences = new SpriteLayoutImage[currentText.Length];
         letterPositions = new Vector2[currentText.Length];
         for (int i = 0; i < currentText.Length; i++)
         {
@@ -211,7 +212,7 @@ public class TextManager : MonoBehaviour
 
             if (currentText[i] == '\n')
             {
-                currentX = self.position.x + offset.x;
+                currentX = self.Position.x + offset.x;
                 currentY -= Charset.LineSpacing;
             }
             else if (currentText[i] == '\t')
@@ -223,29 +224,29 @@ public class TextManager : MonoBehaviour
                 continue;
 
             GameObject singleLtr = Instantiate(SpriteFontRegistry.LETTER_OBJECT);
-            RectTransform ltrRect = singleLtr.GetComponent<RectTransform>();
-            Image ltrImg = singleLtr.GetComponent<Image>();
+			SpriteLayoutBase ltrRect = singleLtr.GetComponent<SpriteLayoutBase>();
+			SpriteLayoutImage ltrImg = singleLtr.GetComponent<SpriteLayoutImage>();
 
             ltrRect.SetParent(gameObject.transform);
 
-            ltrImg.sprite = Charset.Letters[currentText[i]];
+            ltrImg.Sprite = Charset.Letters[currentText[i]];
 
             letterReferences[i] = ltrImg;
 
             if (Charset.Letters.ContainsKey(currentText[i]))
             {
-                ltrRect.position = new Vector3((int)currentX, (int)(currentY + Charset.Letters[currentText[i]].border.w - Charset.Letters[currentText[i]].border.y), 0);
+                ltrRect.Position = new Vector3((int)currentX, (int)(currentY + Charset.Letters[currentText[i]].border.w - Charset.Letters[currentText[i]].border.y), 0);
             }
             else
             {
-                ltrRect.position = new Vector3((int)currentX, (int)currentY, 0);
+                ltrRect.Position = new Vector3((int)currentX, (int)currentY, 0);
             }
-            letterPositions[i] = ltrRect.anchoredPosition;
-            ltrImg.SetNativeSize();
-            ltrImg.color = currentColor;
-            ltrImg.enabled = displayImmediate;
+            letterPositions[i] = ltrRect.LocalPosition;
+            //ltrImg.SetNativeSize();
+            ltrImg.Color = currentColor;
+            ltrImg.RendererEnabled = displayImmediate;
 
-            currentX += ltrRect.rect.width + hSpacing; // TODO remove hardcoded letter offset
+            currentX += ltrRect.Width + hSpacing; // TODO remove hardcoded letter offset
         }
     }
 
@@ -347,12 +348,12 @@ public class TextManager : MonoBehaviour
             case "starcolor":
                 Color starColor = ParseUtil.getColor(cmds[1]);
                 if (textQueue[currentLine].Text[0] == '*')
-                    letterReferences[0].color = starColor;
+                    letterReferences[0].Color = starColor;
                 if (textQueue[currentLine] is SelectMessage)
                 {
                     int indexOfStar = textQueue[currentLine].Text.IndexOf('*'); // HACK oh my god lol
                     if (indexOfStar > -1)
-                        letterReferences[indexOfStar].color = starColor;
+                        letterReferences[indexOfStar].Color = starColor;
                 }
                 break;
 
