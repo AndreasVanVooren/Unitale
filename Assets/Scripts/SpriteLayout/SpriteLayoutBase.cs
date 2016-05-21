@@ -44,19 +44,13 @@ namespace SpriteLayout
 
                     var parents = spr. GetComponentsInParent<SpriteLayoutBase>();
 
+                    spr.Anchor = EditorGUILayout.Vector2Field("Anchor", spr.Anchor);
+                    
                     if(spr.Parent == null || t.parent == null || parents.Length <= 1)
                     {
-//                        if(t.GetComponentInParent<SpriteLayoutBase>() == spr)
-//                        {
-//                            //Debug.Log(t.GetComponentInParent<SpriteLayoutBase>().GetInstanceID());
-//                            //Debug.Log(spr.GetInstanceID());
-//                        }
-                        EditorGUILayout.LabelField("Needs parent for anchoring");
+                        EditorGUILayout.LabelField("Needs parent for anchoring to have effect");
                     }
-                    else
-                    {
-                        spr.Anchor = EditorGUILayout.Vector2Field("Anchor", spr.Anchor);
-                    }
+
                     spr.Pivot = EditorGUILayout.Vector2Field("Pivot", spr.Pivot);
 
                     if (GUI.changed)
@@ -107,12 +101,20 @@ namespace SpriteLayout
 			//	tgt.Anchor = EditorGUILayout.Vector2Field("Anchor", tgt.Anchor);
 			//}
 			//tgt.Pivot = EditorGUILayout.Vector2Field("Pivot", tgt.Pivot);
-			if(GUILayout.Button("Make Image"))
+            if (GUILayout.Button("Reset parent"))
+            {
+                var slb = ((SpriteLayoutBase)target);
+                slb.Initialize();
+            }
+
+            if(GUILayout.Button("Make Image"))
 			{
-				var slb = ((SpriteLayoutBase)target);
+                var slb = ((SpriteLayoutBase)target);
 				var img = slb.gameObject.AddComponent<SpriteLayoutImage>();
 				img.InitFromOther(slb);
+                Destroy(slb);
 			}
+
 		}
 	}
 
@@ -402,7 +404,7 @@ namespace SpriteLayout
 			this.ResetPosition();
 		}
 
-		protected virtual void Initialize()
+		internal virtual void Initialize()
 		{
 //			if(transform.parent == null)
 //			{
@@ -453,7 +455,7 @@ namespace SpriteLayout
 		{
             Vector3 newPos = (Vector3)AnchorVector + LocalPosition;
             Vector3 piv = LocalRotation * PivotVector;
-            newPos += piv;
+            newPos -= piv;
             transform.localPosition = newPos;
 		}
 

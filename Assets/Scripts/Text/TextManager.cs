@@ -71,6 +71,10 @@ public class TextManager : MonoBehaviour
     private void Awake()
     {
         self = gameObject.GetComponent<SpriteLayoutBase>();
+        if(self == null)
+        {
+            Debug.LogError("sfsadfasfs",this.gameObject);
+        }
         letterSound = gameObject.AddComponent<AudioSource>();
         letterSound.playOnAwake = false;
         // setFont(SpriteFontRegistry.F_UI_DIALOGFONT);

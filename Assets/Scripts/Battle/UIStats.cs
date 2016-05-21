@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using SpriteLayout;
 
 public class UIStats : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class UIStats : MonoBehaviour
     private GameObject hpTextManParent;
     private TextManager hpTextMan;
     private LifeBarController lifebar;
-    private RectTransform lifebarRt;
+    private SpriteLayoutBase lifebarRt;
     
 
     private int hpCurrent = PlayerCharacter.MaxHP;
@@ -29,7 +30,7 @@ public class UIStats : MonoBehaviour
     {
         GameObject statsObj = GameObject.Find("Stats");
         lifebar = statsObj.GetComponentInChildren<LifeBarController>();
-        lifebarRt = lifebar.GetComponent<RectTransform>();
+        lifebarRt = lifebar.GetComponent<SpriteLayoutBase>();
 
         nameLevelTextManParent = GameObject.Find("NameLv");
         hpTextManParent = GameObject.Find("HPTextParent");
@@ -74,7 +75,7 @@ public class UIStats : MonoBehaviour
     {
         if (initialized)
         {
-            lifebarRt.sizeDelta = new Vector2(PlayerCharacter.MaxHP * 1.2f, lifebarRt.sizeDelta.y);
+            lifebarRt.Dimensions = new Vector2(PlayerCharacter.MaxHP * 1.2f, lifebarRt.Height);
             hpMax = PlayerCharacter.MaxHP;
             setHP(hpCurrent);
         }

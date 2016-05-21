@@ -15,6 +15,12 @@ namespace SpriteLayout
 
             for (int i = 0; i < targets.Length; i++)
             {
+                if (GUILayout.Button("Reset parent"))
+                {
+                    var slb = ((SpriteLayoutBase)targets[i]);
+                    slb.Initialize();
+                }
+
                 SpriteLayoutRoot root = (SpriteLayoutRoot) targets[i];
                 //spr.Width =  EditorGUILayout.FloatField("Width", spr.Width);
                 root.PixelsPerUnit = EditorGUILayout.IntField("Pixels per Unit", root.PixelsPerUnit);

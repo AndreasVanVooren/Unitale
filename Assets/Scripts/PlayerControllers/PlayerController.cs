@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// the RectTransform of the inner box of the battle arena - set using Unity Inspector
     /// </summary>
-    public RectTransform arenaBounds;
+    public SpriteLayoutBase arenaBounds;
 
     /// <summary>
     /// absolute position of the player on screen, used mainly by projectiles for collision detection
@@ -215,22 +215,22 @@ public class PlayerController : MonoBehaviour
         // check if new position would be out of arena bounds, and modify accordingly if it is
         if (!ignoreBounds)
         {
-            if (xPos < arenaBounds.position.x - arenaBounds.sizeDelta.x / 2 + self.Width / 2)
+            if (xPos < arenaBounds.Position.x - arenaBounds.Width / 2 + self.Width / 2)
             {
-                xPos = arenaBounds.position.x - arenaBounds.sizeDelta.x / 2 + self.Width / 2;
+                xPos = arenaBounds.Position.x - arenaBounds.Width/ 2 + self.Width / 2;
             }
-            else if (xPos > arenaBounds.position.x + arenaBounds.sizeDelta.x / 2 - self.Width / 2)
+            else if (xPos > arenaBounds.Position.x + arenaBounds.Width/ 2 - self.Width / 2)
             {
-                xPos = arenaBounds.position.x + arenaBounds.sizeDelta.x / 2 - self.Width / 2;
+                xPos = arenaBounds.Position.x + arenaBounds.Width / 2 - self.Width / 2;
             }
 
-            if (yPos < arenaBounds.position.y - arenaBounds.sizeDelta.y / 2 + self.Height / 2)
+            if (yPos < arenaBounds.Position.y - arenaBounds.Height / 2 + self.Height / 2)
             {
-                yPos = arenaBounds.position.y - arenaBounds.sizeDelta.y / 2 + self.Height / 2;
+                yPos = arenaBounds.Position.y - arenaBounds.Height / 2 + self.Height / 2;
             }
-            else if (yPos > arenaBounds.position.y + arenaBounds.sizeDelta.y / 2 - self.Height / 2)
+            else if (yPos > arenaBounds.Position.y + arenaBounds.Height / 2 - self.Height / 2)
             {
-                yPos = arenaBounds.position.y + arenaBounds.sizeDelta.y / 2 - self.Height / 2;
+                yPos = arenaBounds.Position.y + arenaBounds.Height / 2 - self.Height / 2;
             }
         }
 

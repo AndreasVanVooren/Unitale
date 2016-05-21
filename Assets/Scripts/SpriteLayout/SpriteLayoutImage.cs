@@ -10,12 +10,19 @@ namespace SpriteLayout
 		Circle,
 	}
 
+
+
 	[CustomEditor(typeof(SpriteLayoutImage))]
 	public class SpriteLayoutImageInspector : Editor
 	{
 		public override void OnInspectorGUI()
 		{
 			//base.OnInspectorGUI();
+            if (GUILayout.Button("Reset parent"))
+            {
+                var slb = ((SpriteLayoutBase)target);
+                slb.Initialize();
+            }
 		}
 	}
 
@@ -33,7 +40,16 @@ namespace SpriteLayout
             { 
                 _renderer.sprite = value; 
                 _mySprite = value;
-                _initialDimensions = _mySprite.bounds.size;
+                if (value != null)
+                {
+                    _initialDimensions = _mySprite.bounds.size;
+                }
+                else
+                {
+                        
+                }
+                ResetScale();
+                ResetPosition();
             }
         }
 
@@ -55,7 +71,7 @@ namespace SpriteLayout
             set { _renderer.enabled = value; }
         }
 
-		protected override void Initialize()
+        internal override void Initialize()
 		{
 			base.Initialize();
 			_renderer =GetComponent<SpriteRenderer>();

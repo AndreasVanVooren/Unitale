@@ -1,7 +1,7 @@
 ﻿using System;
 using MoonSharp.Interpreter;
 using UnityEngine;
-using UnityEngine.UI;
+//using UnityEngine.UI;
 using SpriteLayout;
 
 /// <summary>
@@ -27,16 +27,19 @@ public class UIController : MonoBehaviour
     private static Sprite fightB1;
     private static Sprite itemB1;
     private static Sprite mercyB1;
-    private Image actBtn;
+    private SpriteLayoutImage fightBtn;
+    private SpriteLayoutImage actBtn;
+    private SpriteLayoutImage itemBtn;
+    private SpriteLayoutImage mercyBtn;
+
     private Actions action = Actions.FIGHT;
+
     private GameObject arenaParent;
     private GameObject canvasParent;
+
     internal LuaEnemyEncounter encounter;
-    private Image fightBtn;
     private FightUIController fightUI;
     private Vector2 initialHealthPos = new Vector2(250, -10); // initial healthbar position for target selection
-    private Image itemBtn;
-    private Image mercyBtn;
 
     private TextManager[] monDialogues;
 
@@ -158,10 +161,10 @@ public class UIController : MonoBehaviour
             textmgr.destroyText();
             PlayerController.instance.SetPosition(320, 160, false);
             PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = true;
-            fightBtn.overrideSprite = null;
-            actBtn.overrideSprite = null;
-            itemBtn.overrideSprite = null;
-            mercyBtn.overrideSprite = null;
+            fightBtn.Sprite = null;
+            actBtn.Sprite = null;
+            itemBtn.Sprite = null;
+            mercyBtn.Sprite = null;
             textmgr.setPause(true);
         }
 
@@ -266,9 +269,9 @@ public class UIController : MonoBehaviour
                     {
                         LifeBarController lifebar = Instantiate(Resources.Load<LifeBarController>("Prefabs/HPBar"));
                         lifebar.transform.SetParent(textmgr.transform);
-                        RectTransform lifebarRt = lifebar.GetComponent<RectTransform>();
-                        lifebarRt.anchoredPosition = new Vector2(maxWidth, initialHealthPos.y - i * textmgr.Charset.LineSpacing);
-                        lifebarRt.sizeDelta = new Vector2(90, lifebarRt.sizeDelta.y);
+                        SpriteLayoutBase lifebarRt = lifebar.GetComponent<SpriteLayoutBase>();
+                        lifebarRt.LocalPosition = new Vector2(maxWidth, initialHealthPos.y - i * textmgr.Charset.LineSpacing);
+                        lifebarRt.Dimensions = new Vector2(90, lifebarRt.Height);
                         lifebar.setFillColor(Color.green);
                         float hpFrac = (float)encounter.enabledEnemies[i].HP / (float)encounter.enabledEnemies[i].getMaxHP();
                         lifebar.setInstant(hpFrac);
@@ -306,16 +309,16 @@ public class UIController : MonoBehaviour
                         break;
                     }
                     GameObject speechBub = Instantiate(SpriteFontRegistry.BUBBLE_OBJECT);
-                    RectTransform enemyRt = encounter.enabledEnemies[i].GetComponent<RectTransform>();
+                    SpriteLayoutBase enemyRt = encounter.enabledEnemies[i].GetComponent<SpriteLayoutBase>();
                     TextManager sbTextMan = speechBub.GetComponent<TextManager>();
                     monDialogues[i] = sbTextMan;
                     sbTextMan.setCaller(encounter.enabledEnemies[i].script);
-                    Image speechBubImg = speechBub.GetComponent<Image>();
+                    SpriteLayoutImage speechBubImg = speechBub.GetComponent<SpriteLayoutImage>();
                     SpriteUtil.SwapSpriteFromFile(speechBubImg, encounter.enabledEnemies[i].DialogBubble);
-                    Sprite speechBubSpr = speechBubImg.sprite;
+                    Sprite speechBubSpr = speechBubImg.Sprite;
                     // TODO improve position setting/remove hardcoding of position setting
                     speechBub.transform.SetParent(encounter.enabledEnemies[i].transform);
-                    speechBub.GetComponent<RectTransform>().anchoredPosition = encounter.enabledEnemies[i].DialogBubblePosition;
+                    speechBub.GetComponent<SpriteLayoutBase>().LocalPosition = encounter.enabledEnemies[i].DialogBubblePosition;
                     sbTextMan.setOffset(speechBubSpr.border.x, -speechBubSpr.border.w);
                     sbTextMan.setFont(SpriteFontRegistry.Get(SpriteFontRegistry.UI_MONSTERTEXT_NAME));
                     sbTextMan.setEffect(new RotatingEffect(sbTextMan));
@@ -327,7 +330,7 @@ public class UIController : MonoBehaviour
                     }
 
                     sbTextMan.setTextQueue(monMsgs);
-                    speechBub.GetComponent<Image>().enabled = true;
+                    speechBub.GetComponent<SpriteLayoutImage>().RendererEnabled = true;
                 }
                 break;
 
@@ -355,7 +358,7 @@ public class UIController : MonoBehaviour
         sndConfirm = AudioClipRegistry.GetSound("menuconfirm");
 
         arenaParent = GameObject.Find("arena_border_outer");
-        canvasParent = GameObject.Find("Canvas");
+        canvasParent = GameObject.Find("PseudoCanvas");
         uiAudio = GetComponent<AudioSource>();
         uiAudio.clip = sndSelect;
 
@@ -680,10 +683,10 @@ public class UIController : MonoBehaviour
                 if (!left && !right)
                     break;
 
-                fightBtn.overrideSprite = null;
-                actBtn.overrideSprite = null;
-                itemBtn.overrideSprite = null;
-                mercyBtn.overrideSprite = null;
+                fightBtn.Sprite = null;
+                actBtn.Sprite = null;
+                itemBtn.Sprite = null;
+                mercyBtn.Sprite = null;
 
                 int actionIndex = (int)action;
 
@@ -908,22 +911,22 @@ public class UIController : MonoBehaviour
         switch (action)
         {
             case Actions.FIGHT:
-                fightBtn.overrideSprite = fightB1;
+                fightBtn.Sprite = fightB1;
                 PlayerController.instance.SetPosition(48, 25, true);
                 break;
 
             case Actions.ACT:
-                actBtn.overrideSprite = actB1;
+                actBtn.Sprite = actB1;
                 PlayerController.instance.SetPosition(202, 25, true);
                 break;
 
             case Actions.ITEM:
-                itemBtn.overrideSprite = itemB1;
+                itemBtn.Sprite = itemB1;
                 PlayerController.instance.SetPosition(361, 25, true);
                 break;
 
             case Actions.MERCY:
-                mercyBtn.overrideSprite = mercyB1;
+                mercyBtn.Sprite = mercyB1;
                 PlayerController.instance.SetPosition(515, 25, true);
                 break;
         }
@@ -953,14 +956,14 @@ public class UIController : MonoBehaviour
         textmgr.setEffect(new TwitchEffect(textmgr));
         encounter = FindObjectOfType<LuaEnemyEncounter>();
 
-        fightBtn = GameObject.Find("FightBt").GetComponent<Image>();
-        fightBtn.sprite = SpriteRegistry.Get("UI/Buttons/fightbt_0");
-        actBtn = GameObject.Find("ActBt").GetComponent<Image>();
-        actBtn.sprite = SpriteRegistry.Get("UI/Buttons/actbt_0");
-        itemBtn = GameObject.Find("ItemBt").GetComponent<Image>();
-        itemBtn.sprite = SpriteRegistry.Get("UI/Buttons/itembt_0");
-        mercyBtn = GameObject.Find("MercyBt").GetComponent<Image>();
-        mercyBtn.sprite = SpriteRegistry.Get("UI/Buttons/mercybt_0");
+        fightBtn = GameObject.Find("FightBt").GetComponent<SpriteLayoutImage>();
+        fightBtn.Sprite = SpriteRegistry.Get("UI/Buttons/fightbt_0");
+        actBtn = GameObject.Find("ActBt").GetComponent<SpriteLayoutImage>();
+        actBtn.Sprite = SpriteRegistry.Get("UI/Buttons/actbt_0");
+        itemBtn = GameObject.Find("ItemBt").GetComponent<SpriteLayoutImage>();
+        itemBtn.Sprite = SpriteRegistry.Get("UI/Buttons/itembt_0");
+        mercyBtn = GameObject.Find("MercyBt").GetComponent<SpriteLayoutImage>();
+        mercyBtn.Sprite = SpriteRegistry.Get("UI/Buttons/mercybt_0");
 
         ArenaSizer.instance.ResizeImmediate(ArenaSizer.UIWidth, ArenaSizer.UIHeight);
         PlayerController.instance.setControlOverride(true);

@@ -8,7 +8,6 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 488322}
-  - 222: {fileID: 22242718}
   - 212: {fileID: 21224214}
   - 114: {fileID: 11446160}
   - 114: {fileID: 11490680}
@@ -102,12 +101,6 @@ SpriteRenderer:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
---- !u!222 &22242718
-CanvasRenderer:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 154122}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
