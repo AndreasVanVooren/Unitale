@@ -136,7 +136,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 702468596}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 94, y: -88, z: 0}
+  m_LocalPosition: {x: 0, y: -158.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2097999511}
@@ -872,6 +872,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1136159458}
+  - 114: {fileID: 1136159459}
   m_Layer: 0
   m_Name: SpriteParent
   m_TagString: Untagged
@@ -886,11 +887,29 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1136159457}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -319.5, y: -239.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1727881049}
   m_RootOrder: 5
+--- !u!114 &1136159459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1136159457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 837ed05ea6c7b51408defb71a6e67231, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _localPosition: {x: 0, y: 0, z: 0}
+  _localRotation: {x: 0, y: 0, z: 0, w: 1}
+  _localScale: {x: 1, y: 1, z: 1}
+  _initialDimensions: {x: 1, y: 1}
+  _dimensions: {x: 1, y: 1}
+  _anchor: {x: 0, y: 0}
+  _pivot: {x: 0, y: 0}
 --- !u!1 &1245745955
 GameObject:
   m_ObjectHideFlags: 0
@@ -1255,7 +1274,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1509689743}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -320, y: -240, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1727881049}
@@ -1288,7 +1307,7 @@ MonoBehaviour:
   _localScale: {x: 1, y: 1, z: 1}
   _initialDimensions: {x: 16, y: 16}
   _dimensions: {x: 16, y: 16}
-  _anchor: {x: 0.5, y: 0.5}
+  _anchor: {x: 0, y: 0}
   _pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1509689747
 CanvasRenderer:

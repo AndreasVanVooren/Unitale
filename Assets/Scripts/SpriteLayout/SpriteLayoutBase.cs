@@ -135,7 +135,17 @@ namespace SpriteLayout
 
         public Vector3 Position
         {
-            get { return transform.parent.position + _localPosition; }
+            get 
+            { 
+                if (transform == null || transform.parent == null || Parent == null)
+                {
+                    return LocalPosition;
+                }
+
+                Vector3 parentPos = Parent.Center - Parent.Rotation * Parent.PivotVector;
+
+                return parentPos + _localPosition; 
+            }
             set
             {
                 var diff = value - Position;
@@ -475,6 +485,10 @@ namespace SpriteLayout
         {
             _initialDimensions = newDimensions;
             Dimensions = newDimensions;
+        }
+        public void ResetDimensions()
+        {
+            Dimensions = _initialDimensions;
         }
 
         public void SetParent(Transform parent)

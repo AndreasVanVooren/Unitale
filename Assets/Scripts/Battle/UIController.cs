@@ -23,6 +23,10 @@ public class UIController : MonoBehaviour
 	
 	public GameObject FightUIGO;
 
+    private static Sprite actB0;
+    private static Sprite fightB0;
+    private static Sprite itemB0;
+    private static Sprite mercyB0;
     private static Sprite actB1;
     private static Sprite fightB1;
     private static Sprite itemB1;
@@ -349,6 +353,11 @@ public class UIController : MonoBehaviour
 
     private void Awake()
     {
+        fightB0 = SpriteRegistry.Get("UI/Buttons/fightbt_0");
+        actB0 = SpriteRegistry.Get("UI/Buttons/actbt_0");
+        itemB0 = SpriteRegistry.Get("UI/Buttons/itembt_0");
+        mercyB0 = SpriteRegistry.Get("UI/Buttons/mercybt_0");
+
         fightB1 = SpriteRegistry.Get("UI/Buttons/fightbt_1");
         actB1 = SpriteRegistry.Get("UI/Buttons/actbt_1");
         itemB1 = SpriteRegistry.Get("UI/Buttons/itembt_1");
@@ -683,10 +692,10 @@ public class UIController : MonoBehaviour
                 if (!left && !right)
                     break;
 
-                fightBtn.Sprite = null;
-                actBtn.Sprite = null;
-                itemBtn.Sprite = null;
-                mercyBtn.Sprite = null;
+                fightBtn.Sprite = fightB0;
+                actBtn.Sprite = actB0;
+                itemBtn.Sprite = itemB0;
+                mercyBtn.Sprite = mercyB0;
 
                 int actionIndex = (int)action;
 

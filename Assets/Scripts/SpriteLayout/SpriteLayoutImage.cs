@@ -30,8 +30,9 @@ namespace SpriteLayout
 	[ExecuteInEditMode]
 	public class SpriteLayoutImage : SpriteLayoutBase
 	{
-		private SpriteRenderer _renderer;
-		private Sprite _mySprite;
+
+        private SpriteRenderer _renderer;
+        private Sprite _mySprite;
 
         public Sprite Sprite
         {
@@ -59,10 +60,19 @@ namespace SpriteLayout
             set { _renderer.color = value; }
         }
 
+        private static int _lowestOrder = 0;
+        private static int _highestOrder = 0;
         public int SortingOrder
         {
             get { return _renderer.sortingOrder; }
-            set { _renderer.sortingOrder = value; }
+            set 
+            { 
+                _renderer.sortingOrder = value; 
+                if (value > _highestOrder)
+                    _highestOrder = value;
+                if (value < _lowestOrder)
+                    _lowestOrder = value;
+            }
         }
 
         public bool RendererEnabled
@@ -78,6 +88,8 @@ namespace SpriteLayout
 			_mySprite = _renderer.sprite;
             if(_mySprite != null)
 			    _initialDimensions = Dimensions = _mySprite.bounds.size;
+            ++_highestOrder;
+            _renderer.sortingOrder = _highestOrder;
 		}
 
 		// Use this for initialization

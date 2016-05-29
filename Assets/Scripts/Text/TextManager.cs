@@ -234,6 +234,7 @@ public class TextManager : MonoBehaviour
             ltrRect.SetParent(gameObject.transform);
 
             ltrImg.Sprite = Charset.Letters[currentText[i]];
+            ltrImg.ResetDimensions();
 
             letterReferences[i] = ltrImg;
 

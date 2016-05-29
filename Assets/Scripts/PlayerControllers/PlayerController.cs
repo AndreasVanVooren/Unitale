@@ -235,7 +235,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // set player position on screen
-//        self.anchoredPosition = new Vector2(xPos, yPos);
+          self.LocalPosition = new Vector2(xPos, yPos);
 //        // modify the player rectangle position so projectiles know where it is
 //        playerAbs.x = self.anchoredPosition.x - self.rect.size.x / 2 + hitboxInset;
 //        playerAbs.y = self.anchoredPosition.y - self.rect.size.y / 2 + hitboxInset;
