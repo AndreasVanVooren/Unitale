@@ -27,16 +27,17 @@ namespace SpriteLayout
 	}
 
 	[RequireComponent(typeof(SpriteRenderer))]
-	[ExecuteInEditMode]
 	public class SpriteLayoutImage : SpriteLayoutBase
 	{
+        private const string _nullPath = "WhiteSquare";
+        private static Sprite _null;
 
         private SpriteRenderer _renderer;
         private Sprite _mySprite;
 
         public Sprite Sprite
         {
-            get { return _renderer.sprite; }
+            get { return _mySprite; }
             set 
             { 
                 _renderer.sprite = value; 
@@ -47,10 +48,10 @@ namespace SpriteLayout
                 }
                 else
                 {
-                        
+                    _renderer.sprite = _null;
+                    _initialDimensions = new Vector2(1, 1);
                 }
-                ResetScale();
-                ResetPosition();
+                ResetTransform();
             }
         }
 
@@ -60,6 +61,7 @@ namespace SpriteLayout
             set { _renderer.color = value; }
         }
 
+        //TODO : Do this differently?
         private static int _lowestOrder = 0;
         private static int _highestOrder = 0;
         public int SortingOrder
@@ -75,6 +77,24 @@ namespace SpriteLayout
             }
         }
 
+        public string SortingLayerName
+        {
+            get { return _renderer.sortingLayerName; }
+            set
+            {
+                _renderer.sortingLayerName = value;
+            }
+        }
+
+        public int SortingLayerID
+        {
+            get { return _renderer.sortingLayerID; }
+            set
+            {
+                _renderer.sortingLayerID = value;
+            }
+        }
+
         public bool RendererEnabled
         {
             get { return _renderer.enabled; }
@@ -84,10 +104,21 @@ namespace SpriteLayout
         internal override void Initialize()
 		{
 			base.Initialize();
+
+            if (!_null)
+            {
+                _null = Resources.Load<Sprite>(_nullPath);
+            }
+
 			_renderer =GetComponent<SpriteRenderer>();
 			_mySprite = _renderer.sprite;
-            if(_mySprite != null)
-			    _initialDimensions = Dimensions = _mySprite.bounds.size;
+            if (_mySprite != null)
+                _initialDimensions = Dimensions = _mySprite.bounds.size;
+            else
+            {
+                _renderer.sprite = _null;
+                _initialDimensions = Dimensions = new Vector2(1, 1);
+            }
             ++_highestOrder;
             _renderer.sortingOrder = _highestOrder;
 		}

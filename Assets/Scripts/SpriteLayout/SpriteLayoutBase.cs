@@ -118,8 +118,7 @@ namespace SpriteLayout
 		}
 	}
 
-	[ExecuteInEditMode]
-	public class SpriteLayoutBase : MonoBehaviour
+    public class SpriteLayoutBase : MonoBehaviour
 	{
 
 		[SerializeField] private Vector3 _localPosition = Vector3.zero;
@@ -219,8 +218,8 @@ namespace SpriteLayout
 			set
 			{
 				_localScale = value;
-				ResetScale ();
-				ResetPosition ();
+                ResetTransform ();
+				//ResetPosition ();
 			}
 		}
 
@@ -282,8 +281,7 @@ namespace SpriteLayout
 					_initialDimensions = value;
 				}
 				#endif
-				ResetScale ();
-				ResetPosition ();
+                ResetTransform ();
 			}
 		}
 
@@ -348,7 +346,7 @@ namespace SpriteLayout
 				{
 					var parents = GetComponentsInParent<SpriteLayoutBase>();
 					if (parents.Length > 1)
-						pSprite = parents[1];
+						pSprite = Parent =  parents[1];
 					else return Vector2.zero;
 				}
 
@@ -389,6 +387,7 @@ namespace SpriteLayout
 					piv.x -= 0.5f;
 					piv.y -= 0.5f;
 					piv.Scale(Dimensions);
+                    piv.Scale(LocalScale);
 					return piv;
 				}
 				//return Vector2.zero;
@@ -426,6 +425,13 @@ namespace SpriteLayout
 			if (Parent == this) Parent = null;
 		}
 
+        protected void ResetTransform()
+        {
+            ResetScale();
+            ResetRotation();
+            ResetPosition();
+        }
+
 		protected void ResetScale()
 		{
 			Vector3 newScale = new Vector3();
@@ -440,7 +446,7 @@ namespace SpriteLayout
                 var parents = GetComponentsInParent<SpriteLayoutBase>();
                 if (parents.Length > 1)
                 {
-                    pSprite = parents[1];
+                    pSprite = Parent = parents[1];
                 }
             }
             
@@ -463,7 +469,7 @@ namespace SpriteLayout
 
 		protected void ResetPosition()
 		{
-            Vector3 newPos = (Vector3)AnchorVector + LocalPosition;
+            Vector3 newPos = LocalPosition + (Vector3)AnchorVector;
             Vector3 piv = LocalRotation * PivotVector;
             newPos -= piv;
             transform.localPosition = newPos;

@@ -30,7 +30,6 @@ namespace SpriteLayout
     }
 
 	[RequireComponent(typeof(Camera))]
-    [ExecuteInEditMode]
 	public class SpriteLayoutRoot : SpriteLayoutBase
 	{
 		public Camera SpriteCamera;
@@ -46,15 +45,23 @@ namespace SpriteLayout
 			const float timeBetweenUpdates = 0.0f;
 		#endif
 		// Use this for initialization
-		void Start()
-		{
-			SpriteCamera = GetComponent<Camera>();
 
-			#if UNITY_EDITOR || UNITY_IOS || UNITY_ANDROID || UNITY_WINRT
-				StartCoroutine(UpdateLoop());
-			#else
-				UpdateFunc(); //do it once
-			#endif
+        internal override void Initialize()
+        {
+            base.Initialize();
+            
+            SpriteCamera = GetComponent<Camera>();
+
+            #if UNITY_EDITOR || UNITY_IOS || UNITY_ANDROID || UNITY_WINRT   //editor or rotatable mobile platform
+                StartCoroutine(UpdateLoop());
+            #else
+                UpdateFunc(); //do it once
+            #endif
+        }
+
+		void Awake()
+		{
+            Initialize();
 		}
 
 		// UpdateLoop is called once per .1 seconds

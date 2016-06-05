@@ -171,7 +171,7 @@ public static class SpriteUtil
         return null;
     }
 
-    public static LuaSpriteController MakeIngameSprite(string filename)
+    public static LuaSpriteController MakeIngameSprite(string filename, string layer = "BelowArena")
     {
         SpriteLayoutImage i = GameObject.Instantiate<SpriteLayoutImage>(SpriteRegistry.GENERIC_SPRITE_PREFAB);
         if (!string.IsNullOrEmpty(filename))
@@ -179,10 +179,11 @@ public static class SpriteUtil
             SwapSpriteFromFile(i, filename);
         }
         i.transform.SetParent(GameObject.Find("SpriteParent").transform, true); //TODO layering
+        i.SortingLayerName = layer;
         return new LuaSpriteController(i);
     }
 
-    public static LuaSpriteController MakeIngameSprite(string filename, string spritename)
+    public static LuaSpriteController MakeIngameSprite(string filename, string spritename, string layer)
     {
 		SpriteLayoutImage i = GameObject.Instantiate<SpriteLayoutImage>(SpriteRegistry.GENERIC_SPRITE_PREFAB);
         if (!string.IsNullOrEmpty(filename) && !string.IsNullOrEmpty(spritename))
@@ -190,6 +191,7 @@ public static class SpriteUtil
             SwapSpriteFromFile(i, filename, spritename);
         }
         i.transform.SetParent(GameObject.Find("SpriteParent").transform, true); //TODO layering
+        i.SortingLayerName = layer;
         return new LuaSpriteController(i);
     }
 }

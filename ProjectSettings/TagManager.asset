@@ -39,9 +39,36 @@ TagManager:
   - 
   - 
   m_SortingLayers:
-  - name: Default
-    uniqueID: 0
+  - name: Background
+    uniqueID: 3467123877
+    locked: 0
+  - name: BelowArena
+    uniqueID: 1002425491
+    locked: 0
+  - name: ArenaBottom
+    uniqueID: 3183697385
+    locked: 0
+  - name: Arena
+    uniqueID: 2514716779
+    locked: 0
+  - name: ArenaTop
+    uniqueID: 566397623
+    locked: 0
+  - name: AboveArena
+    uniqueID: 3494561823
+    locked: 0
+  - name: BelowBulletLayer
+    uniqueID: 111963235
+    locked: 0
+  - name: BulletLayer
+    uniqueID: 3866613023
+    locked: 0
+  - name: AboveBulletLayer
+    uniqueID: 970315759
     locked: 0
   - name: Foreground
     uniqueID: 1513848731
+    locked: 0
+  - name: Default
+    uniqueID: 0
     locked: 0

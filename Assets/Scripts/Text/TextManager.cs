@@ -181,7 +181,7 @@ public class TextManager : MonoBehaviour
         {
             if (letterReferences[currentCharacter] != null && Charset.Letters.ContainsKey(textQueue[currentLine].Text[currentCharacter]))
             {
-                letterReferences[currentCharacter].enabled = true;
+                letterReferences[currentCharacter].RendererEnabled = true;
             }
             currentCharacter++;
         }
@@ -234,6 +234,7 @@ public class TextManager : MonoBehaviour
             ltrRect.SetParent(gameObject.transform);
 
             ltrImg.Sprite = Charset.Letters[currentText[i]];
+            ltrImg.SortingLayerName = "ArenaTop";
             ltrImg.ResetDimensions();
 
             letterReferences[i] = ltrImg;
@@ -295,7 +296,7 @@ public class TextManager : MonoBehaviour
                 }
                 if (letterReferences[currentCharacter] != null)
                 {
-                    letterReferences[currentCharacter].enabled = true;
+                    letterReferences[currentCharacter].RendererEnabled = true;
                     if (letterSound != null && !muted)
                         letterSound.Play();
                 }
