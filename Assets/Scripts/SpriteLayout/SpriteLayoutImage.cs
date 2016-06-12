@@ -111,14 +111,16 @@ namespace SpriteLayout
             }
 
 			_renderer =GetComponent<SpriteRenderer>();
-			_mySprite = _renderer.sprite;
-            if (_mySprite != null)
-                _initialDimensions = Dimensions = _mySprite.bounds.size;
-            else
-            {
-                _renderer.sprite = _null;
-                _initialDimensions = Dimensions = new Vector2(1, 1);
-            }
+            Sprite = _renderer.sprite;
+
+			//_mySprite = _renderer.sprite;
+            //if (_mySprite != null)
+            //    _initialDimensions = _mySprite.bounds.size;
+            //else
+            //{
+            //   _renderer.sprite = _null;
+            //   _initialDimensions = new Vector2(1, 1);
+            //}
             ++_highestOrder;
             _renderer.sortingOrder = _highestOrder;
 		}

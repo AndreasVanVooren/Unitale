@@ -141,9 +141,9 @@ namespace SpriteLayout
                     return LocalPosition;
                 }
 
-                Vector3 parentPos = Parent.Center - Parent.Rotation * Parent.PivotVector;
+                Vector3 parentPos = Parent.Center + Parent.Rotation * Parent.PivotVector;
 
-                return parentPos + _localPosition; 
+                return parentPos + LocalPosition; 
             }
             set
             {
@@ -275,12 +275,12 @@ namespace SpriteLayout
 			set
 			{
 				_dimensions = value;
-				#if UNITY_EDITOR
-				if(!EditorApplication.isPlaying)
-				{
-					_initialDimensions = value;
-				}
-				#endif
+				//#if UNITY_EDITOR
+				//if(!EditorApplication.isPlaying)
+				//{
+				//	_initialDimensions = value;
+				//}
+				//#endif
                 ResetTransform ();
 			}
 		}
@@ -323,15 +323,15 @@ namespace SpriteLayout
 			{
 				if (_anchor == value)
 					return;
-				var pSprite = Parent;
-				if (pSprite == null)
-				{
-					//Debug.Log("parent null");
-					var parents = GetComponentsInParent<SpriteLayoutBase>();
-					if (parents.Length > 1)
-						pSprite = parents[1];
-					else return;
-				}
+				//var pSprite = Parent;
+				//if (pSprite == null)
+				//{
+				//	//Debug.Log("parent null");
+				//	var parents = GetComponentsInParent<SpriteLayoutBase>();
+				//	if (parents.Length > 1)
+				//		pSprite = parents[1];
+				//	else return;
+				//}
 				_anchor = value;
 				ResetPosition ();
 			}
@@ -355,6 +355,7 @@ namespace SpriteLayout
 				anch.x -= 0.5f;
 				anch.y -= 0.5f;
 				anch.Scale(pSprite.Dimensions);
+
 				return anch;
 
 			}
@@ -419,6 +420,8 @@ namespace SpriteLayout
 //			{
 //				Debug.Log("NO PARENTS!");
 //			}
+            _initialDimensions = Dimensions;
+
 			var parents = GetComponentsInParent<SpriteLayoutBase>();
 			if (parents.Length > 1)	//check if there is a gameobject.
 				Parent = parents[1];
@@ -459,6 +462,15 @@ namespace SpriteLayout
 
             newScale.Scale(parentInvDimRate);
 
+            //if (pSprite != null)
+            //{
+            //    Vector3 counterScale = pSprite.transform.localScale;
+            //    counterScale.x = 1 / counterScale.x;
+            //    counterScale.y = 1 / counterScale.y;
+            //    counterScale.z = 1 / counterScale.z;
+            //    newScale.Scale(counterScale);
+            //}
+
 			transform.localScale = newScale;
 		}
 
@@ -472,6 +484,16 @@ namespace SpriteLayout
             Vector3 newPos = LocalPosition + (Vector3)AnchorVector;
             Vector3 piv = LocalRotation * PivotVector;
             newPos -= piv;
+
+            //counter act unity scaling due to 
+            if (Parent != null)
+            {
+                Vector3 counterScale = Vector3.one;
+                counterScale.x = Parent._initialDimensions.x / Parent.Dimensions.x;
+                counterScale.y = Parent._initialDimensions.y / Parent.Dimensions.y;
+                //counterScale.z = 1/counterScale.z;
+                newPos.Scale(counterScale);
+            }
             transform.localPosition = newPos;
 		}
 
