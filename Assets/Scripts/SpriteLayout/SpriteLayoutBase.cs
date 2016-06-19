@@ -312,6 +312,28 @@ namespace SpriteLayout
 			}
 		}
 
+		public Vector2 DimensionRatio
+		{
+			get
+			{
+				Vector2 vec = new Vector2();
+				vec.x = Width / _initialDimensions.x;
+				vec.y = Height / _initialDimensions.y;
+				return ; 
+			}
+		}
+
+		public Vector2 DimensionRatioInverse
+		{
+			get
+			{
+				Vector2 vec = new Vector2();
+				vec.x = _initialDimensions.x / Width;
+				vec.y = _initialDimensions.y / Height;
+				return ; 
+			}
+		}
+
 		/// <summary>
 		/// The anchor, aka where this sprite attaches to on its parent
 		/// </summary>
@@ -355,7 +377,8 @@ namespace SpriteLayout
 				anch.x -= 0.5f;
 				anch.y -= 0.5f;
 				anch.Scale(pSprite.Dimensions);
-
+				//anch.Scale (pSprite.LocalScale);
+				//anch.Scale (pSprite.DimensionRatioInverse);
 				return anch;
 
 			}
@@ -453,14 +476,13 @@ namespace SpriteLayout
                 }
             }
             
-            Vector3 parentInvDimRate = Vector3.one;
+            
             if (pSprite != null)
-            {
-                parentInvDimRate.x = pSprite._initialDimensions.x / pSprite.Width;
-                parentInvDimRate.y = pSprite._initialDimensions.y / pSprite.Height;
+			{
+				newScale.Scale(pSprite.DimensionRatioInverse);
             }
 
-            newScale.Scale(parentInvDimRate);
+            
 
             //if (pSprite != null)
             //{
@@ -488,11 +510,7 @@ namespace SpriteLayout
             //counter act unity scaling due to 
             if (Parent != null)
             {
-                Vector3 counterScale = Vector3.one;
-                counterScale.x = Parent._initialDimensions.x / Parent.Dimensions.x;
-                counterScale.y = Parent._initialDimensions.y / Parent.Dimensions.y;
-                //counterScale.z = 1/counterScale.z;
-                newPos.Scale(counterScale);
+                newPos.Scale(Parent.DimensionRatioInverse);
             }
             transform.localPosition = newPos;
 		}
