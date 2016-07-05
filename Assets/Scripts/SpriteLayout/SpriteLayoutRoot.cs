@@ -4,30 +4,30 @@ using System.Collections;
 
 namespace SpriteLayout
 {
-    [CustomEditor(typeof(SpriteLayoutRoot))]
-    [CanEditMultipleObjects]
-    public class SpriteLayoutRootInspector : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            //base.OnInspectorGUI();
-            //SpriteLayoutRoot[] roots = (SpriteLayoutRoot[])targets;
-
-            for (int i = 0; i < targets.Length; i++)
-            {
-                if (GUILayout.Button("Reset parent"))
-                {
-                    var slb = ((SpriteLayoutBase)targets[i]);
-                    slb.Initialize();
-                }
-
-                SpriteLayoutRoot root = (SpriteLayoutRoot) targets[i];
-                //spr.Width =  EditorGUILayout.FloatField("Width", spr.Width);
-                root.PixelsPerUnit = EditorGUILayout.IntField("Pixels per Unit", root.PixelsPerUnit);
-            }
-
-        }
-    }
+    //[CustomEditor(typeof(SpriteLayoutRoot))]
+    //[CanEditMultipleObjects]
+    //public class SpriteLayoutRootInspector : Editor
+    //{
+    //    public override void OnInspectorGUI()
+    //    {
+    //        //base.OnInspectorGUI();
+    //        //SpriteLayoutRoot[] roots = (SpriteLayoutRoot[])targets;
+	//
+    //        for (int i = 0; i < targets.Length; i++)
+    //        {
+    //            if (GUILayout.Button("Reset parent"))
+    //            {
+    //                var slb = ((SpriteLayoutBase)targets[i]);
+    //                slb.Initialize();
+    //            }
+	//
+    //            SpriteLayoutRoot root = (SpriteLayoutRoot) targets[i];
+    //            //spr.Width =  EditorGUILayout.FloatField("Width", spr.Width);
+    //            root.PixelsPerUnit = EditorGUILayout.IntField("Pixels per Unit", root.PixelsPerUnit);
+    //        }
+	//
+    //    }
+    //}
 
 	[RequireComponent(typeof(Camera))]
 	public class SpriteLayoutRoot : SpriteLayoutBase
@@ -61,7 +61,26 @@ namespace SpriteLayout
 
 		void Awake()
 		{
-            Initialize();
+			Initialize();
+
+			//if (StaticInits.Initialized)
+			//{
+			//	ResetTransform();
+			//}
+			//else
+			//{
+			//	LateUpdater.lateActions.Add(ResetTransform);
+			//}
+		}
+
+		void Start()
+		{
+			
+		}
+
+		void Update()
+		{
+			ResetTransform();
 		}
 
 		// UpdateLoop is called once per .1 seconds

@@ -50,7 +50,8 @@ public abstract class Projectile : MonoBehaviour
         Vector2 half = new Vector2(0.5f, 0.5f);
         img.Anchor = half;
         img.Pivot = half;
-		img.AttachCollider (ColliderType.Rect);
+		if(!img.GetComponent<Collider2D>())
+			img.AttachCollider (ColliderType.Rect);
         self.Dimensions = img.Sprite.rect.size;
         //selfAbs = new Rect(self.anchoredPosition.x - self.rect.width / 2, self.anchoredPosition.y - self.rect.height / 2, self.sizeDelta.x, self.sizeDelta.y);
 		ctrl.sprite.Reset();		//ensure correct size, if all goes right, this will break it code completely.

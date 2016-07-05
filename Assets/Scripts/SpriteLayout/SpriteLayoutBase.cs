@@ -5,7 +5,6 @@ using System.Collections;
 namespace SpriteLayout
 {
 	[CustomEditor(typeof(Transform))]
-    [CanEditMultipleObjects]
 	public class SpriteLayoutTransformInspector : Editor
 	{
 		//SerializedProperty locPos;
@@ -21,106 +20,113 @@ namespace SpriteLayout
 
 		public override void OnInspectorGUI()
 		{
+
+			var t = (Transform)target;
+			if(t && t.GetComponent<SpriteLayoutBase>() == null)
+			{
+				DrawDefaultInspector();
+			}
             //var arr = (Transform[])targets;
 
-            for (int i = 0; i < targets.Length; i++)
-            {
-                var t = (Transform) targets[i];
-                if (t == null)
-                    continue;
-
-                var spr = t.GetComponent<SpriteLayoutBase>();
-
-                if (spr != null)
-                {
-                    EditorGUILayout.HelpBox("These are SpriteLayout controls,\nfor actual transform controls, check the debug inspector", MessageType.Warning);
-
-                    spr.LocalPosition = EditorGUILayout.Vector3Field("Position", spr.LocalPosition);
-                    spr.LocalRotation = Quaternion.Euler(EditorGUILayout.Vector3Field("Rotation", spr.LocalRotation.eulerAngles));
-                    spr.LocalScale = EditorGUILayout.Vector3Field("Scale", spr.LocalScale);
-
-                    spr.Width =  EditorGUILayout.FloatField("Width", spr.Width);
-                    spr.Height = EditorGUILayout.FloatField("Height", spr.Height);
-
-                    var parents = spr. GetComponentsInParent<SpriteLayoutBase>();
-
-                    spr.Anchor = EditorGUILayout.Vector2Field("Anchor", spr.Anchor);
-                    
-                    if(spr.Parent == null || t.parent == null || parents.Length <= 1)
-                    {
-                        EditorGUILayout.LabelField("Needs parent for anchoring to have effect");
-                    }
-
-                    spr.Pivot = EditorGUILayout.Vector2Field("Pivot", spr.Pivot);
-
-                    if (GUI.changed)
-                    {
-                        EditorUtility.SetDirty(spr);
-                    }
-
-                    continue;
-                }
-
-                serializedObject.Update();
-
-                //EditorGUILayout.PropertyField(locPos,new GUIContent("Position"));
-                //EditorGUILayout.PropertyField(locRot, new GUIContent("Rotation"));
-                //EditorGUILayout.PropertyField(locScale, new GUIContent("Scale"));
-
-                t.localPosition = EditorGUILayout.Vector3Field("Position", t.localPosition);
-                t.localRotation = Quaternion.Euler(EditorGUILayout.Vector3Field("Rotation", t.localRotation.eulerAngles));
-                t.localScale = EditorGUILayout.Vector3Field("Scale", t.localScale);
-                //DrawDefaultInspector();
-
-                //serializedObject.ApplyModifiedProperties();
-                if(GUI.changed)
-                {
-                    EditorUtility.SetDirty( t );
-                }
-            }
+            //for (int i = 0; i < targets.Length; i++)
+           //{
+           //    var t = (Transform) target;
+			//	if (t == null)
+			//		//continue;
+			//		return;
+           //    var spr = t.GetComponent<SpriteLayoutBase>();
+		   //
+           //    if (spr != null)
+           //    {
+           //        EditorGUILayout.HelpBox("These are SpriteLayout controls,\nfor actual transform controls, check the debug inspector", MessageType.Warning);
+		   //
+           //        spr.LocalPosition = EditorGUILayout.Vector3Field("Position", spr.LocalPosition);
+           //        spr.LocalRotation = Quaternion.Euler(EditorGUILayout.Vector3Field("Rotation", spr.LocalRotation.eulerAngles));
+           //        spr.LocalScale = EditorGUILayout.Vector3Field("Scale", spr.LocalScale);
+		   //
+           //        spr.Width =  EditorGUILayout.FloatField("Width", spr.Width);
+           //        spr.Height = EditorGUILayout.FloatField("Height", spr.Height);
+		   //
+           //        var parents = spr. GetComponentsInParent<SpriteLayoutBase>();
+		   //
+           //        spr.Anchor = EditorGUILayout.Vector2Field("Anchor", spr.Anchor);
+           //        
+           //        if(spr.Parent == null || t.parent == null || parents.Length <= 1)
+           //        {
+           //            EditorGUILayout.LabelField("Needs parent for anchoring to have effect");
+           //        }
+		   //
+           //        spr.Pivot = EditorGUILayout.Vector2Field("Pivot", spr.Pivot);
+		   //
+           //        if (GUI.changed)
+           //        {
+			//			//Debug.Log("fsadfsafd");
+           //            EditorUtility.SetDirty(spr.gameObject);
+           //        }
+		   //
+           //        //continue;
+           //    }
+		   //
+           //    serializedObject.Update();
+		   //
+           //    //EditorGUILayout.PropertyField(locPos,new GUIContent("Position"));
+           //    //EditorGUILayout.PropertyField(locRot, new GUIContent("Rotation"));
+           //    //EditorGUILayout.PropertyField(locScale, new GUIContent("Scale"));
+		   //
+           //    t.localPosition = EditorGUILayout.Vector3Field("Position", t.localPosition);
+           //    t.localRotation = Quaternion.Euler(EditorGUILayout.Vector3Field("Rotation", t.localRotation.eulerAngles));
+           //    t.localScale = EditorGUILayout.Vector3Field("Scale", t.localScale);
+           //    //DrawDefaultInspector();
+		   //
+           //    //serializedObject.ApplyModifiedProperties();
+           //    if(GUI.changed)
+           //    {
+           //        EditorUtility.SetDirty( t );
+           //    }
+           //}
 
 			
 		}
 	}
 
-	[CustomEditor(typeof(SpriteLayoutBase))]
-	public class SpriteLayoutBaseInspector : Editor
-	{
-		public override void OnInspectorGUI()
-		{
-			//base.OnInspectorGUI();
-			//
-			//var tgt = (SpriteLayoutBase)target;
-			//
-			//if (tgt.transform.parent == null || tgt.transform.GetComponentInParent<SpriteLayoutBase>() == null)
-			//{
-			//	EditorGUILayout.LabelField("Needs parent sprite for anchoring");
-			//}
-			//else
-			//{
-			//	tgt.Anchor = EditorGUILayout.Vector2Field("Anchor", tgt.Anchor);
-			//}
-			//tgt.Pivot = EditorGUILayout.Vector2Field("Pivot", tgt.Pivot);
-            if (GUILayout.Button("Reset parent"))
-            {
-                var slb = ((SpriteLayoutBase)target);
-                slb.Initialize();
-            }
-
-            if(GUILayout.Button("Make Image"))
-			{
-                var slb = ((SpriteLayoutBase)target);
-				var img = slb.gameObject.AddComponent<SpriteLayoutImage>();
-				img.InitFromOther(slb);
-                Destroy(slb);
-			}
-
-		}
-	}
+	//[CustomEditor(typeof(SpriteLayoutBase))]
+	//public class SpriteLayoutBaseInspector : Editor
+	//{
+	//	public override void OnInspectorGUI()
+	//	{
+	//		//base.OnInspectorGUI();
+	//		//
+	//		//var tgt = (SpriteLayoutBase)target;
+	//		//
+	//		//if (tgt.transform.parent == null || tgt.transform.GetComponentInParent<SpriteLayoutBase>() == null)
+	//		//{
+	//		//	EditorGUILayout.LabelField("Needs parent sprite for anchoring");
+	//		//}
+	//		//else
+	//		//{
+	//		//	tgt.Anchor = EditorGUILayout.Vector2Field("Anchor", tgt.Anchor);
+	//		//}
+	//		//tgt.Pivot = EditorGUILayout.Vector2Field("Pivot", tgt.Pivot);
+    //        if (GUILayout.Button("Reset parent"))
+    //        {
+    //            var slb = ((SpriteLayoutBase)target);
+    //            slb.Initialize();
+    //        }
+	//
+    //        if(GUILayout.Button("Make Image"))
+	//		{
+    //            var slb = ((SpriteLayoutBase)target);
+	//			var img = slb.gameObject.AddComponent<SpriteLayoutImage>();
+	//			img.InitFromOther(slb);
+    //            Destroy(slb);
+	//		}
+	//
+	//	}
+	//}
 
     public class SpriteLayoutBase : MonoBehaviour
 	{
-
+		public bool DebugMe = false;
 		[SerializeField] private Vector3 _localPosition = Vector3.zero;
 		public Vector3 LocalPosition
 		{
@@ -128,7 +134,7 @@ namespace SpriteLayout
 			set
 			{
 				_localPosition = value;
-				ResetPosition ();
+				//ResetPosition ();
 			}
 		}
 
@@ -141,14 +147,29 @@ namespace SpriteLayout
                     return LocalPosition;
                 }
 
-                Vector3 parentPos = Parent.Center + Parent.Rotation * Parent.PivotVector;
-
-                return parentPos + LocalPosition; 
+                Vector3 parentPos = Parent.Center ;
+				Vector2 anch = this.AnchorVector;
+				//anch.Scale(Parent.DimensionRatioInverse);
+				anch.Scale(Parent.Scale);
+				Vector3 posDiff = LocalPosition;
+				//posDiff.Scale(Parent.DimensionRatioInverse);
+				posDiff.Scale(Parent.Scale);
+				parentPos += Parent.Rotation * ((Vector3)anch+ posDiff);
+                return parentPos ; 
             }
             set
             {
                 var diff = value - Position;
-                //Take into account that LocalPosition set already resets position
+				//Take into account that LocalPosition set already resets position
+				if(DebugMe && Input.GetKey(KeyCode.Minus))
+				{
+					Debug.LogFormat("[{0}] - val:{1} orig:{2} diff:{3}", gameObject.name, value, Position, diff);
+				}
+
+				if (Parent)
+				{
+					diff = Quaternion.Inverse(Parent.Rotation) * diff;
+				}
                 LocalPosition += diff;
             }
         }
@@ -170,8 +191,8 @@ namespace SpriteLayout
 			set
 			{
 				_localRotation = value;
-				ResetRotation ();
-				ResetPosition ();
+				//ResetRotation ();
+				//ResetPosition ();
 			}
 		}
 
@@ -218,7 +239,7 @@ namespace SpriteLayout
 			set
 			{
 				_localScale = value;
-                ResetTransform ();
+                //ResetTransform ();
 				//ResetPosition ();
 			}
 		}
@@ -229,22 +250,26 @@ namespace SpriteLayout
             {
                 Vector3 scale = Vector3.one;
 
-                SpriteLayoutBase obj = this;
-                do
+				var pSprite = Parent;
+				if (pSprite == null)
                 {
-                    scale.Scale(obj.LocalScale);
-                    var temp = obj.Parent;
-                    if (temp == null)
-                    {
-                        var parents = GetComponentsInParent<SpriteLayoutBase>();
-                        if (parents.Length > 1)
-                            temp = parents[1];
-                    }
-                    obj = temp;
+                    var parents = GetComponentsInParent<SpriteLayoutBase>();
+                    if (parents.Length > 1)
+						pSprite = Parent = parents[1];
                 }
-                while (obj != null);  
 
-                return scale;
+				if(pSprite != null)
+				{
+					scale = Parent.Scale;
+					scale.Scale(this.LocalScale);
+				}
+				else
+				{
+					scale = this.LocalScale;
+				}
+				
+				return scale;
+
             }
             set
             {
@@ -281,7 +306,7 @@ namespace SpriteLayout
 				//	_initialDimensions = value;
 				//}
 				//#endif
-                ResetTransform ();
+                //ResetTransform ();
 			}
 		}
 
@@ -296,8 +321,8 @@ namespace SpriteLayout
 			set 
 			{ 
 				Dimensions = new Vector2(value, _dimensions.y); 
-				ResetScale ();
-				ResetPosition ();
+				//ResetScale ();
+				//ResetPosition ();
 			}
 		}
 
@@ -307,8 +332,8 @@ namespace SpriteLayout
 			set 
 			{
 				Dimensions = new Vector2(_dimensions.x, value); 
-				ResetScale ();
-				ResetPosition ();
+				//ResetScale ();
+				//ResetPosition ();
 			}
 		}
 
@@ -319,7 +344,7 @@ namespace SpriteLayout
 				Vector2 vec = new Vector2();
 				vec.x = Width / _initialDimensions.x;
 				vec.y = Height / _initialDimensions.y;
-				return ; 
+				return vec; 
 			}
 		}
 
@@ -330,7 +355,7 @@ namespace SpriteLayout
 				Vector2 vec = new Vector2();
 				vec.x = _initialDimensions.x / Width;
 				vec.y = _initialDimensions.y / Height;
-				return ; 
+				return vec; 
 			}
 		}
 
@@ -355,7 +380,7 @@ namespace SpriteLayout
 				//	else return;
 				//}
 				_anchor = value;
-				ResetPosition ();
+				//ResetPosition ();
 			}
 		}
 
@@ -387,7 +412,7 @@ namespace SpriteLayout
 		/// <summary>
 		/// The pivot.
 		/// </summary>
-        [SerializeField, HideInInspector] private Vector2 _pivot = new Vector2(0.5f, 0.5f);
+        [SerializeField] private Vector2 _pivot = new Vector2(0.5f, 0.5f);
 		public Vector2 Pivot
 		{
 			get { return _pivot; }
@@ -396,7 +421,7 @@ namespace SpriteLayout
 				//_mySprite.pivot = value;
 				//if (_mySprite != null)
 				_pivot = value;
-				ResetPosition ();
+				//ResetPosition ();
 			}
 		}
 
@@ -411,7 +436,7 @@ namespace SpriteLayout
 					piv.x -= 0.5f;
 					piv.y -= 0.5f;
 					piv.Scale(Dimensions);
-                    piv.Scale(LocalScale);
+                    //piv.Scale(LocalScale);
 					return piv;
 				}
 				//return Vector2.zero;
@@ -449,21 +474,39 @@ namespace SpriteLayout
 			if (parents.Length > 1)	//check if there is a gameobject.
 				Parent = parents[1];
 			if (Parent == this) Parent = null;
+
+			ResetTransform();
 		}
 
-        protected void ResetTransform()
+		protected void ResetTransform()
+		{
+			ResetTransform(true);
+		}
+
+        protected void ResetTransform(bool recursive )
         {
             ResetScale();
             ResetRotation();
             ResetPosition();
+
+			if (!recursive) return;
+			for (int i = 0; i < transform.childCount; i++)
+			{
+				var myChild = transform.GetChild(i).GetComponent<SpriteLayoutBase>();
+				//toriel wuz here
+				if(myChild)
+				{
+					myChild.ResetTransform();
+				}
+			}
         }
 
 		protected void ResetScale()
 		{
 			Vector3 newScale = new Vector3();
 
-            newScale.x = Width / _initialDimensions.x * LocalScale.x;
-            newScale.y = Height / _initialDimensions.y * LocalScale.y;
+            newScale.x = DimensionRatio.x * LocalScale.x;
+            newScale.y = DimensionRatio.y * LocalScale.y;
             newScale.z = LocalScale.z;
 
             var pSprite = Parent;
@@ -507,11 +550,11 @@ namespace SpriteLayout
             Vector3 piv = LocalRotation * PivotVector;
             newPos -= piv;
 
-            //counter act unity scaling due to 
-            if (Parent != null)
-            {
-                newPos.Scale(Parent.DimensionRatioInverse);
-            }
+            ////counter act unity scaling due to 
+            //if (Parent != null)
+            //{
+            //    newPos.Scale(Parent.DimensionRatioInverse);
+            //}
             transform.localPosition = newPos;
 		}
 
@@ -520,6 +563,11 @@ namespace SpriteLayout
 		{
 			Initialize();
 		}
+
+		//void Start()
+		//{
+		//	ResetTransform();
+		//}
 
 		// Update is called once per frame
 		void Update()

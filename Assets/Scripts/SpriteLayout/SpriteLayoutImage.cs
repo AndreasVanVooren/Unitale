@@ -12,19 +12,19 @@ namespace SpriteLayout
 
 
 
-	[CustomEditor(typeof(SpriteLayoutImage))]
-	public class SpriteLayoutImageInspector : Editor
-	{
-		public override void OnInspectorGUI()
-		{
-			//base.OnInspectorGUI();
-            if (GUILayout.Button("Reset parent"))
-            {
-                var slb = ((SpriteLayoutBase)target);
-                slb.Initialize();
-            }
-		}
-	}
+	//[CustomEditor(typeof(SpriteLayoutImage))]
+	//public class SpriteLayoutImageInspector : Editor
+	//{
+	//	public override void OnInspectorGUI()
+	//	{
+	//		//base.OnInspectorGUI();
+    //        if (GUILayout.Button("Reset parent"))
+    //        {
+    //            var slb = ((SpriteLayoutBase)target);
+    //            slb.Initialize();
+    //        }
+	//	}
+	//}
 
 	[RequireComponent(typeof(SpriteRenderer))]
 	public class SpriteLayoutImage : SpriteLayoutBase
