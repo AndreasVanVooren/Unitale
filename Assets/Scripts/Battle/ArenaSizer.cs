@@ -60,6 +60,13 @@ public class ArenaSizer : MonoBehaviour
         arenaCenter = inner.Center;
         currentX = inner.Width;
         currentY = inner.Height;
+
+		var imgOuter = ArenaBorderOuter.GetComponent<SpriteLayoutImage>();
+		var imgInner = Arena.GetComponent<SpriteLayoutImage>();
+		if(imgOuter && imgInner && imgOuter.SortingOrder > imgInner.SortingOrder)
+		{
+			imgOuter.SortingOrder = imgInner.SortingOrder - 1;
+		}
     }
 
     /// <summary>

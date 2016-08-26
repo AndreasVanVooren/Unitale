@@ -111,6 +111,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 25.277779, y: 23.076923, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1895438721}
   m_RootOrder: 0
@@ -133,6 +134,10 @@ MonoBehaviour:
   _dimensions: {x: 182, y: 15}
   _anchor: {x: 0.5, y: 0.5}
   _pivot: {x: 0.5, y: 0.5}
+  InitialSprite: {fileID: 0}
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: Default
+  EnabledOnPlay: 1
 --- !u!212 &110721880
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -189,6 +194,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -158.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 2097999511}
   - {fileID: 1812958000}
@@ -248,6 +254,7 @@ Transform:
   m_LocalRotation: {x: 0.6387345, y: 0.24328436, z: -0.12647107, w: 0.7189131}
   m_LocalPosition: {x: 6.04, y: 4.23, z: 54.63}
   m_LocalScale: {x: 1, y: 8.65, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -278,6 +285,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -261.54868, y: 44.153843, z: 0}
   m_LocalScale: {x: 0.0017699115, y: 0.0076923077, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1669544034}
   m_RootOrder: 0
@@ -349,6 +357,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -8, y: -17, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 2088050294}
   m_Father: {fileID: 1812958000}
@@ -383,10 +392,14 @@ MonoBehaviour:
   _localPosition: {x: 0, y: -9, z: 0}
   _localRotation: {x: 0, y: 0, z: 0, w: 1}
   _localScale: {x: 1, y: 1, z: 1}
-  _initialDimensions: {x: 1, y: 1}
-  _dimensions: {x: 1, y: 1}
+  _initialDimensions: {x: 23, y: 10}
+  _dimensions: {x: 23, y: 10}
   _anchor: {x: 0, y: 0}
   _pivot: {x: 0, y: 0}
+  InitialSprite: {fileID: 0}
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: Default
+  EnabledOnPlay: 1
 --- !u!212 &790319843
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -460,7 +473,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 456550, guid: 6bb0eb7beeeea9541a8577fb18eb237c, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 19838350, guid: 6bb0eb7beeeea9541a8577fb18eb237c, type: 2}
       propertyPath: InitialModule.maxNumParticles
@@ -579,6 +592,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -319.5, y: -239.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1727881049}
   m_RootOrder: 7
@@ -639,6 +653,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1565117937}
   m_Father: {fileID: 0}
@@ -729,6 +744,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -80, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 2057661440}
   m_Father: {fileID: 1727881049}
@@ -779,6 +795,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 289.5, y: -21.5, z: 0}
   m_LocalScale: {x: 0.0017301039, y: 0.023809524, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1318067683}
   m_RootOrder: 3
@@ -816,6 +833,10 @@ MonoBehaviour:
   _dimensions: {x: 110, y: 42}
   _anchor: {x: 1, y: 0}
   _pivot: {x: 1, y: 0}
+  InitialSprite: {fileID: 0}
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: Arena
+  EnabledOnPlay: 1
 --- !u!212 &1054116119
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -872,6 +893,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.56521744, z: 0}
   m_LocalScale: {x: 0.0018281536, y: 0.008695652, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1615530489}
   m_RootOrder: 3
@@ -901,8 +923,8 @@ MonoBehaviour:
   _localPosition: {x: 0, y: 58, z: 0}
   _localRotation: {x: 0, y: 0, z: 0, w: 1}
   _localScale: {x: 1, y: 1, z: 1}
-  _initialDimensions: {x: 1, y: 1}
-  _dimensions: {x: 1, y: 1}
+  _initialDimensions: {x: 100, y: 100}
+  _dimensions: {x: 100, y: 100}
   _anchor: {x: 0.5, y: 0}
   _pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1117372061
@@ -931,6 +953,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.3642857, z: 0}
   m_LocalScale: {x: 0.0017391305, y: 0.007142857, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 2057661440}
   m_RootOrder: 0
@@ -991,8 +1014,9 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1136159457}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -320, y: -239.5, z: 0}
+  m_LocalPosition: {x: -320, y: -240, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1727881049}
   m_RootOrder: 4
@@ -1042,6 +1066,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -289.5, y: -21.5, z: 0}
   m_LocalScale: {x: 0.0017301039, y: 0.023809524, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1318067683}
   m_RootOrder: 0
@@ -1079,6 +1104,10 @@ MonoBehaviour:
   _dimensions: {x: 110, y: 42}
   _anchor: {x: 0, y: 0}
   _pivot: {x: 0, y: 0}
+  InitialSprite: {fileID: 0}
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: Arena
+  EnabledOnPlay: 1
 --- !u!212 &1245745959
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1136,6 +1165,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 640, y: 480, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1727881049}
   m_RootOrder: 0
@@ -1158,6 +1188,10 @@ MonoBehaviour:
   _dimensions: {x: 640, y: 480}
   _anchor: {x: 0.5, y: 0.5}
   _pivot: {x: 0.5, y: 0.5}
+  InitialSprite: {fileID: 0}
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: Background
+  EnabledOnPlay: 1
 --- !u!212 &1289772517
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1225,6 +1259,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1, y: -233.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1245745956}
   - {fileID: 2085582260}
@@ -1251,6 +1286,10 @@ MonoBehaviour:
   _dimensions: {x: 578, y: 42}
   _anchor: {x: 0, y: 1}
   _pivot: {x: 0.5, y: 0}
+  InitialSprite: {fileID: 0}
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: ArenaBottom
+  EnabledOnPlay: 1
 --- !u!212 &1318067685
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1320,6 +1359,14 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 11442466, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
+      propertyPath: InitialSortingLayerName
+      value: Default
+      objectReference: {fileID: 0}
+    - target: {fileID: 11402160, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
+      propertyPath: InitialSortingLayerName
+      value: Default
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
   m_IsPrefabParent: 0
@@ -1350,6 +1397,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.0018281536, y: 0.008695652, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1615530489}
   m_RootOrder: 1
@@ -1383,10 +1431,14 @@ MonoBehaviour:
   _localPosition: {x: 0, y: 0, z: 0}
   _localRotation: {x: 0, y: 0, z: 0, w: 1}
   _localScale: {x: 1, y: 1, z: 1}
-  _initialDimensions: {x: 1, y: 1}
-  _dimensions: {x: 1, y: 1}
+  _initialDimensions: {x: 14, y: 128}
+  _dimensions: {x: 14, y: 128}
   _anchor: {x: 0.5, y: 0.5}
   _pivot: {x: 0.5, y: 0.5}
+  InitialSprite: {fileID: 0}
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: ArenaTop
+  EnabledOnPlay: 1
 --- !u!212 &1473831756
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1447,6 +1499,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -320, y: -240, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1727881049}
   m_RootOrder: 6
@@ -1481,6 +1534,10 @@ MonoBehaviour:
   _dimensions: {x: 1, y: 1}
   _anchor: {x: 0, y: 0}
   _pivot: {x: 0.5, y: 0.5}
+  InitialSprite: {fileID: 0}
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: ArenaTop
+  EnabledOnPlay: 1
 --- !u!222 &1509689747
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1633,6 +1690,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1727881049}
   m_RootOrder: 1
@@ -1778,7 +1836,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22465858, guid: 1ccc044534d366d4abebb5047dfda396, type: 2}
       propertyPath: m_RootOrder
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22465858, guid: 1ccc044534d366d4abebb5047dfda396, type: 2}
       propertyPath: m_AnchoredPosition.x
@@ -1895,6 +1953,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -58, z: 0}
   m_LocalScale: {x: 0.0018281536, y: 0.008695652, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1615530489}
   m_RootOrder: 2
@@ -1987,10 +2046,14 @@ MonoBehaviour:
   _localPosition: {x: 0, y: 0, z: 0}
   _localRotation: {x: 0, y: 0, z: 0, w: 1}
   _localScale: {x: 1, y: 1, z: 1}
-  _initialDimensions: {x: 1, y: 1}
-  _dimensions: {x: 1, y: 1}
+  _initialDimensions: {x: 26, y: 110}
+  _dimensions: {x: 26, y: 110}
   _anchor: {x: 0.5, y: 0}
   _pivot: {x: 0.5, y: 0}
+  InitialSprite: {fileID: 0}
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: ArenaTop
+  EnabledOnPlay: 1
 --- !u!212 &1574807812
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2017,7 +2080,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 566397623
   m_SortingOrder: 180
-  m_Sprite: {fileID: 21300000, guid: 562f3f4f4fb3c4cb4a44391374cb8748, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c9f3271be80940e43ba5e5eaa5513eff, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2048,6 +2111,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 135.5, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1318067683}
   m_RootOrder: 2
@@ -2085,6 +2149,10 @@ MonoBehaviour:
   _dimensions: {x: 110, y: 42}
   _anchor: {x: 0.5, y: 0}
   _pivot: {x: 1, y: 0}
+  InitialSprite: {fileID: 0}
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: Arena
+  EnabledOnPlay: 1
 --- !u!212 &1614633477
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2143,7 +2211,8 @@ Transform:
   m_GameObject: {fileID: 1615530488}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.0017699115, y: 0.0076923077, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1895438721}
   - {fileID: 1473831753}
@@ -2177,7 +2246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1cd8741235a5cb47a23270c049ef764, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetRt: {fileID: 0}
+  targetRt: {fileID: 1473831755}
   FightUILineObj: {fileID: 1473831752}
   SliceAnimObj: {fileID: 1574807808}
   DamageNumberObj: {fileID: 1078329491}
@@ -2197,10 +2266,14 @@ MonoBehaviour:
   _localPosition: {x: 0, y: 0, z: 0}
   _localRotation: {x: 0, y: 0, z: 0, w: 1}
   _localScale: {x: 1, y: 1, z: 1}
-  _initialDimensions: {x: 1, y: 1}
-  _dimensions: {x: 1, y: 1}
+  _initialDimensions: {x: 547, y: 115}
+  _dimensions: {x: 547, y: 115}
   _anchor: {x: 0.5, y: 0.5}
   _pivot: {x: 0.5, y: 0.5}
+  InitialSprite: {fileID: 0}
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: Arena
+  EnabledOnPlay: 1
 --- !u!212 &1615530493
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2330,7 +2403,8 @@ Transform:
   m_GameObject: {fileID: 1669544033}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.0017391305, y: 0.007142857, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 781040951}
   - {fileID: 1615530489}
@@ -2352,9 +2426,13 @@ MonoBehaviour:
   _localRotation: {x: 0, y: 0, z: 0, w: 1}
   _localScale: {x: 1, y: 1, z: 1}
   _initialDimensions: {x: 1, y: 1}
-  _dimensions: {x: 1, y: 1}
+  _dimensions: {x: 565, y: 130}
   _anchor: {x: 0.5, y: 0.5}
   _pivot: {x: 0.5, y: 0.5}
+  InitialSprite: {fileID: 0}
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: ArenaBottom
+  EnabledOnPlay: 1
 --- !u!212 &1669544036
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2379,7 +2457,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1780250517
+  m_SortingLayerID: -1111269911
   m_SortingOrder: 269
   m_Sprite: {fileID: 21300000, guid: 562f3f4f4fb3c4cb4a44391374cb8748, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
@@ -2479,6 +2557,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 320, y: 240, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1289772515}
   - {fileID: 1546056635}
@@ -2667,6 +2746,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -68.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 790319840}
   m_Father: {fileID: 702468597}
@@ -2743,11 +2823,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 479962, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 488316, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
       propertyPath: m_RootOrder
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11414768, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
       propertyPath: fillColor.r
@@ -2887,11 +2967,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11442466, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
       propertyPath: _anchor.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11402160, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
       propertyPath: _anchor.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 455620, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
       propertyPath: m_LocalScale.z
@@ -2905,6 +2985,14 @@ Prefab:
       propertyPath: background
       value: 
       objectReference: {fileID: 808258660}
+    - target: {fileID: 11402160, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
+      propertyPath: InitialSortingLayerName
+      value: Default
+      objectReference: {fileID: 0}
+    - target: {fileID: 11442466, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
+      propertyPath: InitialSortingLayerName
+      value: Default
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
   m_IsPrefabParent: 0
@@ -2944,6 +3032,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -3012,6 +3101,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -70.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1117372062}
   - {fileID: 1669544034}
@@ -3033,9 +3123,13 @@ MonoBehaviour:
   _localRotation: {x: 0, y: 0, z: 0, w: 1}
   _localScale: {x: 1, y: 1, z: 1}
   _initialDimensions: {x: 1, y: 1}
-  _dimensions: {x: 1, y: 1}
+  _dimensions: {x: 575, y: 140}
   _anchor: {x: 0.5, y: 0}
   _pivot: {x: 0.5, y: 0}
+  InitialSprite: {fileID: 0}
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: ArenaBottom
+  EnabledOnPlay: 1
 --- !u!212 &2057661442
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3106,6 +3200,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -135.5, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1318067683}
   m_RootOrder: 1
@@ -3143,6 +3238,10 @@ MonoBehaviour:
   _dimensions: {x: 110, y: 42}
   _anchor: {x: 0.5, y: 0}
   _pivot: {x: 0, y: 0}
+  InitialSprite: {fileID: 0}
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: Arena
+  EnabledOnPlay: 1
 --- !u!212 &2085582263
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3202,6 +3301,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -282.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 702468597}
   m_RootOrder: 0

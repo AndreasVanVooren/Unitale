@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using SpriteLayout;
 using System.Collections;
 
 /// <summary>
@@ -10,7 +11,7 @@ public class StationaryMissScript : MonoBehaviour {
 
     public void setXPosition(float xpos)
     {
-        GetComponent<RectTransform>().anchoredPosition = new Vector2(xpos - 55, 190); // 55 is the the fairly static 1/2 width of the miss text
+        GetComponent<SpriteLayoutBase>().LocalPosition = new Vector2(xpos - 55, 190); // 55 is the the fairly static 1/2 width of the miss text
     }
 
 	void Start () {

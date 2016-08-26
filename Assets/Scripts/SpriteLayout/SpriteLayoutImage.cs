@@ -26,21 +26,29 @@ namespace SpriteLayout
 	//	}
 	//}
 
-	[RequireComponent(typeof(SpriteRenderer))]
+	//[RequireComponent(typeof(SpriteRenderer))]
 	public class SpriteLayoutImage : SpriteLayoutBase
 	{
         private const string _nullPath = "WhiteSquare";
         private static Sprite _null;
 
-        private SpriteRenderer _renderer;
+        public SpriteRenderer Renderer
+		{
+			get; private set;
+		}
+		
         private Sprite _mySprite;
+		private Sprite _override;
 
-        public Sprite Sprite
+		public Sprite InitialSprite;
+
+		public Sprite Sprite
         {
             get { return _mySprite; }
             set 
             { 
-                _renderer.sprite = value; 
+				if(Renderer && _override == null)
+					Renderer.sprite = value; 
                 _mySprite = value;
                 if (value != null)
                 {
@@ -48,17 +56,48 @@ namespace SpriteLayout
                 }
                 else
                 {
-                    _renderer.sprite = _null;
-                    _initialDimensions = new Vector2(1, 1);
+                    Renderer.sprite = _null;
+                    _initialDimensions = _null.bounds.size;
                 }
-                ResetTransform();
+                //ResetTransform();
             }
         }
 
+		public Sprite OverrideSprite
+		{
+			get { return _override; }
+			set 
+			{
+				if(Renderer)
+				{
+					_override = value;
+					if (_override != null)
+					{
+						Renderer.sprite = _override;
+						_initialDimensions = _override.bounds.size;
+					}
+					else
+					{
+						Renderer.sprite = _mySprite;
+						_initialDimensions = _mySprite.bounds.size;
+					}
+				}
+			}
+		}
+		public Color InitialColor = Color.white;
+
         public Color Color
         {
-            get { return _renderer.color; }
-            set { _renderer.color = value; }
+            get 
+			{
+				if (!Renderer) return Color.black;
+				return Renderer.color; 
+			}
+            set 
+			{ 
+				if(Renderer)
+					Renderer.color = value; 
+			}
         }
 
         //TODO : Do this differently?
@@ -66,10 +105,15 @@ namespace SpriteLayout
         private static int _highestOrder = 0;
         public int SortingOrder
         {
-            get { return _renderer.sortingOrder; }
+            get 
+			{
+				if (!Renderer) return 0;
+				return Renderer.sortingOrder; 
+			}
             set 
-            { 
-                _renderer.sortingOrder = value; 
+            {
+				if (!Renderer) return;
+				Renderer.sortingOrder = value; 
                 if (value > _highestOrder)
                     _highestOrder = value;
                 if (value < _lowestOrder)
@@ -77,28 +121,48 @@ namespace SpriteLayout
             }
         }
 
+		public string InitialSortingLayerName;
         public string SortingLayerName
         {
-            get { return _renderer.sortingLayerName; }
+            get 
+			{
+				if (!Renderer) return "";
+				return Renderer.sortingLayerName; 
+			}
             set
             {
-                _renderer.sortingLayerName = value;
+				if (!Renderer) return;
+				Renderer.sortingLayerName = value;
             }
         }
 
         public int SortingLayerID
         {
-            get { return _renderer.sortingLayerID; }
+            get 
+			{
+				if (!Renderer) return -1;
+				return Renderer.sortingLayerID; 
+			}
             set
             {
-                _renderer.sortingLayerID = value;
+				if (!Renderer) return;
+				Renderer.sortingLayerID = value;
             }
         }
 
+		public bool EnabledOnPlay = true;
         public bool RendererEnabled
         {
-            get { return _renderer.enabled; }
-            set { _renderer.enabled = value; }
+            get 
+			{
+				if (!Renderer) return false;
+				return Renderer.enabled; 
+			}
+            set 
+			{ 
+				if(Renderer)
+					Renderer.enabled = value; 
+			}
         }
 
         internal override void Initialize()
@@ -110,9 +174,36 @@ namespace SpriteLayout
                 _null = Resources.Load<Sprite>(_nullPath);
             }
 
-			_renderer =GetComponent<SpriteRenderer>();
-            Sprite = _renderer.sprite;
+			//create sub-object with sprite renderer
+			var go = new GameObject(string.Format("Img of {0}", gameObject.name));
+			go.transform.parent = this.transform;
+			go.transform.localPosition = Vector3.zero;
+			go.transform.localRotation = Quaternion.identity;
+			Vector3 scale = DimensionRatio;
+			scale.z = 1;
+			go.transform.localScale = scale;
 
+			var initialRenderer = GetComponent<SpriteRenderer>();
+
+			Renderer = go.AddComponent<SpriteRenderer>();
+			
+			if(initialRenderer)
+			{
+				Sprite = initialRenderer.sprite;
+				Renderer.sortingLayerID = initialRenderer.sortingLayerID;
+				Renderer.color = initialRenderer.color;
+				Renderer.enabled = initialRenderer.enabled;
+
+				Destroy(initialRenderer);
+			}
+			else
+			{
+				Sprite = InitialSprite;
+				Renderer.sortingLayerName = InitialSortingLayerName;
+				Renderer.color = InitialColor;
+				Renderer.enabled = EnabledOnPlay;
+			}
+			
 			//_mySprite = _renderer.sprite;
             //if (_mySprite != null)
             //    _initialDimensions = _mySprite.bounds.size;
@@ -122,7 +213,7 @@ namespace SpriteLayout
             //   _initialDimensions = new Vector2(1, 1);
             //}
             ++_highestOrder;
-            _renderer.sortingOrder = _highestOrder;
+            Renderer.sortingOrder = _highestOrder;
 		}
 
 		// Use this for initialization
@@ -161,6 +252,16 @@ namespace SpriteLayout
             collider.offset = new Vector2(xOffset, yOffset);
             collider.size = new Vector2(xSize,ySize);
         }
+
+		protected override void ResetTransform(bool recursive)
+		{
+			Vector3 baseScale = DimensionRatio;
+			baseScale.z = 1;
+			if(Renderer)
+				Renderer.transform.localScale = baseScale;
+			
+			base.ResetTransform(recursive);
+		}
 
 		// Update is called once per frame
 		void Update()

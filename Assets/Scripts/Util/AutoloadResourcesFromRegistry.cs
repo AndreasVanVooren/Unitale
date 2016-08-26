@@ -37,6 +37,7 @@ class AutoloadResourcesFromRegistry : MonoBehaviour
             SpriteLayoutImage img = GetComponent<SpriteLayoutImage>();
             if (img != null)
             {
+				Debug.Log(SpritePath);
                 img.Sprite = SpriteRegistry.Get(SpritePath);
                 if (SetNativeSize)
                 {

@@ -134,7 +134,7 @@ namespace SpriteLayout
 			set
 			{
 				_localPosition = value;
-				//ResetPosition ();
+				ResetTransform();
 			}
 		}
 
@@ -150,11 +150,11 @@ namespace SpriteLayout
                 Vector3 parentPos = Parent.Center ;
 				Vector2 anch = this.AnchorVector;
 				//anch.Scale(Parent.DimensionRatioInverse);
-				anch.Scale(Parent.Scale);
-				Vector3 posDiff = LocalPosition;
+				//anch.Scale(Parent.Scale);
+				Vector3 posDiff = (Vector3)anch + LocalPosition;
 				//posDiff.Scale(Parent.DimensionRatioInverse);
 				posDiff.Scale(Parent.Scale);
-				parentPos += Parent.Rotation * ((Vector3)anch+ posDiff);
+				parentPos += Quaternion.Inverse(Parent.Rotation) * posDiff;
                 return parentPos ; 
             }
             set
@@ -168,7 +168,11 @@ namespace SpriteLayout
 
 				if (Parent)
 				{
-					diff = Quaternion.Inverse(Parent.Rotation) * diff;
+					//first rotate, then scale
+					diff = Parent.Rotation * diff;
+					var parentScale = Parent.Scale;
+					diff.x /= parentScale.x;
+					diff.y /= parentScale.y;
 				}
                 LocalPosition += diff;
             }
@@ -191,6 +195,7 @@ namespace SpriteLayout
 			set
 			{
 				_localRotation = value;
+				ResetTransform();
 				//ResetRotation ();
 				//ResetPosition ();
 			}
@@ -207,7 +212,7 @@ namespace SpriteLayout
 
         public Quaternion Rotation
         {
-            get { return transform.parent.rotation * LocalRotation; }
+            get { return transform.rotation; }
             set 
             { 
                 var diff = value * Quaternion.Inverse(Rotation);
@@ -239,7 +244,7 @@ namespace SpriteLayout
 			set
 			{
 				_localScale = value;
-                //ResetTransform ();
+                ResetTransform ();
 				//ResetPosition ();
 			}
 		}
@@ -306,7 +311,7 @@ namespace SpriteLayout
 				//	_initialDimensions = value;
 				//}
 				//#endif
-                //ResetTransform ();
+                ResetTransform ();
 			}
 		}
 
@@ -483,11 +488,16 @@ namespace SpriteLayout
 			ResetTransform(true);
 		}
 
-        protected void ResetTransform(bool recursive )
+        protected virtual void ResetTransform(bool recursive )
         {
             ResetScale();
             ResetRotation();
             ResetPosition();
+
+			if(DebugMe)
+			{
+				Debug.LogFormat("Pos : {0}, LocalPos : {1}", Position, LocalPosition);
+			}
 
 			if (!recursive) return;
 			for (int i = 0; i < transform.childCount; i++)
@@ -503,27 +513,27 @@ namespace SpriteLayout
 
 		protected void ResetScale()
 		{
-			Vector3 newScale = new Vector3();
-
-            newScale.x = DimensionRatio.x * LocalScale.x;
-            newScale.y = DimensionRatio.y * LocalScale.y;
-            newScale.z = LocalScale.z;
-
-            var pSprite = Parent;
-            if(pSprite == null)
-            {
-                var parents = GetComponentsInParent<SpriteLayoutBase>();
-                if (parents.Length > 1)
-                {
-                    pSprite = Parent = parents[1];
-                }
-            }
-            
-            
-            if (pSprite != null)
-			{
-				newScale.Scale(pSprite.DimensionRatioInverse);
-            }
+			//Vector3 newScale = new Vector3();
+			//
+            //newScale.x = DimensionRatio.x * LocalScale.x;
+            //newScale.y = DimensionRatio.y * LocalScale.y;
+            //newScale.z = LocalScale.z;
+			//
+            //var pSprite = Parent;
+            //if(pSprite == null)
+            //{
+            //    var parents = GetComponentsInParent<SpriteLayoutBase>();
+            //    if (parents.Length > 1)
+            //    {
+            //        pSprite = Parent = parents[1];
+            //    }
+            //}
+            //
+            //
+            //if (pSprite != null)
+			//{
+			//	newScale.Scale(pSprite.DimensionRatioInverse);
+            //}
 
             
 
@@ -536,7 +546,7 @@ namespace SpriteLayout
             //    newScale.Scale(counterScale);
             //}
 
-			transform.localScale = newScale;
+			transform.localScale = LocalScale;
 		}
 
 		protected void ResetRotation()
@@ -547,10 +557,12 @@ namespace SpriteLayout
 		protected void ResetPosition()
 		{
             Vector3 newPos = LocalPosition + (Vector3)AnchorVector;
-            Vector3 piv = LocalRotation * PivotVector;
+            Vector3 piv = PivotVector;
+			piv.Scale(LocalScale);
+			piv = LocalRotation * piv;
             newPos -= piv;
 
-            ////counter act unity scaling due to 
+            //counter act unity scaling due to 
             //if (Parent != null)
             //{
             //    newPos.Scale(Parent.DimensionRatioInverse);
@@ -595,10 +607,22 @@ namespace SpriteLayout
             var pSprite = parent.GetComponent<SpriteLayoutBase>();
             if (pSprite != null)
             {
-                this.Parent = pSprite;              
+				var scale = Scale;
+				var parentScale = pSprite.Scale;
+				scale.x /= parentScale.x;
+				scale.y /= parentScale.y;
+				scale.z /= parentScale.z;
+				LocalScale = scale;
+				LocalRotation = Quaternion.Inverse(pSprite.Rotation) * Rotation;
+				var position = Position;
+				this.Parent = pSprite;
+				Position = position;
             }
             else
             {
+				LocalScale = Scale;
+				LocalRotation = Rotation;
+				LocalPosition = Position;
                 this.Parent = null;
             }
         }

@@ -85,12 +85,12 @@ public class FightUIController : MonoBehaviour
         lifeBar.setVisible(false);
         finishingFade = false;
         enemy = target;
-        enePos = enemy.GetComponent<RectTransform>().position;
-        targetRt.LocalPosition = new Vector2(GetComponent<RectTransform>().rect.width/2, 0);
-        Vector3 slicePos = target.GetComponent<RectTransform>().position;
-        slicePos.Set(slicePos.x, slicePos.y + target.GetComponent<RectTransform>().rect.height / 2 - 55, slicePos.z); // lol hardcoded offsets
-        slice.img.GetComponent<RectTransform>().position = slicePos;
-        borderX = -GetComponent<RectTransform>().rect.width / 2;
+        enePos = enemy.GetComponent<SpriteLayoutBase>().Position;
+        targetRt.LocalPosition = new Vector2(GetComponent<SpriteLayoutBase>().Width/2, 0);
+        Vector3 slicePos = target.GetComponent<SpriteLayoutBase>().Position;
+        slicePos.Set(slicePos.x, slicePos.y + target.GetComponent<SpriteLayoutBase>().Height / 2 - 55, slicePos.z); // lol hardcoded offsets
+        slice.img.Position = slicePos;
+        borderX = -GetComponent<SpriteLayoutBase>().Width / 2;
         stopped = false;
         shakeInProgress = false;
         shakeTimer = 0;
@@ -120,7 +120,7 @@ public class FightUIController : MonoBehaviour
     private int getDamage()
     {
         //first try get damage from custom pre attack handler
-        var dmg = enemy.HandlePreAttack(targetRt.LocalPosition.x * 2.0f / GetComponent<RectTransform>().rect.width);
+        var dmg = enemy.HandlePreAttack(targetRt.LocalPosition.x * 2.0f / GetComponent<SpriteLayoutBase>().Width);
         if (dmg != null)
         {
             if (dmg.amount.HasValue)
@@ -148,7 +148,7 @@ public class FightUIController : MonoBehaviour
                 return 2.2f;
             else
             {
-                float mult = 2.0f - 2.0f * Mathf.Abs(targetRt.LocalPosition.x * 2.0f / GetComponent<RectTransform>().rect.width);
+                float mult = 2.0f - 2.0f * Mathf.Abs(targetRt.LocalPosition.x * 2.0f / GetComponent<SpriteLayoutBase>().Width);
                 if (mult < 0)
                     mult = 0;
                 return mult;
@@ -208,8 +208,8 @@ public class FightUIController : MonoBehaviour
                 shakeIndex = shakeidx;
                 if (shakeIndex >= shakeX.Length)
                     shakeIndex = shakeX.Length - 1;
-                Vector2 localEnePos = enemy.GetComponent<RectTransform>().anchoredPosition; // get local position to do the shake
-                enemy.GetComponent<RectTransform>().anchoredPosition = new Vector2(localEnePos.x + shakeX[shakeIndex], localEnePos.y);
+                Vector2 localEnePos = enemy.GetComponent<SpriteLayoutBase>().LocalPosition; // get local position to do the shake
+                enemy.GetComponent<SpriteLayoutBase>().LocalPosition = new Vector2(localEnePos.x + shakeX[shakeIndex], localEnePos.y);
             }
 
             damageTextRt.Position = new Vector2(damageTextRt.Position.x, 80 + enePos.y + 40 * Mathf.Sin(shakeTimer * Mathf.PI * 0.75f));
@@ -256,8 +256,8 @@ public class FightUIController : MonoBehaviour
                 int newHP = enemy.HP - Damage;
                 if (newHP < 0)
                     newHP = 0;
-                lifeBar.GetComponent<RectTransform>().position = new Vector2(enePos.x, enePos.y + 20);
-                lifeBar.GetComponent<RectTransform>().sizeDelta = new Vector2(enemy.GetComponent<RectTransform>().rect.width, 13);
+                lifeBar.GetComponent<SpriteLayoutBase>().Position = new Vector2(enePos.x, enePos.y + 20);
+                lifeBar.GetComponent<SpriteLayoutBase>().Dimensions = new Vector2(enemy.GetComponent<SpriteLayoutBase>().Width, 13);
                 lifeBar.setInstant((float)enemy.HP / (float)enemy.getMaxHP());
                 lifeBar.setLerp((float)enemy.HP / (float)enemy.getMaxHP(), (float)newHP / (float)enemy.getMaxHP());
                 lifeBar.setVisible(true);
@@ -306,8 +306,8 @@ public class FightUIController : MonoBehaviour
                 int newHP = enemy.HP - dmgInt;
                 if (newHP < 0)
                     newHP = 0;
-                lifeBar.GetComponent<RectTransform>().position = new Vector2(enePos.x, enePos.y + 20);
-                lifeBar.GetComponent<RectTransform>().sizeDelta = new Vector2(enemy.GetComponent<RectTransform>().rect.width, 13);
+                lifeBar.GetComponent<SpriteLayoutBase>().Position = new Vector2(enePos.x, enePos.y + 20);
+                lifeBar.GetComponent<SpriteLayoutBase>().Dimensions = new Vector2(enemy.GetComponent<SpriteLayoutBase>().Width, 13);
                 lifeBar.setInstant((float)enemy.HP / (float)enemy.getMaxHP());
                 lifeBar.setLerp((float)enemy.HP / (float)enemy.getMaxHP(), (float)newHP / (float)enemy.getMaxHP());
                 lifeBar.setVisible(true);
@@ -319,7 +319,7 @@ public class FightUIController : MonoBehaviour
             {
                 StationaryMissScript smc = Resources.Load<StationaryMissScript>("Prefabs/StationaryMiss");
                 smc = Instantiate(smc);
-                smc.transform.SetParent(GameObject.Find("Canvas").transform);
+                smc.transform.SetParent(GameObject.Find("PseudoCanvas").transform);
                 smc.setXPosition(320 - enePos.x);
                 
             }

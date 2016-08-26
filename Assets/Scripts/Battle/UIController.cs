@@ -165,10 +165,10 @@ public class UIController : MonoBehaviour
             textmgr.destroyText();
             PlayerController.instance.SetPosition(320, 160, false);
             PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = true;
-            fightBtn.Sprite = null;
-            actBtn.Sprite = null;
-            itemBtn.Sprite = null;
-            mercyBtn.Sprite = null;
+            fightBtn.OverrideSprite = null;
+            actBtn.OverrideSprite = null;
+            itemBtn.OverrideSprite = null;
+            mercyBtn.OverrideSprite = null;
             textmgr.setPause(true);
         }
 
@@ -313,6 +313,7 @@ public class UIController : MonoBehaviour
                         break;
                     }
                     GameObject speechBub = Instantiate(SpriteFontRegistry.BUBBLE_OBJECT);
+					SpriteLayoutBase speechBubTransform = speechBub.GetComponent<SpriteLayoutBase>();
                     SpriteLayoutBase enemyRt = encounter.enabledEnemies[i].GetComponent<SpriteLayoutBase>();
                     TextManager sbTextMan = speechBub.GetComponent<TextManager>();
                     monDialogues[i] = sbTextMan;
@@ -320,9 +321,9 @@ public class UIController : MonoBehaviour
                     SpriteLayoutImage speechBubImg = speechBub.GetComponent<SpriteLayoutImage>();
                     SpriteUtil.SwapSpriteFromFile(speechBubImg, encounter.enabledEnemies[i].DialogBubble);
                     Sprite speechBubSpr = speechBubImg.Sprite;
-                    // TODO improve position setting/remove hardcoding of position setting
-                    speechBub.transform.SetParent(encounter.enabledEnemies[i].transform);
-                    speechBub.GetComponent<SpriteLayoutBase>().LocalPosition = encounter.enabledEnemies[i].DialogBubblePosition;
+					// TODO improve position setting/remove hardcoding of position setting
+					speechBubTransform.SetParent(encounter.enabledEnemies[i].transform);
+					speechBubTransform.LocalPosition = encounter.enabledEnemies[i].DialogBubblePosition;
                     sbTextMan.setOffset(speechBubSpr.border.x, -speechBubSpr.border.w);
                     sbTextMan.setFont(SpriteFontRegistry.Get(SpriteFontRegistry.UI_MONSTERTEXT_NAME));
                     sbTextMan.setEffect(new RotatingEffect(sbTextMan));
@@ -692,10 +693,10 @@ public class UIController : MonoBehaviour
                 if (!left && !right)
                     break;
 
-                fightBtn.Sprite = fightB0;
-                actBtn.Sprite = actB0;
-                itemBtn.Sprite = itemB0;
-                mercyBtn.Sprite = mercyB0;
+                fightBtn.OverrideSprite = null;
+                actBtn.OverrideSprite = null;
+                itemBtn.OverrideSprite = null;
+                mercyBtn.OverrideSprite = null;
 
                 int actionIndex = (int)action;
 
@@ -920,22 +921,22 @@ public class UIController : MonoBehaviour
         switch (action)
         {
             case Actions.FIGHT:
-                fightBtn.Sprite = fightB1;
+                fightBtn.OverrideSprite = fightB1;
                 PlayerController.instance.SetPosition(48, 25, true);
                 break;
 
             case Actions.ACT:
-                actBtn.Sprite = actB1;
+                actBtn.OverrideSprite = actB1;
                 PlayerController.instance.SetPosition(202, 25, true);
                 break;
 
             case Actions.ITEM:
-                itemBtn.Sprite = itemB1;
+                itemBtn.OverrideSprite = itemB1;
                 PlayerController.instance.SetPosition(361, 25, true);
                 break;
 
             case Actions.MERCY:
-                mercyBtn.Sprite = mercyB1;
+                mercyBtn.OverrideSprite = mercyB1;
                 PlayerController.instance.SetPosition(515, 25, true);
                 break;
         }

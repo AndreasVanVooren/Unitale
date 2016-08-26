@@ -194,9 +194,12 @@ public class TextManager : MonoBehaviour
 
     public void destroyText()
     {
+		var image = GetComponent<SpriteLayoutImage>();
         foreach (Transform child in gameObject.transform)
         {
-            Destroy(child.gameObject);
+			if (image && image.Renderer.transform == child) continue;
+
+			Destroy(child.gameObject);
         }
     }
 
