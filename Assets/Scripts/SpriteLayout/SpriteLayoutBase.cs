@@ -154,7 +154,7 @@ namespace SpriteLayout
 				Vector3 posDiff = (Vector3)anch + LocalPosition;
 				//posDiff.Scale(Parent.DimensionRatioInverse);
 				posDiff.Scale(Parent.Scale);
-				parentPos += Quaternion.Inverse(Parent.Rotation) * posDiff;
+				parentPos += Parent.Rotation * posDiff;
                 return parentPos ; 
             }
             set
@@ -163,16 +163,17 @@ namespace SpriteLayout
 				//Take into account that LocalPosition set already resets position
 				if(DebugMe && Input.GetKey(KeyCode.Minus))
 				{
-					Debug.LogFormat("[{0}] - val:{1} orig:{2} diff:{3}", gameObject.name, value, Position, diff);
+					Debug.LogFormat(gameObject, "[{0}] - val:{1} orig:{2} diff:{3}", gameObject.name, value, Position, diff);
 				}
 
 				if (Parent)
 				{
 					//first rotate, then scale
-					diff = Parent.Rotation * diff;
+					diff = Quaternion.Inverse(Parent.Rotation) * diff;
 					var parentScale = Parent.Scale;
 					diff.x /= parentScale.x;
 					diff.y /= parentScale.y;
+					//diff.z /= parentScale.z;
 				}
                 LocalPosition += diff;
             }
@@ -272,7 +273,11 @@ namespace SpriteLayout
 				{
 					scale = this.LocalScale;
 				}
-				
+
+				if (scale.z == 0)
+				{
+					scale.z = 1;
+				}
 				return scale;
 
             }
@@ -290,6 +295,7 @@ namespace SpriteLayout
                 scale.x *= 1 / parentScale.x;
                 scale.y *= 1 / parentScale.y;
                 scale.z *= 1 / parentScale.z;
+				
                 LocalScale = scale;
             }
         }
@@ -601,30 +607,35 @@ namespace SpriteLayout
         {
             transform.SetParent( parent );
 
-            if (parent == null)
-                return;
+			if (parent == null)
+			{
+				LocalScale = Scale;
+				LocalRotation = Rotation;
+				LocalPosition = Position;
+				this.Parent = null;
+				ResetTransform();
+				return;
+			}
 
             var pSprite = parent.GetComponent<SpriteLayoutBase>();
             if (pSprite != null)
             {
 				var scale = Scale;
-				var parentScale = pSprite.Scale;
-				scale.x /= parentScale.x;
-				scale.y /= parentScale.y;
-				scale.z /= parentScale.z;
-				LocalScale = scale;
-				LocalRotation = Quaternion.Inverse(pSprite.Rotation) * Rotation;
+				var rotation = Rotation;
 				var position = Position;
 				this.Parent = pSprite;
+				Scale = scale;
+				Rotation = rotation;
 				Position = position;
             }
             else
-            {
+			{
 				LocalScale = Scale;
 				LocalRotation = Rotation;
 				LocalPosition = Position;
-                this.Parent = null;
+				this.Parent = null;
             }
+			ResetTransform();
         }
 	}
 }

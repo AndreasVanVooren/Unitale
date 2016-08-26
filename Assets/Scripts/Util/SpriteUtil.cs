@@ -171,7 +171,12 @@ public static class SpriteUtil
         return null;
     }
 
-    public static LuaSpriteController MakeIngameSprite(string filename, string layer = "BelowArena")
+	public static LuaSpriteController MakeIngameSprite(string filename)
+	{
+		return MakeIngameSprite(filename, "BelowArena");
+	}
+	
+	public static LuaSpriteController MakeIngameSprite(string filename, string layer)
     {
         SpriteLayoutImage i = GameObject.Instantiate<SpriteLayoutImage>(SpriteRegistry.GENERIC_SPRITE_PREFAB);
         if (!string.IsNullOrEmpty(filename))

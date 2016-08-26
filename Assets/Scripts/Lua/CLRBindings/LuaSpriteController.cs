@@ -243,7 +243,7 @@ public class LuaSpriteController {
 
     public void SetParent(LuaSpriteController parent)
     {
-        img.transform.SetParent(parent.img.transform);
+        img.SetParent(parent.img.transform);
         //remove child from previous parent
         if(this.parent != null)
             this.parent.children.Remove(this);
