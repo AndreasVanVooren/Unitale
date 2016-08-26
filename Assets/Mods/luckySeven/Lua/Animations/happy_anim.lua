@@ -36,7 +36,7 @@ local torsEye = CreateSprite("Happy/tempSprites/eyes/torsEyeClosed");
 --torso.SetAnchor(0.455,1);
 --torso.SetPivot(0.37,0);
 torsEye.SetParent(torso);
-torsEye.MoveTo(-14.4,-6.8);
+torsEye.MoveTo(-9,-4.25);
 
 local neck = nil;
 local armNeckTop = nil;
@@ -435,18 +435,24 @@ function happyAnim.ToggleSway(newState)
 	
 end
 
-function KillHeadLoc(head, yOffset, yOffsetJaw)
+local function KillHeadLoc(head, yOffset, yOffsetJaw)
 	yOffset = yOffset or 0;
 	yOffsetJaw = yOffsetJaw or 0;
 	
+	--local positionX = head[1].xAbs;
+	--local positionY = head[1].yAbs;
 	head[1].SetParent(legs);
-	
+	--head[1].xAbs = positionX;
+	--head[1].yAbs = positionY;
 	table.insert(looseHeadParts, {head[1],-15, 0, yOffset});
 	if(head[3] == nil)then
 		return;
 	end
+	--positionX = head[3].xAbs;
+	--positionY = head[3].yAbs;
 	head[3].SetParent(legs);
-	
+	--head[3].xAbs = positionX;
+	--head[3].yAbs = positionY;
 	table.insert(looseHeadParts, {head[3], 15, 0, yOffsetJaw});
 end
 

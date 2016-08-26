@@ -17,7 +17,8 @@ function PreInitialize()
 end
 
 function CreateWave()
-	
+	waveCounter = 0;
+	waveTimer = 0;
 	if(waveType == 2)then		--tentacle thing in bounds
 		--disable hand
 		Encounter.Call("ToggleHand");
@@ -119,8 +120,9 @@ function UpdateWave2()
 	if(waveTimer > timerlimit)then
 		--CHAKKA
 		--if x out of bounds NOW, wrap around
-		if(waveCounter > 6) then
+		if(waveCounter >= 6) then
 			isWaveEnding = true;
+			waveBullets1[2] = 2.0;
 			return;
 		end
 		

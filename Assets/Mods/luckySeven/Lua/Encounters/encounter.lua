@@ -1,6 +1,6 @@
 -- An animation demo with a rotating Sans head.
 music = "Happy_Intro" --Always OGG. Extension is added automatically. Remove the first two lines for custom music.
-encountertext = "Everything's H A P P Y ." --Modify as necessary. It will only be read out in the action select screen.
+encountertext = "[effect:none]Everything's H A P P Y ." --Modify as necessary. It will only be read out in the action select screen.
 nextwaves = {"waveNull"}
 wavetimer = 0.0
 arenasize = {260, 130}
