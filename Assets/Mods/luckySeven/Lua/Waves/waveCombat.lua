@@ -116,40 +116,66 @@ function UpdateWave2()
 	
 	hand.sprite.rotation = curRot;
 	
-	
-	if(waveTimer > timerlimit)then
-		--CHAKKA
-		--if x out of bounds NOW, wrap around
-		if(waveCounter >= 6) then
-			isWaveEnding = true;
-			waveBullets1[2] = 2.0;
-			return;
+	if(isWaveEnding ~= true)then
+		if(waveTimer > timerlimit)then
+			--CHAKKA
+			--if x out of bounds NOW, wrap around
+			
+			if(waveCounter >= 6) then
+				isWaveEnding = true;
+				waveBullets1[2] = 2.0;
+				waveBullets1[5] = 0;
+				return;
+			end
+			
+			if(x > 650)then
+				x = -x;
+			elseif(x < -10) then
+				x = -x;
+			end
+			
+			local i = math.random(1,#possibilities);
+			
+			local bone = CreateProjectileAbs(possibilities[i], x,y);
+			bone.sprite.SetPivot(0,0.5);
+			bone.sprite.rotation = curRot;
+			x = x + math.cos( math.rad(curRot) )*lengths[i];
+			y = y + math.sin( math.rad(curRot) )*lengths[i];
+			hand.MoveToAbs(x, y);
+			
+			waveCounter = waveCounter + 1;
+			
+			waveBullets1[2] = 1.5 - (0.3*waveCounter) + (math.random() * 0.5);
+			waveBullets1[3] = x;
+			waveBullets1[4] = y;
+			waveBullets1[5] = rotSpeed + 10;
+			waveBullets[5 + waveCounter - 1] = bone;
+			
+			waveTimer = 0;
+			
 		end
-		
-		if(x > 650)then
-			x = -x;
-		elseif(x < -10) then
-			x = -x;
+	else
+		if(waveTimer > timerlimit)then
+			if(waveCounter <= 0)then
+				--do end wave stuff
+				Encounter.Call("ToggleHand");
+				EndWave();
+				return;
+			end
+			
+			local bone = waveBullets[5 + waveCounter - 1];
+			hand.MoveToAbs(bone.absx, bone.absy);
+			
+			waveBullets1[2] = 0.75;
+			waveBullets1[3] = bone.absx;
+			waveBullets1[4] = bone.absy;
+			waveBullets1[5] = 0;
+			
+			bone.Remove();
+			
+			waveCounter = waveCounter - 1;
+			waveTimer = 0;
 		end
-		
-		local i = math.random(1,#possibilities);
-		
-		local bone = CreateProjectileAbs(possibilities[i], x,y);
-		bone.sprite.SetPivot(0,0.5);
-		bone.sprite.rotation = curRot;
-		x = x + math.cos( math.rad(curRot) )*lengths[i];
-		y = y + math.sin( math.rad(curRot) )*lengths[i];
-		hand.MoveToAbs(x, y);
-		
-		waveCounter = waveCounter + 1;
-		
-		waveBullets1[2] = 1.5 - (0.3*waveCounter) + (math.random() * 0.5);
-		waveBullets1[3] = x;
-		waveBullets1[4] = y;
-		waveBullets1[5] = rotSpeed + 10;
-		
-		waveTimer = 0;
-		
 	end
 end
 
