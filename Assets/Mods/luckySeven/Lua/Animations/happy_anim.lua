@@ -125,6 +125,7 @@ local function CreateHead(X, Y, pivotX, pivotY, withJaw, hasEye)
 		jaw.SetAnchor(0.9333334,0.4166666);
 		jaw.SetPivot(0.9105945,1);
 		jaw.MoveTo(0,0);
+		jaw.SendToBottom();
 	end
 	
 	local eye = nil;
@@ -143,9 +144,10 @@ local function CreateHead(X, Y, pivotX, pivotY, withJaw, hasEye)
 	return { head, eye, jaw };
 end
 	
-local head1 = CreateHead(-7.7, 75.57988, 0.5, -0.27, true,0);
+local head1 = CreateHead(0, 0, 0.5, -0.27, true,0);
 head1[1].SetParent(torso);
-head1[1].y = 12.3;
+head1[1].x = -6.5;
+head1[1].y = 8.5;
 local head2 = nil --CreateHead(-64.6, 39.6, 0.5, 1, true);
 local head3 = nil --CreateHead(80.6, 77.9, 0.5, -0.27, true);
 local head4 = nil --CreateHead(80.6, 77.9, 0.5, -0.27, true);
@@ -190,150 +192,8 @@ local function UpdateSpring()
 			springTimer = 0.5;
 			timeStart = Time.time;
 		end
-		if(sprung == 1)then
-			sprung = 2;
-			--neck
-			neck = CreateSprite("Happy/tempSprites/neckBone");
-			neck.SetParent(torso);
-			neck.SetAnchor(0.425,0.579);
-			neck.SetPivot(0.3,0);
-			neck.MoveTo(0,0);
-			
-			armNeckTop = CreateSprite("Happy/tempSprites/armNeckTopTop")
-			armNeckTop.SetParent(neck);
-			armNeckTop.SetAnchor(0.17,0.8914);
-			armNeckTop.SetPivot(0.4729,0.0253);
-			armNeckTop.MoveTo(0,0);
-			
-			head4 = CreateHead(0,0, 0.5, -0.27, true,2); --neckTop
-			
-			legs.Scale(1.6,1.6, true);
-			
-			PositionHead(head4, armNeckTop, 0, 20, 0);
-			happyAnim.Shake(0.25);	--for some reason these kinds of func defines need a ptr to the module. Just stick with it.
-			
-			if(head1 ~= nil)then
-				head1[1].Remove();
-				head1[3].Remove();
-				head1 = nil;
-			end
-		elseif(sprung ==2 )then
-			sprung = 3;
-			--left arm
-			armLoL = CreateSprite("Happy/tempSprites/armLowerL");
-			armLoL.SetParent(torso);
-			armLoL.SetAnchor(0.22,0.965)
-			armLoL.SetPivot(1,0.733);
-			armLoL.MoveTo(0.4,0);
-			
-			head2 = CreateHead(-64.6, 39.6, 0.5, 1, true); -- armLoL
-			
-			legs.Scale(1.6,1.6, true);
-			
-			PositionHead(head2, armLoL,-45,-45, 0);
-			happyAnim.Shake(0.25);
-		elseif(sprung ==3 )then
-			sprung = 4;
-			
-			armUp1 = CreateSprite("Happy/tempSprites/armUpper");
-			armUp1.SetParent(torso);
-			armUp1.SetAnchor(0.6792037, 0.3424562);
-			armUp1.SetPivot(0.5, 1);
-			armUp1.MoveTo(0,0);
-			
-			armLo1 = CreateSprite("Happy/tempSprites/armLower");
-			armLo1.SetParent(armUp1);
-			armLo1.SetAnchor(0.3888889, 0.06450538);
-			armLo1.SetPivot(0.06965858, 0.8420351);
-			armLo1.MoveTo(0,0);
-			
-			armUp2 = CreateSprite("Happy/tempSprites/armUpper2");
-			armUp2.SetParent(torso);
-			armUp2.SetAnchor(0.78, 0.52);
-			armUp2.SetPivot(0.5, 0.935167);
-			armUp2.MoveTo(-2.5,2);
-			armUp2.localRotation = armUp2Rot;
-			
-			armLo2 = CreateSprite("Happy/tempSprites/armLower2");
-			armLo2.SetParent(armUp2);
-			armLo2.SetAnchor(0.5, 0.14);
-			armLo2.SetPivot(0.5, 0.02837969);
-			armLo2.MoveTo(0,0);
-			armLo2.localRotation = armLo2Rot;
-			
-			hand1 = CreateSprite("Happy/tempSprites/hand1");
-			hand1.SetParent(armLo1);
-			hand1.SetAnchor(0.984, 0.495);
-			hand1.SetPivot(0.1571406, 0.17743);
-			hand1.MoveTo(0,0);
-			
-			hand2 = CreateSprite("Happy/tempSprites/hand2");
-			hand2.SetParent(armLo2);
-			hand2.SetAnchor(0.8, 0.948);
-			hand2.SetPivot(0.5, 0.06390622);
-			hand2.MoveTo(0,0);
-			hand2.localRotation = hand2Rot;
-			
-			head3 = CreateHead(0,0, 0.5, -0.27, true); --arm2
-			
-			legs.Scale(1.6,1.6, true);
-			
-			PositionHead(head3, hand2, 0, 3, 0);
-			happyAnim.Shake(0.25);
-		elseif(sprung ==4 )then
-			sprung = 5;
-			armNeckL = CreateSprite("Happy/tempSprites/armNeckL")
-			armNeckL.SetParent(neck);
-			armNeckL.SetAnchor(0.17, 0.57);
-			armNeckL.SetPivot(0.994, 0.374);
-			armNeckL.MoveTo(0,0);
-			armNeckL.localRotation = armNeckLRot;
-			
-			head6 = CreateHead(0,0, 0.5, 0, false); --neckArmL
-			
-			legs.Scale(1.6,1.6, true);
-			
-			PositionHead(head6,armNeckL,-60,5,180);
-			happyAnim.Shake(0.25);
-		elseif(sprung ==5 )then
-			sprung = 6;
-			
-			armNeckHiR = CreateSprite("Happy/tempSprites/armNeckUpperR")
-			armNeckHiR.SetParent(neck);
-			armNeckHiR.SetAnchor(0.8943, 0.9286);
-			armNeckHiR.SetPivot(0.171, 0.0798);
-			armNeckHiR.MoveTo(0,0);
-			
-			head5 = CreateHead(0,0, 0.5, -0.27, true); --neckarmRTop
-			
-			
-			armNeckLoR = CreateSprite("Happy/tempSprites/armNeckLowerR")
-			armNeckLoR.SetParent(neck);
-			armNeckLoR.SetAnchor(0.93939, 0.8914);
-			armNeckLoR.SetPivot(0.10067, 0.9942);
-			armNeckLoR.MoveTo(0,0);
-			
-			head7 = CreateHead(0,0, 0.5, 0, false); --neckArmRBot
-			
-			
-			legs.Scale(1.6,1.6, true);
-			
-			PositionHead(head5,armNeckHiR,25,30,-60);
-			PositionHead(head7,armNeckLoR,25,-15,-20);
-			happyAnim.Shake(0.25);
-		end
+		
 	end
-end
-
-local function LetShitGoDown()
-	--reset timer
-	timeStart = Time.time;
-	
-	Audio.LoadFile("Happy_Loop");
-	legs.Scale(1.6,1.6, true);
-	sprung = 1;
-	swaying = true;
-	SetGlobal("isSprung", true);
 end
 
 --tentacle thing in bounds : armLol (2)
@@ -426,6 +286,10 @@ local function GentleSway()
 	end
 end
 
+function happyAnim.ResetTimer()
+	timeStart = Time.time;
+end
+
 function happyAnim.ToggleSway(newState)
 	if(newState == nil)then
 		swaying = not swaying;
@@ -442,6 +306,7 @@ local function KillHeadLoc(head, yOffset, yOffsetJaw)
 	--local positionX = head[1].xAbs;
 	--local positionY = head[1].yAbs;
 	head[1].SetParent(legs);
+	head[1].SendToBottom();
 	--head[1].xAbs = positionX;
 	--head[1].yAbs = positionY;
 	table.insert(looseHeadParts, {head[1],-15, 0, yOffset});
@@ -451,6 +316,7 @@ local function KillHeadLoc(head, yOffset, yOffsetJaw)
 	--positionX = head[3].xAbs;
 	--positionY = head[3].yAbs;
 	head[3].SetParent(legs);
+	head[3].SendToBottom();
 	--head[3].xAbs = positionX;
 	--head[3].yAbs = positionY;
 	table.insert(looseHeadParts, {head[3], 15, 0, yOffsetJaw});
@@ -522,7 +388,7 @@ local function UpdateDeadItems()
 			looseHeadParts[i][1].color = {v,v,v};
 		end
 		
-		looseHeadParts[i][1].SendToBottom();
+		--looseHeadParts[i][1].SendToBottom();
 		
 	end
 end
@@ -539,11 +405,18 @@ local function UpdateEye(eyeRef, index, isSmall)
 	elseif(eyeState[index] == 1)then
 		eyeState[index] = 2;
 		eyeRef.StopAnimation();
+		DEBUG("Stopping anim");
+		if(isSmall)then
+			eyeRef.Set("Happy/tempSprites/eyes/eyeSmallOpen");
+			
+		else
+			eyeRef.Set("Happy/tempSprites/eyes/eyeOpen");
+		end
 	end
 	--set;
 	
 	--basically the state when the eye is open, not animating.
-	if(eyeState == 2)then
+	if(eyeState[index] == 2)then
 	
 		--deduce direction
 		--get x and y
@@ -564,15 +437,15 @@ local function UpdateEye(eyeRef, index, isSmall)
 		angle = math.deg(angle) + eyeRef.rotation;
 		
 		--ensure it's in the right range
-		while(angle > 180)do
-			angle = angle - 360;
+		if(angle > 180)then
+			angle = 180;
 		end
-		while(angle < -180)do
-			angle = angle + 360;
+		if(angle < -180)then
+			angle = -180;
 		end
 		
 		--Do some string shenanigans
-		local dir = "";
+		local dir = "Open";
 		if(angle > 157.5)then
 			dir = "Open"
 		elseif(angle > 112.5)then
@@ -642,7 +515,7 @@ end
 --NOTE TO SELF: index starts at 2
 local function ShowEyeLoc(eyeRef, index, isSmall)
 	isSmall = isSmall or true;
-	
+	DEBUG("Index ".. index);
 	if(isSmall)then
 		--eyeRef.Set("Happy/tempSprites/eyes/eyeOpen");
 		eyeRef.SetAnimation({
@@ -661,6 +534,8 @@ local function ShowEyeLoc(eyeRef, index, isSmall)
 	end
 
 	eyeState[index] = 1;
+	DEBUG("timer ".. eyeAnimationTimers[index]);
+	DEBUG("state ".. eyeState[index]);
 end
 
 --Note : bit contrived, put in head array?
@@ -673,6 +548,7 @@ function happyAnim.ShowEye(index)
 		eyeAnimationTimers[index] = 3/30;
 		eyeState[index] = 1;
 	elseif(index == 2)then
+		DEBUG("ASDFSADF");
 		ShowEyeLoc(head2[2],2);
 	elseif(index == 3)then
 		ShowEyeLoc(head3[2],3);
@@ -716,7 +592,134 @@ end
 function happyAnim.SpringUp()
 
 	--DEBUG("Yo intro");
-	LetShitGoDown();
+	--LetShitGoDown();
+	if(sprung == 0)then 
+		sprung = 1; 
+		swaying = true;
+		SetGlobal("isSprung", true);
+	end
+	--play sound
+	if(sprung == 1)then
+		--neck
+		neck = CreateSprite("Happy/tempSprites/neckBone");
+		neck.SetParent(torso);
+		neck.SetAnchor(0.425,0.579);
+		neck.SetPivot(0.3,0);
+		neck.MoveTo(0,0);
+		
+		armNeckTop = CreateSprite("Happy/tempSprites/armNeckTopTop")
+		armNeckTop.SetParent(neck);
+		armNeckTop.SetAnchor(0.17,0.8914);
+		armNeckTop.SetPivot(0.4729,0.0253);
+		armNeckTop.MoveTo(0,0);
+		
+		head4 = CreateHead(0,0, 0.5, -0.27, true,2); --neckTop
+		
+		PositionHead(head4, armNeckTop, 0, 20, 0);
+		
+		if(head1 ~= nil)then
+			head1[1].Remove();
+			head1[3].Remove();
+			head1 = nil;
+		end
+	elseif(sprung ==2 )then
+		--left arm
+		armLoL = CreateSprite("Happy/tempSprites/armLowerL");
+		armLoL.SetParent(torso);
+		armLoL.SetAnchor(0.22,0.965)
+		armLoL.SetPivot(1,0.733);
+		armLoL.MoveTo(0.4,0);
+		
+		head2 = CreateHead(-64.6, 39.6, 0.5, 1, true); -- armLoL
+		
+		PositionHead(head2, armLoL,-45,-45, 0);
+	elseif(sprung ==3 )then
+		
+		armUp1 = CreateSprite("Happy/tempSprites/armUpper");
+		armUp1.SetParent(torso);
+		armUp1.SetAnchor(0.6792037, 0.3424562);
+		armUp1.SetPivot(0.5, 1);
+		armUp1.MoveTo(0,0);
+		
+		armLo1 = CreateSprite("Happy/tempSprites/armLower");
+		armLo1.SetParent(armUp1);
+		armLo1.SetAnchor(0.3888889, 0.06450538);
+		armLo1.SetPivot(0.06965858, 0.8420351);
+		armLo1.MoveTo(0,0);
+		
+		armUp2 = CreateSprite("Happy/tempSprites/armUpper2");
+		armUp2.SetParent(torso);
+		armUp2.SetAnchor(0.78, 0.52);
+		armUp2.SetPivot(0.5, 0.935167);
+		armUp2.MoveTo(-2.5,2);
+		armUp2.localRotation = armUp2Rot;
+		
+		armLo2 = CreateSprite("Happy/tempSprites/armLower2");
+		armLo2.SetParent(armUp2);
+		armLo2.SetAnchor(0.5, 0.14);
+		armLo2.SetPivot(0.5, 0.02837969);
+		armLo2.MoveTo(0,0);
+		armLo2.localRotation = armLo2Rot;
+		
+		hand1 = CreateSprite("Happy/tempSprites/hand1");
+		hand1.SetParent(armLo1);
+		hand1.SetAnchor(0.984, 0.495);
+		hand1.SetPivot(0.1571406, 0.17743);
+		hand1.MoveTo(0,0);
+		
+		hand2 = CreateSprite("Happy/tempSprites/hand2");
+		hand2.SetParent(armLo2);
+		hand2.SetAnchor(0.8, 0.948);
+		hand2.SetPivot(0.5, 0.06390622);
+		hand2.MoveTo(0,0);
+		hand2.localRotation = hand2Rot;
+		
+		head3 = CreateHead(0,0, 0.5, -0.27, true); --arm2
+		
+		
+		PositionHead(head3, hand2, 0, 3, 0);
+	elseif(sprung ==4 )then
+		armNeckL = CreateSprite("Happy/tempSprites/armNeckL")
+		armNeckL.SetParent(neck);
+		armNeckL.SetAnchor(0.17, 0.57);
+		armNeckL.SetPivot(0.994, 0.374);
+		armNeckL.MoveTo(0,0);
+		armNeckL.localRotation = armNeckLRot;
+		
+		head6 = CreateHead(0,0, 0.5, 0, false); --neckArmL
+		
+		
+		PositionHead(head6,armNeckL,-60,5,180);
+	elseif(sprung ==5 )then
+		
+		armNeckHiR = CreateSprite("Happy/tempSprites/armNeckUpperR")
+		armNeckHiR.SetParent(neck);
+		armNeckHiR.SetAnchor(0.8943, 0.9286);
+		armNeckHiR.SetPivot(0.171, 0.0798);
+		armNeckHiR.MoveTo(0,0);
+		
+		head5 = CreateHead(0,0, 0.5, -0.27, true); --neckarmRTop
+		
+		
+		armNeckLoR = CreateSprite("Happy/tempSprites/armNeckLowerR")
+		armNeckLoR.SetParent(neck);
+		armNeckLoR.SetAnchor(0.93939, 0.8914);
+		armNeckLoR.SetPivot(0.10067, 0.9942);
+		armNeckLoR.MoveTo(0,0);
+		
+		head7 = CreateHead(0,0, 0.5, 0, false); --neckArmRBot
+		
+		
+		
+		
+		PositionHead(head5,armNeckHiR,25,30,-60);
+		PositionHead(head7,armNeckLoR,25,-15,-20);
+		
+		Audio.LoadFile("Happy_Loop");
+	end
+	sprung = sprung + 1;
+	legs.Scale(1.6,1.6, true);
+	happyAnim.Shake(0.25);
 end
 
 

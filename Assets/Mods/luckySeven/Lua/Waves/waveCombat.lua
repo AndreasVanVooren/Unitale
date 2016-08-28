@@ -19,11 +19,12 @@ end
 function CreateWave()
 	waveCounter = 0;
 	waveTimer = 0;
+	isWaveEnding = false;
 	if(waveType == 2)then		--tentacle thing in bounds
 
 		--disable hand
 		Encounter.Call("ToggleHand");
-
+		Encounter.Call("ShowEye2");
 		--this has to be hardcoded, reason being fuck you.
 		local initX = 395.867095947266;
 		local initY = 279.202453613281;
@@ -38,7 +39,7 @@ function CreateWave()
 
 		--disable hand
 		Encounter.Call("ToggleHand");
-
+		Encounter.Call("ShowEye3");
 		--this has to be hardcoded, reason being fuck you.
 		local initX = 395.867095947266;
 		local initY = 279.202453613281;
@@ -88,7 +89,7 @@ function UpdateWaveBoneExtrude(bulletTable, repeatCount, targetX, targetY)
 	local vSin = vecY/length;
 	local angle = math.deg( math.atan2(vSin,vCos) );
 
-	DEBUG ("RotSpeed : ".. rotSpeed);
+	--DEBUG ("RotSpeed : ".. rotSpeed);
 
 	while (angle < -180) do
 		angle = angle + 360;
@@ -96,7 +97,7 @@ function UpdateWaveBoneExtrude(bulletTable, repeatCount, targetX, targetY)
 	while (angle >= 180) do
 		angle = angle - 360;
 	end
-	DEBUG ("Angle 2nd pass : ".. angle);
+	--DEBUG ("Angle 2nd pass : ".. angle);
 
 	while(curRot - angle > 180)do
 		curRot = curRot - 360;
@@ -123,7 +124,7 @@ function UpdateWaveBoneExtrude(bulletTable, repeatCount, targetX, targetY)
 		diff = 0;
 	end
 
-	DEBUG ("Cur rot : ".. curRot);
+	--DEBUG ("Cur rot : ".. curRot);
 
 	hand.sprite.rotation = curRot;
 
@@ -134,25 +135,23 @@ function UpdateWaveBoneExtrude(bulletTable, repeatCount, targetX, targetY)
 
 			if(waveCounter >= repeatCount) then
 				isWaveEnding = true;
-				bulletTable[2] = 2.0;
+				bulletTable[2] = 1.0;
 				bulletTable[5] = 0;
 				return;
 			end
 
-			if(x > 650)then
-				x = -x;
-			elseif(x < -10) then
-				x = -x;
+			if(x > 650 or x < -10)then
+				x = 640-x;
 			end
 
 			local i = math.random(1,#possibilities);
 
-			local bone = CreateProjectileAbs(possibilities[i], math.fmod(x,640),math.fmod(y,480));
+			local bone = CreateProjectileAbs(possibilities[i], x,y);
 			bone.sprite.SetPivot(0,0.5);
 			bone.sprite.rotation = curRot;
 			x = x + math.cos( math.rad(curRot) )*lengths[i];
 			y = y + math.sin( math.rad(curRot) )*lengths[i];
-			hand.MoveToAbs(math.fmod(x,640), math.fmod(y,480));
+			hand.MoveToAbs(x,y);
 
 			waveCounter = waveCounter + 1;
 
@@ -160,26 +159,27 @@ function UpdateWaveBoneExtrude(bulletTable, repeatCount, targetX, targetY)
 			bulletTable[3] = x;
 			bulletTable[4] = y;
 			bulletTable[5] = rotSpeed + 10;
-			waveBullets1[6 + waveCounter-1] = bone;
+			bulletTable[6 + waveCounter-1] = bone;
 
 			waveTimer = 0;
 
 		end
 	else
 		if(waveTimer > timerlimit)then
-			if(waveCounter <= 0)then
+			if(waveCounter <= 1)then
 				--do end wave stuff
 				Encounter.Call("ToggleHand");
 				EndWave();
 				return;
 			end
 
-			local bone = waveBullets[6 + waveCounter - 1];
+			local bone = bulletTable[6 + waveCounter - 1];
 			hand.MoveToAbs(bone.absx, bone.absy);
 
-			bulletTable[2] = 0.75;
+			bulletTable[2] = 0.5;
 			bulletTable[3] = bone.absx;
 			bulletTable[4] = bone.absy;
+			hand.sprite.rotation = bone.sprite.rotation;
 			bulletTable[5] = 0;
 
 			bone.Remove();

@@ -179,6 +179,11 @@ function HandleCustomCommand(command)
     elseif command == "BATHE" then
 		if(isHugged) then
 			BattleDialog("TODO.");
+			batheCount = batheCount+1;
+			if(batheCount >= 2)then
+				AddMercy("Separate");
+			end
+			
 		else
 			BattleDialog("It won't let you.");
 		end
@@ -198,4 +203,5 @@ end
 function OnDeath()
 	Encounter.Call("State", "ENEMYDIALOGUE");
 	hasDied = true;
+	AddMercy("Consume");
 end

@@ -4,6 +4,7 @@ encountertext = "[effect:none]Everything's H A P P Y ." --Modify as necessary. I
 nextwaves = {"waveNull"}
 wavetimer = 0.0
 arenasize = {260, 130}
+canRun = false;
 
 enemies = {"happy"}
 
@@ -16,6 +17,8 @@ dialogue = nil
 possible_attacks = {"waveNull"}
 
 hasSpeech = false;
+
+happyIntro = "[waitall:3][noskip]Everything's [waitall:8][func:Spring]H [func:Spring]A [func:Spring]P [func:Spring]P [func:Spring]Y .";
 
 function EnteringState(newState, oldState)
 	if(oldState == "ITEMMENU") then
@@ -33,7 +36,7 @@ function EnteringState(newState, oldState)
 			enemies[1].SetVar("feelsAttacked",false);
 			BattleDialog({
 				"[waitall:3][noskip][func:PrepareSpring]You shouldn't have done that.",
-				"[waitall:3][noskip]Everything's [waitall:8][func:Spring]H A P P Y ."
+				happyIntro
 				});
 			EnemyDialogueEnding();
 		elseif(enemies[1].GetVar("feelsDeaded") == true)then
@@ -177,9 +180,7 @@ function DefenseEnding() --This built-in function fires after the defense round 
 end
 
 function HandleSpare()
-	isdfd = nil;
-	isdfd.Perform();
-
+	Spare();
      --State("ENEMYDIALOGUE")
 	 --CloseEye();
 end
@@ -200,35 +201,18 @@ function HandleItem(ItemID)
 		--return;
 		
 		if(GetGlobal("isSprung") == false)then
-			BattleDialog({
-				"[noskip][waitall:4]You hold the Locket in the air...[w:8]\n[func:PrepareSpring]It seems to remember something...",
-				"[waitall:3][noskip]Everything's [waitall:8][func:Spring]H A P P Y ."
-			});
-		elseif(GetGlobal("isSprung") == true)then	--just make sure it isn't nil
-		
-			if(enemies[1].GetVar("hasDied") == true)then
-				PlayMusic("Happy_Fuckit")
-				BattleDialog({
-					"BEPIS",
-					"[noskip][novoice][func:State,DONE]"
-				});
-			elseif(enemies[1].GetVar("batheCount") < 2)then
-				BattleDialog({
-					"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
-					"...you choke on the foul air."
-				});
-			else
-				BattleDialog({
-					"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
-					"...you reach out to the SOULS.",
-						"[noskip][novoice][func:State,DONE]"
-				});
-			end
+			BattleDialog({"The locket whispers to you...\rMake it remember..."});
+		elseif(enemies[1].GetVar("hasDied") == true)then
+			BattleDialog({"The locket whispers to you...\r[color:FF0000]Show it the mercy it deserves..."});
+		elseif(enemies[1].GetVar("isHugged") ~= true)then
+			BattleDialog({"The locket whispers to you...\rSo alone... So cold..."});
+		elseif(enemies[1].GetVar("batheCount") >= 2)then
+			BattleDialog({"The locket whispers to you...\rIt is time. You know what to do."});
+		else
+			BattleDialog({"The locket whispers to you...\rTidy for the big day..."});
 		end
-
 		
-		
-			--State("ACTIONSELECT")
+		--State("ACTIONSELECT")
 			--encountertext = "The Sanstrosity seems content."
 		--BattleDialog({
 		--	"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
@@ -387,6 +371,33 @@ function HandleItem(ItemID)
 	end
 end
 
+customMercy = {"Flee"};
+
+function HandleMercy(mercyID)
+	if(mercyID == "Flee")then
+		BattleDialog({"You try to run...", "But there's no escape..."});
+	elseif(mercyID == "Separate")then
+		
+		PlayMusic("the locket")
+		
+		--PlaySeparate();
+		--return;
+		BattleDialog({
+					"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
+					"...you reach out to the SOULS.",
+						"[noskip][novoice][func:State,DONE]"--playseparate
+				});
+		
+	elseif(mercyID == "Consume")then
+		PlayMusic("Happy_Fuckit")
+	    BattleDialog({
+	    	"BEPIS",
+	    	"[noskip][novoice][func:State,DONE]"
+		});
+	end 
+	
+end
+
 function PauseAudio()
 	Audio.Pause()
 end
@@ -412,7 +423,18 @@ function Heal(amount)
 end
 
 function Spare()
-	State("DONE");
+	--State("DONE");
+	if(enemies[1].GetVar("hasDied") == true)then
+		BattleDialog("Too late for mercy.");
+	elseif(GetGlobal("isSprung") == false)then
+		BattleDialog({
+				"[noskip][waitall:4]You show mercy to It.[w:8]\n[func:PrepareSpring]It seems to remember something...",
+				happyIntro
+		});
+	else
+		BattleDialog({"It doesn't look like it's working..."
+		});
+	end
 end
 
 function PrepareSpring()
@@ -435,9 +457,35 @@ function Deaded()
 	Audio.Pitch(0.5);
 	happyAnim.ShowEye(1);
 	happyAnim.ToggleSway(false);
+	happyAnim.ResetTimer();
 	--enableTorseye
 	wavetimer = 0;
 	possible_attacks = {"waveNull"};
+end
+
+function ShowEye2()
+	--DEBUG("AFSAFDASF");
+	happyAnim.ShowEye(2);
+end
+
+function ShowEye3()
+	happyAnim.ShowEye(3);
+end
+
+function ShowEye4()
+	happyAnim.ShowEye(4);
+end
+
+function ShowEye5()
+	happyAnim.ShowEye(5);
+end
+
+function ShowEye6()
+	happyAnim.ShowEye(6);
+end
+
+function ShowEye7()
+	happyAnim.ShowEye(7);
 end
 
 function Spring()
