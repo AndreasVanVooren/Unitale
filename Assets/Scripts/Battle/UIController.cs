@@ -227,7 +227,7 @@ public class UIController : MonoBehaviour
 
             case UIState.MERCYMENU:
                 selectedMercy = 0;
-                string[] mercyopts = new string[1 + (encounter.CanRun ? 1 : 0)];
+                string[] mercyopts = new string[1 + (encounter.CanRun ? 1 : 0) + encounter.customMercy.Count];
                 mercyopts[0] = "Spare";
                 foreach (EnemyController enemy in encounter.enabledEnemies)
                 {
@@ -237,10 +237,21 @@ public class UIController : MonoBehaviour
                         break;
                     }
                 }
+				int index = 1;
                 if (encounter.CanRun)
                 {
-                    mercyopts[1] = "Flee";
+                    mercyopts[index] = "Flee";
+					++index;
                 }
+				for (int i = 0; i < encounter.customMercy.Count; i++)
+				{
+					if(index + i >= 3)
+					{
+						Debug.LogWarningFormat("Exceeding max spare options, culling options from {0}", encounter.customMercy[i]);
+						break;
+					}
+					mercyopts[index + i] = encounter.customMercy[i];
+				}
                 setPlayerOnSelection(0);
                 textmgr.setText(new SelectMessage(mercyopts, true));
                 break;
@@ -609,7 +620,7 @@ public class UIController : MonoBehaviour
 
                     encounter.CallOnSelfOrChildren("HandleSpare");
                 }
-                else if (selectedMercy == 1)
+                else if (selectedMercy == 1 && encounter.CanRun)
                 {
                     PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = false;
                     AudioClip yay = AudioClipRegistry.GetSound("runaway");
@@ -668,6 +679,14 @@ public class UIController : MonoBehaviour
                     musicPausedFromRunning = true;
                     runawayattempts++;
                 }
+				else
+				{
+					Debug.Log(selectedMercy - (encounter.CanRun ? 2 : 1));
+					if (!encounter.CustomMercy(encounter.customMercy[selectedMercy - (encounter.CanRun?2:1)]))
+					{
+						Debug.LogWarningFormat("No CustomMercy for {0}", encounter.customMercy[selectedMercy - (encounter.CanRun ? 2 : 1)]);
+					}
+				}
                 playSound(sndConfirm);
                 break;
 
@@ -831,12 +850,12 @@ public class UIController : MonoBehaviour
                 }
                 if (encounter.CanRun)
                 {
-                    selectedMercy = Math.mod(selectedMercy, 2);
+                    selectedMercy = Math.mod(selectedMercy, Mathf.Min(2+encounter.customMercy.Count,3));
                 }
                 else
                 {
-                    selectedMercy = 0;
-                }
+					selectedMercy = Math.mod(selectedMercy, Mathf.Min(1 + encounter.customMercy.Count, 3));
+				}
                 setPlayerOnSelection(selectedMercy * 2);
                 break;
         }

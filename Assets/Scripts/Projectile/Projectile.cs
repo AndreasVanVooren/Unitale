@@ -148,15 +148,14 @@ public abstract class Projectile : MonoBehaviour
         return false;
     }
 
-    void OnCollisionStay2D(Collision2D other)
+    void OnTriggerStay2D(Collider2D other)
     {
-        
-
         //if it is the player
         if (other.gameObject.CompareTag("Player"))
         {
-            
-        }
+			OnProjectileHit();
+
+		}
         //if it is another projectile
         else
         {

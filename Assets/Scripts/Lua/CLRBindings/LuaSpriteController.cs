@@ -327,13 +327,15 @@ public class LuaSpriteController {
 
     public void SendToTop()
     {
-        Debug.Log("[LuaSpriteController::SendToTop] TODO");
-        //img.rectTransform.SetAsLastSibling(); // in unity, the lowest UI component in the hierarchy renders last
-    }
+        //Debug.Log("[LuaSpriteController::SendToTop] TODO");
+		//img.rectTransform.SetAsLastSibling(); // in unity, the lowest UI component in the hierarchy renders last
+		img.SendToTop();
+	}
 
     public void SendToBottom()
     {
-        Debug.Log("[LuaSpriteController::SendToBottom] TODO");
+        //Debug.Log("[LuaSpriteController::SendToBottom] TODO");
+		img.SendToBottom();
         //img.rectTransform.SetAsFirstSibling();
     }
 

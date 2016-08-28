@@ -100,6 +100,18 @@ namespace SpriteLayout
 			}
         }
 
+		public void SendToTop()
+		{
+			if(SortingOrder < _highestOrder)
+				SortingOrder = _highestOrder + 1;
+		}
+
+		public void SendToBottom()
+		{
+			if(SortingOrder > _lowestOrder)
+				SortingOrder = _lowestOrder - 1;
+		}
+
         //TODO : Do this differently?
         private static int _lowestOrder = 0;
         private static int _highestOrder = 0;
@@ -226,18 +238,27 @@ namespace SpriteLayout
 
         public void AttachCollider(ColliderType type)
 		{
+			if(this.GetComponent<Rigidbody2D>() == null)
+			{
+				var body = this.gameObject.AddComponent<Rigidbody2D>();
+				body.gravityScale = 0;
+				body.isKinematic = true;
+			}
+			
 			switch (type)
 			{
 				case ColliderType.Rect:
 					{
 						var collider = this.gameObject.AddComponent<BoxCollider2D>();
+						collider.isTrigger = true;
 						collider.size = Dimensions;
 						break;
 					}
 				case ColliderType.Circle:
 					{
 						var collider = this.gameObject.AddComponent<CircleCollider2D>();
-						float avg = (Dimensions.x + Dimensions.y) / 2;
+						collider.isTrigger = true;
+						float avg = (Extents.x + Extents.y) / 2;
 						collider.radius = avg;
 						break;
 					}
