@@ -405,12 +405,22 @@ local function UpdateEye(eyeRef, index, isSmall)
 	elseif(eyeState[index] == 1)then
 		eyeState[index] = 2;
 		eyeRef.StopAnimation();
-		DEBUG("Stopping anim");
+		--DEBUG("Stopping anim");
 		if(isSmall)then
 			eyeRef.Set("Happy/tempSprites/eyes/eyeSmallOpen");
 			
 		else
 			eyeRef.Set("Happy/tempSprites/eyes/eyeOpen");
+		end
+	elseif(eyeState[index] == 3)then
+		eyeState[index] = 0;
+		eyeRef.StopAnimation();
+		--DEBUG("Stopping anim");
+		if(isSmall)then
+			eyeRef.Set("Happy/tempSprites/eyes/eyeSmallClosed");
+			
+		else
+			eyeRef.Set("Happy/tempSprites/eyes/eyeClosed");
 		end
 	end
 	--set;
@@ -515,7 +525,10 @@ end
 --NOTE TO SELF: index starts at 2
 local function ShowEyeLoc(eyeRef, index, isSmall)
 	isSmall = isSmall or true;
-	DEBUG("Index ".. index);
+	
+	if(eyeState[index] ~= 0) then return; end
+	
+	--DEBUG("Index ".. index);
 	if(isSmall)then
 		--eyeRef.Set("Happy/tempSprites/eyes/eyeOpen");
 		eyeRef.SetAnimation({
@@ -534,8 +547,8 @@ local function ShowEyeLoc(eyeRef, index, isSmall)
 	end
 
 	eyeState[index] = 1;
-	DEBUG("timer ".. eyeAnimationTimers[index]);
-	DEBUG("state ".. eyeState[index]);
+	--DEBUG("timer ".. eyeAnimationTimers[index]);
+	--DEBUG("state ".. eyeState[index]);
 end
 
 --Note : bit contrived, put in head array?
@@ -548,7 +561,7 @@ function happyAnim.ShowEye(index)
 		eyeAnimationTimers[index] = 3/30;
 		eyeState[index] = 1;
 	elseif(index == 2)then
-		DEBUG("ASDFSADF");
+		--DEBUG("ASDFSADF");
 		ShowEyeLoc(head2[2],2);
 	elseif(index == 3)then
 		ShowEyeLoc(head3[2],3);
@@ -560,6 +573,57 @@ function happyAnim.ShowEye(index)
 		ShowEyeLoc(head6[2],6);
 	elseif(index == 7) then
 		ShowEyeLoc(head7[2],7);
+	end
+end
+
+local function HideEyeLoc(eyeRef, index, isSmall)
+	
+	isSmall = isSmall or true;
+	
+	if(eyeState[index] ~= 2) then return; end
+	
+	--DEBUG("Index ".. index);
+	if(isSmall)then
+		--eyeRef.Set("Happy/tempSprites/eyes/eyeOpen");
+		eyeRef.SetAnimation({
+				"Happy/tempSprites/eyes/eyeClosing1",
+				"Happy/tempSprites/eyes/eyeClosed",
+			});--plays 1 frame for 1/30 
+		eyeAnimationTimers[index] = 2/30;
+	else
+		--eyeRef.Set("Happy/tempSprites/eyes/eyeOpen");
+		eyeRef.SetAnimation({
+				"Happy/tempSprites/eyes/eyeSmallClosing",
+				"Happy/tempSprites/eyes/eyeSmallClosed",
+			});--plays 1 frame for 1/30 
+		eyeAnimationTimers[index] = 2/30;
+	end
+
+	eyeState[index] = 3;
+	--DEBUG("timer ".. eyeAnimationTimers[index]);
+	--DEBUG("state ".. eyeState[index]);
+end
+
+function happyAnim.HideEye(index)
+	if(index == 1)then
+		torsEye.SetAnimation({"Happy/tempSprites/eyes/torsEyeOpening2",
+				"Happy/tempSprites/eyes/torsEyeOpening1",
+				"Happy/tempSprites/eyes/torsEyeClosed",});
+		--torsEye.Set("Happy/tempSprites/eyes/torsEyeOpen");
+		eyeAnimationTimers[index] = 3/30;
+		eyeState[index] = 3;
+	elseif(index == 2)then
+		HideEyeLoc(head2[2],2);
+	elseif(index == 3)then
+		HideEyeLoc(head3[2],3);
+	elseif(index == 4)then
+		HideEyeLoc(head4[2],4);
+	elseif(index == 5)then
+		HideEyeLoc(head5[2],5);
+	elseif(index == 6) then
+		HideEyeLoc(head6[2],6);
+	elseif(index == 7) then
+		HideEyeLoc(head7[2],7);
 	end
 end
 

@@ -41,9 +41,8 @@ function EnteringState(newState, oldState)
 			EnemyDialogueEnding();
 		elseif(enemies[1].GetVar("feelsDeaded") == true)then
 			enemies[1].SetVar("feelsDeaded",false);
-			DEBUG("Can't take sky or somehting");
 			BattleDialog({
-				"[func:Deaded]It's dying...",
+				"[func:Deaded]The end is nigh...",
 				});
 		elseif(not hasSpeech) then
 			
@@ -143,7 +142,8 @@ function Update()
 	end
 	
 	if(Input.Menu == 1)then
-		enemies[1].Call("Cheat");
+		--enemies[1].Call("Cheat");
+		Player.Hurt(98456946);
 	end
 	
 end
@@ -201,7 +201,9 @@ function HandleItem(ItemID)
 		--return;
 		
 		if(GetGlobal("isSprung") == false)then
-			BattleDialog({"The locket whispers to you...\rMake it remember..."});
+			BattleDialog({"The locket whispers to you...\rMake It remember...\rOr make It undone..."});
+		elseif(enemies[1].GetVar("feelsAttacked") == true)then
+			
 		elseif(enemies[1].GetVar("hasDied") == true)then
 			BattleDialog({"The locket whispers to you...\r[color:FF0000]Show it the mercy it deserves..."});
 		elseif(enemies[1].GetVar("isHugged") ~= true)then
@@ -392,6 +394,7 @@ function HandleMercy(mercyID)
 		PlayMusic("Happy_Fuckit")
 	    BattleDialog({
 	    	"BEPIS",
+			"We're still in the process of making of this shit",
 	    	"[noskip][novoice][func:State,DONE]"
 		});
 	end 
@@ -486,6 +489,15 @@ end
 
 function ShowEye7()
 	happyAnim.ShowEye(7);
+end
+
+function HideEyes()
+	happyAnim.HideEye(2);
+	happyAnim.HideEye(3);
+	happyAnim.HideEye(4);
+	happyAnim.HideEye(5);
+	happyAnim.HideEye(6);
+	happyAnim.HideEye(7);
 end
 
 function Spring()
