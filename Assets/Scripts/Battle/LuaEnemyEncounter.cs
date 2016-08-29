@@ -232,6 +232,10 @@ internal class LuaEnemyEncounter : EnemyEncounter
 						break;
 				}
 			}
+			else
+			{
+				Inventory.LoadDefaultInventory();
+			}
 
 			Table spares = script.GetVar("customMercy").Table;
 			if(spares != null)

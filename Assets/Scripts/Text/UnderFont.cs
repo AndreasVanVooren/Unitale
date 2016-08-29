@@ -11,6 +11,12 @@ public class UnderFont
         DefaultColor = Color.white;
     }
 
+	public void UpdateSound(AudioClip sound)
+	{
+		if (sound == null) return;
+		Sound = sound;
+	}
+
     public Dictionary<char, Sprite> Letters { get; private set; }
     public AudioClip Sound { get; private set; }
     public Color DefaultColor { get; set; }

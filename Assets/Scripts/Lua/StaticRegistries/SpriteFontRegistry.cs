@@ -18,15 +18,22 @@ public static class SpriteFontRegistry
 
     public static void init()
     {
-        if (initialized)
-            return;
-        LETTER_OBJECT = Resources.Load("Fonts/letter") as GameObject;
-        BUBBLE_OBJECT = Resources.Load("Prefabs/DialogBubble") as GameObject;
-
         string modPath = FileLoader.pathToModFile("Sprites/UI/Fonts");
         string defaultPath = FileLoader.pathToDefaultFile("Sprites/UI/Fonts");
+
+		if (initialized)
+		{
+			//update from default path before updating from modpath;
+			updateAllFrom(defaultPath);
+			updateAllFrom(modPath);
+			return;
+		}
+
         loadAllFrom(modPath);
         loadAllFrom(defaultPath);
+
+        LETTER_OBJECT = Resources.Load("Fonts/letter") as GameObject;
+        BUBBLE_OBJECT = Resources.Load("Prefabs/DialogBubble") as GameObject;
 
         initialized = true;
     }
@@ -55,6 +62,21 @@ public static class SpriteFontRegistry
         }
     }
 
+	private static void updateAllFrom(string directoryPath)
+	{
+		DirectoryInfo dInfo = new DirectoryInfo(directoryPath);
+		if (!dInfo.Exists)
+		{
+			return;
+		}
+		FileInfo[] fInfo = dInfo.GetFiles("*.png", SearchOption.TopDirectoryOnly);
+		foreach (FileInfo file in fInfo)
+		{
+			string fontName = Path.GetFileNameWithoutExtension(file.FullName);
+			updateUnderFont(fontName);
+		}
+	}
+
     public static UnderFont Get(string fontName)
     {
         fontName = fontName.ToLower();
@@ -63,6 +85,29 @@ public static class SpriteFontRegistry
         }
         return dict[fontName];
     }
+
+	private static void updateUnderFont(string fontName)
+	{
+		XmlDocument xml = new XmlDocument();
+		string xmlPath = FileLoader.requireFile("Sprites/UI/Fonts/" + fontName + ".xml", false);
+		if (xmlPath == null)
+		{
+			return;
+		}
+		xml.Load(xmlPath);
+
+		AudioClip defaultVoice = null;
+		if (xml["font"]["voice"] != null)
+		{
+			defaultVoice = AudioClipRegistry.GetVoice(xml["font"]["voice"].InnerText);
+		}
+		UnderFont underfont = Get(fontName);
+		if(defaultVoice == null || underfont == null)
+		{
+			return;
+		}
+		underfont.UpdateSound(defaultVoice);
+	}
 
     private static UnderFont getUnderFont(string fontName)
     {
