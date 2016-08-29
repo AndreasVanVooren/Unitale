@@ -13,7 +13,7 @@ public class GameOverBehavior : MonoBehaviour {
     private string[] heartShardAnim = new string[] { "UI/Battle/heartshard_0", "UI/Battle/heartshard_1", "UI/Battle/heartshard_2", "UI/Battle/heartshard_3" };
     private TextManager gameOverTxt;
     private SpriteLayoutImage gameOverImage;
-    private RectTransform[] heartShardInstances = new RectTransform[0];
+    private SpriteLayoutBase[] heartShardInstances = new SpriteLayoutBase[0];
     private Vector2[] heartShardRelocs;
     private LuaSpriteController[] heartShardCtrl;
 
@@ -24,7 +24,7 @@ public class GameOverBehavior : MonoBehaviour {
     private float breakHeartAfter = 1.0f;
     private float explodeHeartAfter = 2.5f;
     private float gameOverAfter = 4.5f;
-    private float fluffybunsAfter = 6.5f;
+    private float fluffybunsAfter = 7.0f;
     private float internalTimer = 0.0f;
     private float gameOverFadeTimer = 0.0f;
     private bool started = false;
@@ -42,9 +42,10 @@ public class GameOverBehavior : MonoBehaviour {
         heartbreak = AudioClipRegistry.GetSound("heartbeatbreaker");
         heartsplode = AudioClipRegistry.GetSound("heartsplosion");
         gameOverImage = GameObject.Find("GameOver").GetComponent<SpriteLayoutImage>();
-        heartPos = gameObject.GetComponent<RectTransform>().position;
-        heartColor = gameObject.GetComponent<SpriteLayoutImage>().Color;
-        gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
+		var playerImage = GetComponent<SpriteLayoutImage>();
+        heartPos = playerImage.Position;
+        heartColor = playerImage.Color;
+		playerImage.SetParent(GameObject.Find("PseudoCanvas").transform);
         gameOverMusic = Camera.main.GetComponent<AudioSource>();
         started = true;
     }
@@ -66,26 +67,27 @@ public class GameOverBehavior : MonoBehaviour {
         {
             AudioSource.PlayClipAtPoint(heartbreak, Camera.main.transform.position, 0.75f);
             brokenHeartPrefab = Instantiate(brokenHeartPrefab);
-            brokenHeartPrefab.transform.SetParent(this.gameObject.transform);
-            brokenHeartPrefab.GetComponent<RectTransform>().position = heartPos;
-            brokenHeartPrefab.GetComponent<SpriteLayoutImage>().Color = heartColor;
-            gameObject.GetComponent<SpriteLayoutImage>().enabled = false;
+			var brokenHeartImage = brokenHeartPrefab.GetComponent<SpriteLayoutImage>();
+			brokenHeartImage.SetParent(this.gameObject.transform);
+			brokenHeartImage.Position = heartPos;
+			brokenHeartImage.Color = heartColor;
+            gameObject.GetComponent<SpriteLayoutImage>().RendererEnabled = false;
             breakHeartAfter = 999.0f;
         }
 
         if (internalTimer > explodeHeartAfter)
         {
             AudioSource.PlayClipAtPoint(heartsplode, Camera.main.transform.position, 0.75f);
-            brokenHeartPrefab.GetComponent<SpriteLayoutImage>().enabled = false;
-            heartShardInstances = new RectTransform[6];
+            brokenHeartPrefab.GetComponent<SpriteLayoutImage>().RendererEnabled = false;
+            heartShardInstances = new SpriteLayoutBase[6];
             heartShardRelocs = new Vector2[6];
             heartShardCtrl = new LuaSpriteController[6];
             for (int i = 0; i < heartShardInstances.Length; i++)
             {
-                heartShardInstances[i] = Instantiate(heartShardPrefab).GetComponent<RectTransform>();
+                heartShardInstances[i] = Instantiate(heartShardPrefab).GetComponent<SpriteLayoutBase>();
                 heartShardCtrl[i] = new LuaSpriteController(heartShardInstances[i].GetComponent<SpriteLayoutImage>());
-                heartShardInstances[i].transform.SetParent(this.gameObject.transform);
-                heartShardInstances[i].GetComponent<RectTransform>().position = heartPos;
+                heartShardInstances[i].SetParent(this.gameObject.transform);
+                heartShardInstances[i].GetComponent<SpriteLayoutBase>().Position = heartPos;
                 heartShardInstances[i].GetComponent<SpriteLayoutImage>().Color = heartColor;
                 heartShardRelocs[i] = UnityEngine.Random.insideUnitCircle * 100.0f;
                 heartShardCtrl[i].Set(heartShardAnim[0]);
@@ -104,18 +106,20 @@ public class GameOverBehavior : MonoBehaviour {
         {
             gameOverTxt.setHorizontalSpacing(7);
             gameOverTxt.setTextQueue(new TextMessage[]{
-                new TextMessage("", false, false), // initial blank message to force pressing Z
+                //new TextMessage("", false, false), // initial blank message to force pressing Z
                 new TextMessage("[color:ffffff][voice:v_fluffybuns][waitall:2]You cannot give\nup just yet...", false, false),
                 new TextMessage("[color:ffffff][voice:v_fluffybuns][waitall:2]" + PlayerCharacter.Name + "!\n[w:15]Stay determined...", false, false),
                 new TextMessage("", false, false), // ending with a double blank message, because the text manager is considered complete
-                new TextMessage("", false, false) // when you're on the last line, and the last line is done writing out too - we fade at this point
+                //new TextMessage("", false, false) // when you're on the last line, and the last line is done writing out too - we fade at this point
+
+				//NOTE : Removed unnecessary blank lines. Fluffybuns auto plays in the original game, and fading happens immediately after text is done.
             });
             fluffybunsAfter = 999.0f;
         }
 
         for (int i = 0; i < heartShardInstances.Length; i++)
         {
-            heartShardInstances[i].position += (Vector3)heartShardRelocs[i]*Time.deltaTime;
+            heartShardInstances[i].Position += (Vector3)heartShardRelocs[i]*Time.deltaTime;
             heartShardRelocs[i].y -= 100f * Time.deltaTime;
         }
 

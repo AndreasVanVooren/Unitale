@@ -64,6 +64,12 @@ public class ProjectileController
         }
     }
 
+	public bool canCollideWithProjectiles
+	{
+		get { return p.canCollideWithOtherProjectiles; }
+		set { p.canCollideWithOtherProjectiles = value; }
+	}
+
     public LuaSpriteController sprite
     {
         get
@@ -79,6 +85,62 @@ public class ProjectileController
         this.absx = p.self.LocalPosition.x;
         this.absy = p.self.LocalPosition.y;
     }
+
+	public void SetRectColliderSize(float x, float y)
+	{
+		var coll = p.self.GetComponent<BoxCollider2D>();
+		if (coll == null)
+		{
+			UnitaleUtil.displayLuaError("", "Projectile has no rect collider");
+		}
+
+		coll.size = new Vector2(x,y);
+	}
+
+	public void SetCircleColliderSize(float r)
+	{
+		var coll = p.self.GetComponent<CircleCollider2D>();
+		if(coll == null)
+		{
+			UnitaleUtil.displayLuaError("", "Projectile has no circle collider");
+		}
+
+		coll.radius = r;
+	}
+
+	public void SetColliderOffset(float x, float y)
+	{
+		var coll = p.self.GetComponent<Collider2D>();
+		if (coll == null)
+		{
+			UnitaleUtil.displayLuaError("", "Projectile has no collider");
+		}
+
+		coll.offset = new Vector2(x, y);
+	}
+
+	public void SetCollider(string type)
+	{
+		var image = ((SpriteLayout.SpriteLayoutImage)p.self);
+		if (image == null)
+		{
+			UnitaleUtil.displayLuaError("", "Projectile has no image part");
+		}
+		if (type.ToLower() == "rect")
+		{
+			image.RemoveColliders();
+			image.AttachCollider(SpriteLayout.ColliderType.Rect);
+		}
+		else if (type.ToLower() == "circle")
+		{
+			image.RemoveColliders();
+			image.AttachCollider(SpriteLayout.ColliderType.Circle);
+		}
+		else
+		{
+			UnitaleUtil.displayLuaError("", "SetCollider: type has to be either \"rect\" or \"circle\"");
+		}
+	}
 
     public void Remove()
     {
@@ -112,13 +174,13 @@ public class ProjectileController
     public void SendToTop()
     {
         //p.self.SetAsLastSibling(); // in unity, the lowest UI component in the hierarchy renders last
-        ((SpriteLayout.SpriteLayoutImage)p.self).SortingOrder = 999;
+        ((SpriteLayout.SpriteLayoutImage)p.self).SendToTop();
     }
 
     public void SendToBottom()
     {
         //p.self.SetAsFirstSibling();
-        ((SpriteLayout.SpriteLayoutImage)p.self).SortingOrder = -999;
+        ((SpriteLayout.SpriteLayoutImage)p.self).SendToBottom();
     }
 
     public void SetVar(string name, DynValue value)

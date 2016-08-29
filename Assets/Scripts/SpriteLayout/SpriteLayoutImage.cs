@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections;
 
 namespace SpriteLayout
@@ -9,22 +8,6 @@ namespace SpriteLayout
 		Rect,
 		Circle,
 	}
-
-
-
-	//[CustomEditor(typeof(SpriteLayoutImage))]
-	//public class SpriteLayoutImageInspector : Editor
-	//{
-	//	public override void OnInspectorGUI()
-	//	{
-	//		//base.OnInspectorGUI();
-    //        if (GUILayout.Button("Reset parent"))
-    //        {
-    //            var slb = ((SpriteLayoutBase)target);
-    //            slb.Initialize();
-    //        }
-	//	}
-	//}
 
 	//[RequireComponent(typeof(SpriteRenderer))]
 	public class SpriteLayoutImage : SpriteLayoutBase
@@ -269,10 +252,42 @@ namespace SpriteLayout
 
         public void AttachRectCollider(float xOffset, float yOffset, float xSize, float ySize)
         {
-            var collider = this.gameObject.AddComponent<BoxCollider2D>();
+			if (this.GetComponent<Rigidbody2D>() == null)
+			{
+				var body = this.gameObject.AddComponent<Rigidbody2D>();
+				body.gravityScale = 0;
+				body.isKinematic = true;
+			}
+
+			var collider = this.gameObject.AddComponent<BoxCollider2D>();
             collider.offset = new Vector2(xOffset, yOffset);
             collider.size = new Vector2(xSize,ySize);
-        }
+			collider.isTrigger = true;
+		}
+
+		public void AttachCircleCollider(float xOffset, float yOffset, float radius)
+		{
+			if (this.GetComponent<Rigidbody2D>() == null)
+			{
+				var body = this.gameObject.AddComponent<Rigidbody2D>();
+				body.gravityScale = 0;
+				body.isKinematic = true;
+			}
+
+			var collider = this.gameObject.AddComponent<CircleCollider2D>();
+			collider.offset = new Vector2(xOffset, yOffset);
+			collider.radius = radius;
+			collider.isTrigger = true;
+		}
+
+		public void RemoveColliders()
+		{
+			var colls = GetComponents<Collider2D>();
+			for (int i = 0; i < colls.Length; i++)
+			{
+				Destroy(colls[i]);
+			}
+		}
 
 		protected override void ResetTransform(bool recursive)
 		{

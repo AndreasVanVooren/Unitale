@@ -29,7 +29,7 @@ public abstract class Projectile : MonoBehaviour
     //protected Rect selfAbs; // Rectangle containing position and size of this projectile
 
     private bool currentlyVisible = true; // Used to keep track of whether this object is currently visible to potentially save time in SetRenderingActive().
-
+	protected internal bool canCollideWithOtherProjectiles = false;
     /// <summary>
     /// Built-in Unity function run for initialization
     /// </summary>
@@ -75,7 +75,7 @@ public abstract class Projectile : MonoBehaviour
         OnUpdate();
         if (HitTest())
         {
-            OnProjectileHit();
+            OnProjectileHitPlayer();
         }
     }
 
@@ -92,10 +92,15 @@ public abstract class Projectile : MonoBehaviour
     /// <summary>
     /// Overrideable method that executes when player is hit. Usually, this calls Hurt() on the player in some way.
     /// </summary>
-    public virtual void OnProjectileHit()
+    public virtual void OnProjectileHitPlayer()
     {
         PlayerController.instance.Hurt();
     }
+
+	public virtual void OnProjectileHitProjectile(Projectile other)
+	{
+		
+	}
 
     /// <summary>
     /// Updates the projectile's hitbox.
@@ -153,13 +158,18 @@ public abstract class Projectile : MonoBehaviour
         //if it is the player
         if (other.gameObject.CompareTag("Player"))
         {
-			OnProjectileHit();
+			OnProjectileHitPlayer();
 
 		}
         //if it is another projectile
-        else
+        else if(canCollideWithOtherProjectiles)
         {
-            
+			var projectile = other.GetComponent<Projectile>();
+			//and the other projectile has collision enabled as well
+			if (projectile.canCollideWithOtherProjectiles)
+			{
+				OnProjectileHitProjectile(projectile);
+			}
         }
     }
 }

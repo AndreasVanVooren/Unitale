@@ -27,7 +27,7 @@ public class LuaProjectile : Projectile
             BulletPool.instance.Requeue(this);*/
     }
 
-    public override void OnProjectileHit()
+    public override void OnProjectileHitPlayer()
     {
         if (owner.Globals["OnHit"] != null && owner.Globals.Get("OnHit") != null)
         {
@@ -45,4 +45,23 @@ public class LuaProjectile : Projectile
             PlayerController.instance.Hurt(3);
         }
     }
+
+	public override void OnProjectileHitProjectile(Projectile other)
+	{
+		if (owner.Globals["OnHitProjectile"] != null && owner.Globals.Get("OnHitProjectile") != null)
+		{
+			try
+			{
+				owner.Call(owner.Globals["OnHitProjectile"], this.ctrl, other.ctrl);
+			}
+			catch (ScriptRuntimeException ex)
+			{
+				UnitaleUtil.displayLuaError("[wave script filename here]\n(should be a filename, sorry! missing feature)", ex.DecoratedMessage);
+			}
+		}
+		else
+		{
+			
+		}
+	}
 }
