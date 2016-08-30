@@ -55,7 +55,7 @@ local function CreateSingleParticle(partSystem)
   local maxRotSpeed = partSystem[13];
 
   local index = math.random(1,#possibleSprites);
-  local part = CreateProjectileAbs(possibleSprites[index],x,y);
+  local part = CreateProjectile(possibleSprites[index],x,y);
   part.SetVar("timer",timer);
   part.SetVar("lifeTime",timer);
   part.SetVar("xVelocity",Lerp( xVelMin,xVelMax,math.random() ));
@@ -66,31 +66,32 @@ local function CreateSingleParticle(partSystem)
 end
 
 local function UpdateSingleParticle(particle)
-  local posX = particle.absx;
-  local posY = particle.absy;
-  local timer = particle.GetVar("timer") - Time.dt;
-  local xVelocity = particle.GetVar("xVelocity");
-  local yVelocity = particle.GetVar("yVelocity");
-  local gravity = particle.GetVar("gravity");
-  local rotation = particle.sprite.rotation;
-  local rotSpeed = particle.GetVar("rotSpeed");
-
-  particle.SetVar("timer",timer);
-  if(timer <= 0)then
-    particle.Remove();
-    return false;
-  end
-
-  yVelocity = yVelocity + gravity * Time.dt;
-  particle.SetVar("yVelocity",yVelocity);
-
-  posX = posX + (xVelocity * Time.dt);
-  posY = posY + (yVelocity * Time.dt);
-  rotation = rotation + (rotSpeed * Time.dt);
-
-  particle.MoveToAbs(posX,posY);
-  particle.sprite.rotation = rotation;
-  particle.sprite.alpha = timer / particle.GetVar("lifeTime");
+	if(particle == nil)then return; end
+	local posX = particle.x;
+	local posY = particle.y;
+	local timer = particle.GetVar("timer") - Time.dt;
+	local xVelocity = particle.GetVar("xVelocity");
+	local yVelocity = particle.GetVar("yVelocity");
+	local gravity = particle.GetVar("gravity");
+	local rotation = particle.sprite.rotation;
+	local rotSpeed = particle.GetVar("rotSpeed");
+	
+	particle.SetVar("timer",timer);
+	if(timer <= 0)then
+		particle.Remove();
+		return false;
+	end
+	
+	yVelocity = yVelocity + gravity * Time.dt;
+	particle.SetVar("yVelocity",yVelocity);
+	
+	posX = posX + (xVelocity * Time.dt);
+	posY = posY + (yVelocity * Time.dt);
+	rotation = rotation + (rotSpeed * Time.dt);
+	
+	particle.MoveTo(posX,posY);
+	particle.sprite.rotation = rotation;
+	particle.sprite.alpha = timer / particle.GetVar("lifeTime");
 end
 
 function particleManager.UpdateParticles()
@@ -98,6 +99,7 @@ function particleManager.UpdateParticles()
   for i=1,#activeParticleSystems do
     local system = activeParticleSystems[i];
     local timer = system[14] - Time.dt;
+	system[14] = timer;
     local partCount = system[2];
     --if timer complete and particles left, add newe particle
     if(timer <=0 and partCount > 0)then
@@ -106,14 +108,8 @@ function particleManager.UpdateParticles()
       system[14] = system[3];
     end
     --update all particles, remove if necessary
-    local j = 15;
-    while j <= #system do
-      if(UpdateSingleParticle(system[j])==false)then
-        --let's hope this does what I think it does
-        table.remove(system, j);
-      else
-        j = j+1;
-      end
+    for j=15,#system do
+      UpdateSingleParticle(system[j])
     end
 
   end

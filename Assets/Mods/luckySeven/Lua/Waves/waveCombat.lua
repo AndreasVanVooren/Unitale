@@ -13,6 +13,7 @@ isWaveEnding = false;
 
 
 function PreInitialize()
+	--todo : get able heads
 	waveType = math.random(4,4);
 	waveState = 0;
 	isWaveEnding = false;
@@ -364,25 +365,76 @@ function WaveBurstWarmup(bulletArr,targetX,targetY)
 	end
 end
 
-function CreateArm(x)
-
-
-
+function CreateArm(x, dist)
+	local y = -dist + math.random(Arena.height/8,Arena.height*3/8);
+	
+	local hand = CreateProjectile("Happy/tempSprites/attacks/burstHand",x,y);
+	hand.sprite.SetPivot(0.5,0);
+	hand.sprite.Scale(1.6,1.6);
+	hand.SetVar("dmg",6);
+	
+	local rand = math.random(0,1);
+	local arm = CreateProjectile("Happy/tempSprites/attacks/burstBone1",x,y);
+	if(rand == 0)then
+		arm.sprite.SetPivot(0.5,1);
+	else
+		arm.sprite.rotation = 180;
+		arm.sprite.SetPivot(0.5,0);
+	end
+	
+	arm.sprite.Scale(1.6,1.6);
+	arm.SetVar("dmg",4);
+	
+	return {hand,arm};
 end
 
-function UpdateWaveBoneBurst(bulletArr)
+function UpdateWaveBoneBurst(bulletArr,travelDistance)
 	if(waveData == 0)then		--first phase (hand in ground)
 		WaveBurstWarmup(bulletArr,437,209);
 	elseif(waveData == 1)then
+		for k in pairs (bulletArr) do
+			bulletArr[k] = nil
+		end
 		--create arms below the screen, create particles below spawn points
 		local burstAmount = math.random(3,7);
-		table.insert(burstAmount);
+		local partSystem = require "Libraries/ParticleManager";
+		table.insert(bulletArr,burstAmount);
+		table.insert(bulletArr,partSystem);
 		for i=1,burstAmount do
-			local spawnPosX = math.random(-Arena.width/2,Arena.width/2);
+			local spawnPosX = math.random(-Arena.width*3/8,Arena.width*3/8);
 			table.insert(bulletArr,spawnPosX);
-			table.insert(bulletArr,CreateArm(spawnPosX));
+			table.insert(bulletArr,CreateArm(spawnPosX,travelDistance));
+			--create a particle system
+			partSystem.CreateParticles({"Happy/tempSprites/particles/ground"},
+										spawnPosX,
+										-Arena.height/2,
+										0.05,
+										0.2,
+										-100,100, 100,300,
+										-1600,
+										-40,40,
+										20);
 		end
-
+		waveData = 2;
+		waveTimer = 0;
+	elseif(waveData == 2)then
+		local travelTime = 1.5;
+		local partSystem = bulletArr[2];
+		if(waveTimer < travelTime )then
+			local burstAmount = bulletArr[1];
+			for i=0,burstAmount-1 do
+				local index = 3 + i*2;
+				local arm = bulletArr[index+1];
+				arm[1].MoveTo( bulletArr[index], arm[1].y + travelDistance * Time.dt/travelTime );
+				arm[2].MoveTo( bulletArr[index], arm[2].y + travelDistance * Time.dt/travelTime );
+			end
+			
+		elseif(waveTimer > travelTime + 1.0)then
+			Encounter.Call("ToggleHand");
+			Encounter.Call("HideEyes");
+			EndWave();
+		end
+		partSystem.UpdateParticles();
 	end
 end
 
@@ -441,7 +493,7 @@ function Update()
 				waveData = 1;
 			end
 		elseif(waveType == 4)then	--burst arms
-			UpdateWaveBoneBurst(waveBullets1);
+			UpdateWaveBoneBurst(waveBullets1,1500);
 		elseif(waveType == 5)then	--head both tentacle
 			UpdateWave5();
 		elseif(waveType == 6)then	--head right tentacle
