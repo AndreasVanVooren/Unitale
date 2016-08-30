@@ -70,8 +70,8 @@ internal class LuaEnemyEncounter : EnemyEncounter
     {
         LuaProjectile projectile = (LuaProjectile)BulletPool.instance.Retrieve();
         SpriteUtil.SwapSpriteFromFile(projectile, sprite);
-		var coll = projectile.GetComponent<BoxCollider2D>();
-		coll.size = projectile.self.Dimensions;
+		projectile.ctrl.SetCollider("rect");
+		projectile.ctrl.SetRectColliderSize( projectile.self.Width, projectile.self.Height );
         projectile.owner = s;
         projectile.gameObject.SetActive(true); 
         projectile.ctrl.MoveToAbs(xpos, ypos);
