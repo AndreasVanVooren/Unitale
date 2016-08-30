@@ -22,16 +22,15 @@ function PreInitialize()
 	Encounter.Call("ToggleSway",false);
 end
 
-function CreateHandProjectile()
-	--this has to be hardcoded, reason being fuck you.
-	local initX = 395.867095947266;
-	local initY = 279.202453613281;
+function CreateHandProjectile(initX,initY)
 	local hand = CreateProjectileAbs("Happy/tempSprites/hand1",initX,initY);
 	hand.SetCollider("Circle");
 	hand.SetCircleColliderSize(9.65);
 	hand.SetColliderOffset(-0.76,-2.33);
 	hand.sprite.SetPivot(0.1571406, 0.17743);
 	hand.sprite.Scale(1.6,1.6);
+
+	return hand;
 end
 
 function CreateWave()
@@ -58,19 +57,23 @@ function CreateWave()
 			beamInitX = initX + (25 / 3 * 2) ;
 			beamInitY = Arena.height/8*3 - 10;
 		end
-		
+
 		--DEBUG("1st pass " .. waveData % 2)
-		
+
 		head = CreateProjectile(initSprite,initX,initY);
 		waveBullets1 = {head,initX,initY,1,1, beamInitX,beamInitY};
-		
+
 		head.sprite.Scale(3,3);
 	elseif(waveType == 2 or waveType == 3)then		--tentacle thing in/out bounds
 
 		--disable hand
 		Encounter.Call("ToggleHand");
 		Encounter.Call("ShowEye" .. waveType);
-		CreateHandProjectile();
+
+		--this has to be hardcoded, reason being fuck you.
+		local initX = 395.867095947266;
+		local initY = 279.202453613281;
+		local hand = CreateHandProjectile(initX,initY);
 		hand.SetVar("dmg",6);
 
 		--wave 2 pattern : hand ref, time to chuck,x pos, y pos, rotation speed
@@ -79,10 +82,16 @@ function CreateWave()
 		else
 			waveBullets1 = {hand, 1.1 + (math.random() * 0.3) ,initX, initY, 80}
 		end
-		
+
 	elseif(waveType == 4)then	--burst arms
 		Encounter.Call("ToggleHand");
 		Encounter.Call("ShowEye4");
+
+		--this has to be hardcoded, reason being fuck you.
+		local initX = 395.867095947266;
+		local initY = 279.202453613281;
+		local hand = CreateHandProjectile(initX,initY);
+		waveBullets1 = {hand,initX,initY, 80};
 	elseif(waveType == 5)then	--burst arms + laser
 
 	elseif(waveType == 6)then	--head tentacle arena
@@ -96,7 +105,7 @@ end
 PreInitialize();
 
 function UpdateLasers(bulletArr, beamCount, useOrange, travelTime, descentDelay)
-	
+
 	if(waveCounter < beamCount)then
 		if(waveTimer > 0.01)then
 			--DEBUG("beep")
@@ -120,12 +129,12 @@ function UpdateLasers(bulletArr, beamCount, useOrange, travelTime, descentDelay)
 					beam.sprite.color = {0/255, 162/255, 232/255};
 				end
 			end
-			
+
 			bulletArr[8+waveCounter] = beam;
-			
+
 			waveTimer = 0;
 			waveCounter = waveCounter + 1;
-			
+
 		end
 	else
 		if(waveTimer > descentDelay)then
@@ -134,14 +143,14 @@ function UpdateLasers(bulletArr, beamCount, useOrange, travelTime, descentDelay)
 			local initX = bulletArr[2];
 			local initY = bulletArr[3];
 			bulletArr[1].MoveTo(initX, initY - (initY * 2) * travelTimer/travelTime);
-			
+
 			--make all lasers descend
 			for i=8, (8+beamCount-1)do
 				local beamX = bulletArr[i].x;
 				local beamY = bulletArr[7] - (Arena.height/8*5 - 20) * travelTimer/travelTime
 				bulletArr[i].MoveTo(beamX, beamY);
 			end
-			
+
 			if(travelTimer > travelTime)then
 				Encounter.Call("HideEyes");
 				EndWave();
@@ -151,17 +160,17 @@ function UpdateLasers(bulletArr, beamCount, useOrange, travelTime, descentDelay)
 end
 
 function UpdateWaveBoneExtrude(
-				bulletTable, 
-				baseTimer, 
-				counterTimeDecrease, 
-				randomInfluence, 
-				rotSpeedIncrease, 
-				repeatCount, 
-				targetX, 
-				targetY, 
-				possibilities, 
+				bulletTable,
+				baseTimer,
+				counterTimeDecrease,
+				randomInfluence,
+				rotSpeedIncrease,
+				repeatCount,
+				targetX,
+				targetY,
+				possibilities,
 				lengths)
-	
+
 	possibilities = possibilities or {
 			"Happy/tempSprites/attacks/atkBone1",
 			"Happy/tempSprites/attacks/atkBone2",
@@ -291,8 +300,90 @@ function UpdateWaveBoneExtrude(
 	return transition;
 end
 
-function UpdateWaveBoneBurst()
-	
+function WaveBurstWarmup(bulletArr,targetX,targetY)
+	local hand = bulletArr[1];
+	local x = bulletArr[2];
+	local y = bulletArr[3];
+	local rotSpeed = bulletArr[4];
+	hand.MoveToAbs( x + math.random(-2,2), y + math.random(-2,2));
+	local curRot = hand.sprite.rotation;
+
+	local vecX = (targetX - x);
+	local vecY = (targetY - y);
+	local length = math.sqrt((vecX * vecX) + (vecY * vecY));
+	local vCos = vecX/length;
+	local vSin = vecY/length;
+	local angle = math.deg( math.atan2(vSin,vCos) );
+
+	--DEBUG ("RotSpeed : ".. rotSpeed);
+
+	while (angle < -180) do
+		angle = angle + 360;
+	end
+	while (angle >= 180) do
+		angle = angle - 360;
+	end
+	--DEBUG ("Angle 2nd pass : ".. angle);
+
+	while(curRot - angle > 180)do
+		curRot = curRot - 360;
+	end
+	while (angle - curRot > 180)do
+		curRot = curRot + 360;
+	end
+
+	local diff = Time.dt*rotSpeed;
+
+	if (curRot > angle ) then
+
+		curRot = curRot - diff;
+		if(curRot < angle) then
+			curRot = angle;
+		end
+	elseif ( curRot <angle ) then
+
+		curRot = curRot + diff;
+		if(curRot > angle ) then
+			curRot = angle;
+		end
+	else
+		diff = 0;
+	end
+
+	--DEBUG ("Cur rot : ".. curRot);
+
+	hand.sprite.rotation = curRot;
+
+	if(waveTimer > 0.75)then
+		hand.Remove();
+		local arm = CreateProjectileAbs("Happy/tempSprites/attacks/burstHandDug",x,y);
+		arm.sprite.SetPivot(0,1);
+		arm.sprite.Scale(1.6,1.4);
+		bulletArr = {};
+		waveData = 1;
+	end
+end
+
+function CreateArm(x)
+
+
+
+end
+
+function UpdateWaveBoneBurst(bulletArr)
+	if(waveData == 0)then		--first phase (hand in ground)
+		WaveBurstWarmup(bulletArr,437,209);
+	elseif(waveData == 1)then
+		--create arms below the screen, create particles below spawn points
+		local burstAmount = math.random(3,7);
+		table.insert(burstAmount);
+		for i=1,burstAmount do
+			local spawnPosX = math.random(-Arena.width/2,Arena.width/2);
+			table.insert(bulletArr,spawnPosX);
+			table.insert(bulletArr,CreateArm(spawnPosX));
+		end
+
+	end
 end
 
 function UpdateWave4()
@@ -325,22 +416,22 @@ function Update()
 		elseif(waveType == 2)then		--tentacle thing in bounds
 			UpdateWaveBoneExtrude(waveBullets1, 1.5, 0.3, 0.5, 10, 5, Player.absx, Player.absy);
 		elseif(waveType == 3)then	--tentacle thing out of bounds
-			
+
 			local x = Player.absx;
-			
+
 			if(waveData == 0 and waveCounter >= 2 )then
 				x = x + 640;
 			end
-			
+
 			if(UpdateWaveBoneExtrude(
 				waveBullets1, 			--ref bullets
 				1.1,					--base timer
-				0.08,					--counter time decrease	
+				0.08,					--counter time decrease
 				0.3, 					--random factor
 				1,
-				12, 
-				x, 
-				Player.absy, 
+				12,
+				x,
+				Player.absy,
 				{
 					"Happy/tempSprites/attacks/atkBone2",
 					"Happy/tempSprites/attacks/atkBone4"
@@ -350,7 +441,7 @@ function Update()
 				waveData = 1;
 			end
 		elseif(waveType == 4)then	--burst arms
-			UpdateWave4();
+			UpdateWaveBoneBurst(waveBullets1);
 		elseif(waveType == 5)then	--head both tentacle
 			UpdateWave5();
 		elseif(waveType == 6)then	--head right tentacle
@@ -374,7 +465,7 @@ function OnHit(bullet)
 			if(not Player.isMoving)then
 				Player.Hurt(dmg);
 			end
-		else	
+		else
 			Player.Hurt(dmg);
 		end
 	end
