@@ -433,7 +433,7 @@ GameObject:
   - 224: {fileID: 1108256570}
   - 114: {fileID: 1108256571}
   m_Layer: 5
-  m_Name: TextParent
+  m_Name: TextParentOld
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -532,7 +532,7 @@ GameObject:
   - 114: {fileID: 1461704713}
   - 114: {fileID: 1461704712}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: CanvasOld
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

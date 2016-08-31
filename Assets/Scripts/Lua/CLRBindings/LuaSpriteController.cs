@@ -22,6 +22,8 @@ public class LuaSpriteController {
     //private Vector3 internalRotation = Vector3.zero;
     private float xScale = 1.0f;
     private float yScale = 1.0f;
+	private float xScaleDim = 1.0f;
+	private float yScaleDim = 1.0f;
     private Sprite originalSprite;
     private KeyframeCollection keyframes;
 
@@ -68,8 +70,7 @@ public class LuaSpriteController {
     {
         get { return xScale; }
         set { 
-            xScale = value; 
-            Scale(xScale, yScale); 
+            Scale(value, yScale);	//xscale and yscale autoset 
         }
     }
 
@@ -77,10 +78,24 @@ public class LuaSpriteController {
     {
         get { return yScale; }
         set { 
-            yScale = value; 
-            Scale(xScale, yScale); 
+            Scale(xScale, value); 
         }
     }
+	public float xscaleDim
+	{
+		get { return xScaleDim; }
+		set { 
+			Scale(value, yScaleDim); //xscale and yscale auto set
+		}
+	}
+
+	public float yscaleDim
+	{
+		get { return yScaleDim; }
+		set { 
+			Scale(xScaleDim, value); 
+		}
+	}
 
     public bool isactive
     { 
@@ -263,8 +278,8 @@ public class LuaSpriteController {
 
     public void Scale(float xs, float ys, bool alsoScaleChildren = false)
     {
-        //xScale = xs;
-        //yScale = ys;
+        xScale = xs;
+        yScale = ys;
         //img.rectTransform.sizeDelta = new Vector2(nativeSizeDelta.x * xScale, nativeSizeDelta.y * yScale);
 		//Debug.LogFormat ("Scaling : size = {0}, scale children = {1}, transform scale : {2}", img.rectTransform.sizeDelta, alsoScaleChildren, img.transform.localScale);
 
@@ -280,6 +295,21 @@ public class LuaSpriteController {
 			}
 		}
     }
+
+	public void ScaleDimensions(float xs, float ys, bool alsoScaleChildren = false)
+	{
+		xScaleDim = xs;
+		yScaleDim = ys;
+		img.DimensionRatio = new Vector2 (xs, ys);
+		if (alsoScaleChildren) 
+		{
+			for (int i = 0; i < children.Count; i++)
+			{
+				//Debug.Log("Scaling child");
+				children[i].ScaleDimensions(xs, ys,true);
+			}
+		}
+	}
 
     public void SetAnimation(string[] frames)
     {

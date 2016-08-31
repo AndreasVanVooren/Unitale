@@ -126,16 +126,18 @@ public class GameOverBehavior : MonoBehaviour {
         if (!done)
         {
             gameOverImage.Color = new Color(1, 1, 1, gameOverFadeTimer);
-            if (gameOverAfter >= 999.0f && gameOverFadeTimer < 1.0f)
+			if (gameOverAfter >= 999.0f && gameOverFadeTimer < 1.0f)
             {
                 gameOverFadeTimer += Time.deltaTime / 2;
-                if (gameOverFadeTimer >= 1.0f)
-                {
-                    gameOverFadeTimer = 1.0f;
-                    done = true;
-                }
             }
             internalTimer += Time.deltaTime; // this is actually dangerous because done can be true before everything's done if timers are modified
+
+			//check post timer thing if everything is done
+			if (gameOverAfter > 900.0f && fluffybunsAfter > 900.0f && gameOverFadeTimer >= 1.0f) 
+			{
+				gameOverFadeTimer = 1.0f;
+				done = true;
+			}
         }
         else if (!exiting && !gameOverTxt.allLinesComplete())
         {

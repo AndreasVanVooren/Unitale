@@ -144,6 +144,10 @@ public class TextManager : MonoBehaviour
 
     public bool allLinesComplete()
     {
+		if (textQueue == null) 
+		{
+			Debug.Log("Something's wrong here");
+		}
         return currentLine == textQueue.Length - 1 && lineComplete();
     }
 

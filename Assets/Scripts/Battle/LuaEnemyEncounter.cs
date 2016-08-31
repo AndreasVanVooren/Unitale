@@ -72,6 +72,7 @@ internal class LuaEnemyEncounter : EnemyEncounter
         SpriteUtil.SwapSpriteFromFile(projectile, sprite);
 		projectile.ctrl.SetCollider("rect");
 		projectile.ctrl.SetRectColliderSize( projectile.self.Width, projectile.self.Height );
+		projectile.ctrl.sprite.Scale (1, 1);
         projectile.owner = s;
         projectile.gameObject.SetActive(true); 
         projectile.ctrl.MoveToAbs(xpos, ypos);
