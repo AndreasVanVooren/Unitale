@@ -1,5 +1,4 @@
---note : this wave only gets called if in pacifist mode.
---In genocide mode, make things more difficult, and based on the amount of heads left.
+--note : this wave only gets called if in Genocide mode.
 
 waveTimer = 0;
 waveState = 0;	--0 = just started, 1 = recentering
@@ -7,14 +6,24 @@ waveType = 0;
 waveCounter = 0;
 waveData = 0;
 
+activeWaves = {};
+
 waveBullets1 = {};
 waveBullets2 = {};
-isWaveEnding = false;
 
+toggleWhenDone = false;
+
+function Finalize()
+	if(toggleWhenDone)then
+		Encounter.Call("ToggleHand");
+	end
+	Encounter.Call("HideEyes");
+	EndWave();
+end
 
 function PreInitialize()
 	--todo : get able heads
-	waveType = math.random(1,7);
+	--waveType = math.random(1,7);
 	waveState = 0;
 	isWaveEnding = false;
 	waveTimer = 0;
@@ -34,93 +43,141 @@ function CreateHandProjectile(initX,initY)
 	return hand;
 end
 
+local lHeadI = 1;
+local lSideI = 2;
+local lTimeI = 3;
+local lGoesBackI = 4;
+local lInitXI = 5;
+local lInitYI = 6;
+local lSpecChanceI = 7;
+local lNormChanceI = 8;
+local lBeamXI = 9;
+local lBeamYI = 10;
+local lBeamArrStartI = 11;
+
+function InitLasers()
+	Encounter.Call("ShowEye7");
+	local side = math.random(0,1);
+	local head = nil;
+	local initSprite = "";
+	local initX = 0;
+	local initY = 0;
+	local beamInitX = 0;
+	local beamInitY = 0;
+	if((side % 2) == 1)then
+		initX = Arena.width/3;
+		initY = Arena.height/8;
+		initSprite = "Happy/tempSprites/attacks/headAimL";
+		beamInitX = initX - (25 / 3 * 2) ;
+		beamInitY = Arena.height/8*3 - 10;
+	else
+		initX = -Arena.width/3;
+		initY = Arena.height/8;
+		initSprite = "Happy/tempSprites/attacks/headAimR";
+		beamInitX = initX + (25 / 3 * 2) ;
+		beamInitY = Arena.height/8*3 - 10;
+	end
+
+	--DEBUG("1st pass " .. waveData % 2)
+
+	head = CreateProjectile(initSprite,initX,initY);
+	head.SendToBottom();
+	head.sprite.Scale(3,3);
+	return {head,side,0,initX,initY,1,1, beamInitX,beamInitY};
+end
+
+local eHandI = 1;
+local eExtraI = 2;
+local eBoneCI = 3;
+local eLimitI = 4;
+local eInitXI = 5;
+local eInitYI = 6;
+local eRotVI = 7;
+local eTimeI = 8;
+local eBoneStartI = 9;
+
+function InitWaveExtrude(index,startTime, startRand, startRot)
+	--disable hand
+	Encounter.Call("ToggleHand");
+	toggleWhenDone = true;
+	Encounter.Call("ShowEye" .. index);
+
+	--this has to be hardcoded, reason being fuck you.
+	local initX = 395.867095947266;
+	local initY = 279.202453613281;
+	local hand = CreateHandProjectile(initX,initY);
+	hand.SetVar("dmg",6);
+	hand.canCollideWithProjectiles = true;
+	--wave 2 pattern : hand ref, time to chuck,x pos, y pos, rotation speed
+
+	return {hand, 0,startTime + (math.random() * startRand) ,initX, initY, startRot,0}
+end
+
+local bStateI = 1;
+
+local b1HandI = 2;
+local b1InitXI = 3;
+local b1InitYI = 4;
+local b1RotVI = 5;
+
+local b2BurstCI = 2;
+local b2TimerI = 3;
+local b2PartSysI = 4;
+
+function InitWaveBurst()
+	Encounter.Call("ToggleHand");
+	Encounter.Call("ShowEye4");
+
+	--this has to be hardcoded, reason being fuck you.
+	local initX = 395.867095947266;
+	local initY = 279.202453613281;
+	local hand = CreateHandProjectile(initX,initY);
+	return {0,hand,initX,initY, 80};
+end
+
+function InitHeadExtrude(side,startTime, startRand, startRot)
+	local initSprite = "";
+	local initX = 0;
+	local initY = 0;
+	local initHandRot = 0;
+	if((side%2) == 1 or side == "right")then
+		initX = Arena.width/2 - 50;
+		initY = 0;
+		initSprite = "Happy/tempSprites/attacks/headAimL";
+		Encounter.Call("ShowEye6");
+		initHandRot = 180;
+	elseif((side%2) == 0 or side == "left")then
+		initX = -Arena.width/2+50;
+		initY = 0;
+		initSprite = "Happy/tempSprites/attacks/headAimR";
+		Encounter.Call("ShowEye5");
+	end
+	local head = CreateProjectile(initSprite,initX,initY);	--autodestroys upon wave end
+	head.sprite.Scale(3,3);
+	head.SendToBottom();
+	local handInitX = head.absx;
+	local handInitY = head.absy + Arena.height/8*1 - 10;
+
+	local hand = CreateHandProjectile(handInitX,handInitY);
+	hand.canCollideWithProjectiles = true;
+	hand.SetVar("dmg",6);
+	hand.sprite.rotation = initHandRot;
+	return {hand, startTime + (math.random() * startRand) ,handInitX, handInitY, startRot,0};
+end
+
 function CreateWave()
 	waveCounter = 0;
 	if(waveType == 1)then	--laser
-		Encounter.Call("ShowEye7");
-		local side = math.random(0,1);
-		local head = nil;
-		local initSprite = "";
-		local initX = 0;
-		local initY = 0;
-		local beamInitX = 0;
-		local beamInitY = 0;
-		if((side % 2) == 1)then
-			initX = Arena.width/3;
-			initY = Arena.height/8;
-			initSprite = "Happy/tempSprites/attacks/headAimL";
-			beamInitX = initX - (25 / 3 * 2) ;
-			beamInitY = Arena.height/8*3 - 10;
-		else
-			initX = -Arena.width/3;
-			initY = Arena.height/8;
-			initSprite = "Happy/tempSprites/attacks/headAimR";
-			beamInitX = initX + (25 / 3 * 2) ;
-			beamInitY = Arena.height/8*3 - 10;
-		end
-
-		--DEBUG("1st pass " .. waveData % 2)
-
-		head = CreateProjectile(initSprite,initX,initY);
-		waveBullets1 = {head,side,0,initX,initY,1,1, beamInitX,beamInitY};
-		head.SendToBottom();
-		head.sprite.Scale(3,3);
-	elseif(waveType == 2 or waveType == 3)then		--tentacle thing in/out bounds
-
-		--disable hand
-		Encounter.Call("ToggleHand");
-		Encounter.Call("ShowEye" .. waveType);
-
-		--this has to be hardcoded, reason being fuck you.
-		local initX = 395.867095947266;
-		local initY = 279.202453613281;
-		local hand = CreateHandProjectile(initX,initY);
-		hand.SetVar("dmg",6);
-
-		--wave 2 pattern : hand ref, time to chuck,x pos, y pos, rotation speed
-		if(waveType == 2)then
-			waveBullets1 = {hand, 1.5 + (math.random() * 0.5) ,initX, initY, 30,0}
-		else
-			waveBullets1 = {hand, 1.1 + (math.random() * 0.3) ,initX, initY, 80,0}
-		end
-
+		waveBullets1 = InitLasers();
+	elseif(waveType == 2 )then		--tentacle thing in/out bounds
+		waveBullets1 = InitWaveExtrude(2, 1.5, 0.5, 30);
+	elseif(waveType==3)then
+		waveBullets1 = InitWaveExtrude(3, 1.1, 0.3, 80);
 	elseif(waveType == 4)then	--burst arms
-		Encounter.Call("ToggleHand");
-		Encounter.Call("ShowEye4");
-
-		--this has to be hardcoded, reason being fuck you.
-		local initX = 395.867095947266;
-		local initY = 279.202453613281;
-		local hand = CreateHandProjectile(initX,initY);
-		waveBullets1 = {hand,initX,initY, 80};
+		waveBullets1 = InitWaveBurst();
 	elseif(waveType == 5)then	--burst arms + laser
-		local rand = math.random(0, 1);
-		local initSprite = "";
-		local initX = 0;
-		local initY = 0;
-		local initHandRot = 0;
-		if(rand == 1)then
-			initX = Arena.width/2 - 50;
-			initY = 0;
-			initSprite = "Happy/tempSprites/attacks/headAimL";
-			Encounter.Call("ShowEye6");
-			initHandRot = 180;
-		else
-			initX = -Arena.width/2+50;
-			initY = 0;
-			initSprite = "Happy/tempSprites/attacks/headAimR";
-			Encounter.Call("ShowEye5");
-		end
-		local head = CreateProjectile(initSprite,initX,initY);	--autodestroys upon wave end
-		head.sprite.Scale(3,3);
-		head.SendToBottom();
-		local handInitX = head.absx;
-		local handInitY = head.absy + Arena.height/8*1 - 10;
+		waveBullets1 = InitHeadExtrude("left",1.5, 0.5, 60)
 
-		local hand = CreateHandProjectile(handInitX,handInitY);
-		hand.SetVar("dmg",6);
-		hand.sprite.rotation = initHandRot;
-		waveBullets1 = {hand, 1.5 + (math.random() * 0.5) ,handInitX, handInitY, 60,0};
 
 	elseif(waveType == 6)then	--head tentacle arena
 		local head1 = CreateProjectile("Happy/tempSprites/attacks/headAimR",-Arena.width/2+50,0);	--autodestroys upon wave end
@@ -139,7 +196,7 @@ function CreateWave()
 		local head2 = CreateProjectile("Happy/tempSprites/attacks/headAimL",Arena.width/2-50,0);	--autodestroys upon wave end
 		head2.sprite.Scale(3,3);
 		head2.SendToBottom();
-		Encounter.Call("ShowEye6");
+		Encounter.Call("ShowEye5");
 
 		local handInitX2 = head2.absx;
 		local handInitY2 = head2.absy + Arena.height/8*1 - 10;
@@ -249,8 +306,7 @@ function UpdateLasers(bulletArr, beamCount, useOrange, travelTime, descentDelay)
 			end
 
 			if(travelTimer > travelTime)then
-				Encounter.Call("HideEyes");
-				EndWave();
+				return true;	--I'm done
 			end
 		end
 	end
@@ -267,9 +323,7 @@ function UpdateWaveBoneExtrude(
 				targetY,
 				possibilities,
 				lengths,
-				toggleHandAfterEnd,
-				needsToWait,
-				manualQuit)
+				needsToWait)
 
 	possibilities = possibilities or {
 			"Happy/tempSprites/attacks/atkBone1",
@@ -278,10 +332,8 @@ function UpdateWaveBoneExtrude(
 			"Happy/tempSprites/attacks/atkBone4",
 		};
 	lengths = lengths or {72,104,60,112};
-	if(toggleHandAfterEnd == nil)then toggleHandAfterEnd = true; end
 	if(needsToWait == nil)then needsToWait = false; end
-	if(manualQuit == nil)then manualQuit = false; end
-	local transition = false;
+	local transition = 0;
 	local hand = bulletTable[1];
 	local timerlimit = bulletTable[2];
 	local x = bulletTable[3];
@@ -356,7 +408,7 @@ function UpdateWaveBoneExtrude(
 
 			if(x > 650 or x < -10)then
 				x = 640-x;
-				transition = true;
+				transition = 1;
 			end
 
 			local i = math.random(1,#possibilities);
@@ -388,16 +440,7 @@ function UpdateWaveBoneExtrude(
 		if(waveTimer > timerlimit)then
 			if(waveCounter <= 1)then
 				--do end wave stuff
-				if(manualQuit)then
-					return true;
-				end
-
-				if(toggleHandAfterEnd == true)then
-					Encounter.Call("ToggleHand");
-				end
-				Encounter.Call("HideEyes");
-				EndWave();
-				return;
+				return true;
 			end
 
 			local bone = bulletTable[7 + waveCounter - 1];
