@@ -22,14 +22,14 @@ happyIntro = "[waitall:3][noskip]Everything's [waitall:8][func:Spring]H [func:Sp
 
 function EnteringState(newState, oldState)
 	if(oldState == "ITEMMENU") then
-	
+
 	elseif(oldState == "ACTIONSELECT") then
-	
+
 	elseif(oldState == "DEFENDING")then
 		ToggleSway(true);
 	end
-	
-	if (newState == "ENEMYDIALOGUE") then 
+
+	if (newState == "ENEMYDIALOGUE") then
 		--DEBUG("ASDFSADF");
 		if(enemies[1].GetVar("feelsAttacked") == true)then
 			--DEBUG("yee haw");
@@ -45,15 +45,15 @@ function EnteringState(newState, oldState)
 				"[func:Deaded]The end is nigh...",
 				});
 		elseif(not hasSpeech) then
-			
+
 			EnemyDialogueEnding();
 			State("DEFENDING");
 		end
-		
+
 	elseif(newState == "ACTIONSELECT")then
-		
+
 	end
-	
+
 	--DEBUG(encountertext);
 end
 
@@ -62,11 +62,11 @@ function EncounterStarting()
     --Include the animation Lua file. It's important you do this in EncounterStarting, because you can't create sprites before the game's done loading.
     --Be careful that you use different variable names as you have here, because the encounter's will be overwritten otherwise!
     --You can also use that to your benefit if you want to share a bunch of variables with multiple encounters.
-    --require "Animations/it_anim" 
+    --require "Animations/it_anim"
 	happyAnim = require "Animations/happy_anim";
 	require "Animations/separate_anim" ;
 	--dialogue =  require "Animations/itDialogue_anim"
-	
+
 	--enemypositions[1] = {0, 0};
 	--enemies[1].Call("SetActive",true);
 	--enemies[1].SetVar("animRef", happyAnim);
@@ -78,7 +78,7 @@ end
 successes = 0;
 codeTimer = 0;
 function Konami()
-	
+
 	if(codeTimer > 0)then
 		codeTimer = codeTimer - Time.dt;
 	elseif (successes <= 10)then
@@ -120,44 +120,44 @@ function Konami()
 		successes = 11
 		AddItem("CHARA", "OtherItm");
 	elseif((
-	Input.Up == 1 or 
+	Input.Up == 1 or
 	Input.Down == 1 or
-	Input.Left == 1 or 
+	Input.Left == 1 or
 	Input.Right == 1 or
-	Input.Confirm == 1 or 
+	Input.Confirm == 1 or
 	Input.Cancel == 1 or
 	Input.Menu == 1 )and successes <= 10)then
 		successes = 0;
 	end
-	
-	
+
+
 end
 
 function Update()
 	SeparateAnim();
 	Konami();
-	
+
 	if(happyAnim ~= nil)then
 		happyAnim.Update();
 	end
-	
+
 	if(Input.Menu == 1)then
 		--enemies[1].Call("Cheat");
 		Player.Hurt(98456946);
 	end
-	
+
 end
 
 function EnemyDialogueEnding()
     -- Good location to fill the 'nextwaves' table with the attacks you want to have simultaneously.
     -- This example line below takes a random attack from 'possible_attacks'.
 	local wave = possible_attacks[math.random(#possible_attacks)]
-	
-	--if(GetGlobal("angry") == true) then 
+
+	--if(GetGlobal("angry") == true) then
 	--	wave = wave .. "Angry";
 	--end
     nextwaves = { wave }
-	
+
 end
 
 function EnemyDialogueStarting()
@@ -174,9 +174,9 @@ function PlayMusic(name)
 end
 
 function DefenseEnding() --This built-in function fires after the defense round ends.
-	
+
 	encountertext = RandomEncounterText() --This built-in function gets a random encounter text from a random enemy.
-	
+
 end
 
 function HandleSpare()
@@ -189,21 +189,21 @@ items = {}; --use items like dictionary : items["KEY"] = "Value"
 items["LOCKET"] = "INV_LOCKET";
 
 function HandleItem(ItemID)
-	
+
 	if(ItemID == "LOCKET")then
 		--Locket, this is how you end battle.
 		--music ="the locket"
 		--Audio.LoadFile(music);
-		
+
 		PlayMusic("the locket")
-		
+
 		--PlaySeparate();
 		--return;
-		
+
 		if(GetGlobal("isSprung") == false)then
 			BattleDialog({"The locket whispers to you...\rMake It remember...\rOr make It undone..."});
 		elseif(enemies[1].GetVar("feelsAttacked") == true)then
-			
+
 		elseif(enemies[1].GetVar("hasDied") == true)then
 			BattleDialog({"The locket whispers to you...\r[color:FF0000]Show it the mercy it deserves..."});
 		elseif(enemies[1].GetVar("isHugged") ~= true)then
@@ -213,7 +213,7 @@ function HandleItem(ItemID)
 		else
 			BattleDialog({"The locket whispers to you...\rTidy for the big day..."});
 		end
-		
+
 		--State("ACTIONSELECT")
 			--encountertext = "The Sanstrosity seems content."
 		--BattleDialog({
@@ -221,7 +221,7 @@ function HandleItem(ItemID)
 		--	"...you reach out to the SOULS.",
 		--	"[noskip][novoice][func:PlaySeparate]"
 		--});
-		
+
 	elseif(ItemID == "DOGTEST2")then
 		--Generic healing item (Spider cider equivalent)
 		if(itemUsed[2] == false) then
@@ -238,8 +238,8 @@ function HandleItem(ItemID)
 				BattleDialog("You feel fine.\nYou'll leave the spiders alone...\r[waitall:8]...for now...")
 				toItems = true;
 			end
-		
-			
+
+
 		else
 			if(Player.hp < maxhp) then
 				BattleDialog({
@@ -248,7 +248,7 @@ function HandleItem(ItemID)
 				});
 			else
 				BattleDialog("Your craving for spiders\rwas already sated.");
-				
+
 			end
 			toItems = true;
 		end
@@ -275,7 +275,7 @@ function HandleItem(ItemID)
 			});
 			else
 				BattleDialog("You do not yet desire\rthe darkness.")
-				
+
 			end
 			toItems = true;
 		end
@@ -286,7 +286,7 @@ function HandleItem(ItemID)
 				BattleDialog({
 					"[noskip]You eat the Candy Monster.\n[w:4][func:Heal,10]It was delicious!",
 					"A faint screaming is heard from\rinside your stomach.\n[w:4][func:Hurt,1]It's less delicious!",
-					
+
 				});
 				itemUsed[4] = true;
 			else
@@ -309,7 +309,7 @@ function HandleItem(ItemID)
 			if(Player.hp < maxhp) then
 				BattleDialog({
 					"[noskip]ERROR: ITEM_NOTHING_USE_DESC\rNOT FOUND.[func:Heal,0]"
-					
+
 				});
 				itemUsed[5] = true;
 			else
@@ -349,13 +349,13 @@ function HandleItem(ItemID)
 		end
 	elseif(ItemID == "DOGTEST7")then
 		--Kills you.
-		
+
 		local num = math.random(3);
 		if(num == 1)then
 			BattleDialog("[noskip][waitall:0][color:ffff00]According to all known laws of aviation,\rthere is no way a bee should be able to fly.\rIts wings are too small to get its fat little body off the ground[func:DieLoser].");
 		elseif (num == 2)then
 			BattleDialog("[noskip][waitall:0][color:ffff00]Yellow, [color:808080]black, [color:ffff00]yellow, [color:808080]black.\r[color:ffff00]Yellow, [color:808080]black, [color:ffff00]yellow, [color:808080]black.\r[color:ffffff]Ooh, [color:ffff00]black [color:ffffff]and [color:808080]yellow!\r[color:ffffff]Let's shake it up a little.[func:DieLoser]");
-		--elseif (num == 3) then		--commented out due to not 
+		--elseif (num == 3) then		--commented out due to not
 			--BattleDialog("[noskip][waitall:0]HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA\rHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA\rHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA\rHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA\rHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA[func:DieLoser].");
 		elseif (num == 3) then
 			BattleDialog("[noskip][waitall:0][color:ff0000]NO!!! NOT THE BEES!!! NOT THE BEES!!!\rAAAAAAAAAAAAAAAAAAAAAAAH!!!\rTHEY'RE IN MY EYES! MY EYES! AAAAAAA\rAAAAAAAAAAAAAAAAAAAAAAAAAAAH![func:DieLoser].");
@@ -379,9 +379,9 @@ function HandleMercy(mercyID)
 	if(mercyID == "Flee")then
 		BattleDialog({"You try to run...", "But there's no escape..."});
 	elseif(mercyID == "Separate")then
-		
+
 		PlayMusic("the locket")
-		
+
 		--PlaySeparate();
 		--return;
 		BattleDialog({
@@ -389,7 +389,7 @@ function HandleMercy(mercyID)
 					"...you reach out to the SOULS.",
 						"[noskip][novoice][func:State,DONE]"--playseparate
 				});
-		
+
 	elseif(mercyID == "Consume")then
 		PlayMusic("Happy_Fuckit")
 	    BattleDialog({
@@ -397,8 +397,8 @@ function HandleMercy(mercyID)
 			"We're still in the process of making of this shit",
 	    	"[noskip][novoice][func:State,DONE]"
 		});
-	end 
-	
+	end
+
 end
 
 function PauseAudio()
@@ -410,7 +410,7 @@ function ResumeAudio()
 end
 
 function OnHit(bullet)
-	
+
 end
 
 function Hurt(amount)
@@ -500,12 +500,25 @@ function HideEyes()
 	happyAnim.HideEye(7);
 end
 
+function GetLivingHeads()
+	local healths = enemies[1].GetVar("headHealth");
+	--we only need heads higher than 2 for this check
+	local heads ={}
+	for i=2,7 do
+		if(healths[i] > 0)then
+			table.insert(heads, i);
+		end
+	end
+
+	return heads;
+end
+
 function Spring()
 	--DEBUG("sadfasdf");
 	happyAnim.SpringUp();
 	--change attacks, set wave timer
 	wavetimer = 999;	--gonna manually end wave;
-	possible_attacks = {"waveCombat"};
+	possible_attacks = {"waveCombatAngry"};
 end
 
 function KillHead(index)
