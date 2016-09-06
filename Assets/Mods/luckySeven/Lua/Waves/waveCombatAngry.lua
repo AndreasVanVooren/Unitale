@@ -11,34 +11,98 @@ waveSteps = 0;
 
 toggleWhenDone = false;
 
+function Test1 (i)
+		table.insert(activeWaveIndices,i);
+end
+
+function Test2 (i,j)
+
+		table.insert(activeWaveIndices,i);
+		table.insert(activeWaveIndices,j);
+end
+
+local fiveFound = false;
+local sixFound = false;
+local sevenFound = false;
+
 function PreInitialize()
 	--todo : get able heads
 	--waveType = math.random(1,7);
-	local heads = Encounter.Call("GetLivingHeads");
-	if(heads == nil)then
-		DEBUG("ERRSADFSADFSAFDSAFASDFASDFASDFSADFSADF");
-		Finalize();
-	end
+	--local heads = Encounter.Call("GetLivingHeads");
+	--if(heads == nil)then
+	--	DEBUG("ERRSADFSADFSAFDSAFASDFASDFASDFSADFSADF");
+	--	Finalize();
+	--end
 
-	local randCount = (#heads)/2;
-	if(randCount < 1)then
-		randCount = 1;
-	end
-	if(randCount > 2)then
-		randCount = 2;
-	end
-
-	simulWaveCount = randCount;
-	for i=1,simulWaveCount do
-		--get a random head from the array
-		local rand = math.random(1,#heads);
-		--insert it in the activeWaveIndices
-		table.insert(activeWaveIndices, heads[rand]);
-		--remove head from array against
-		table.remove(heads,rand);
-	end
+	--local randCount = (#heads)/2;
+	--if(randCount < 1)then
+	--	randCount = 1;
+	--end
+	--if(randCount > 2)then
+	--	randCount = 2;
+	--end
 
 
+	--simulWaveCount = randCount;
+	--local i = 1;
+	--while (i <= simulWaveCount and #heads > 0) do
+	--	--get a random head from the array
+	--	local rand = math.random(1,#heads);
+	--	local valid = true;
+	--	--insert it in the activeWaveIndices
+
+	--	--if 2 or 3 or 4 is selected, remove the other ones.
+	--	if(heads[rand] == 2)then
+	--		for j=(#heads),1,-1 do
+	--			if(heads[j] == 3 or heads[j] == 4)then
+	--				table.remove(heads,j);
+	--			end
+	--		end
+	--	elseif(heads[rand]== 3)then
+	--		for j=(#heads),1,-1 do
+	--			if(heads[j] == 3 or heads[j] == 2)then
+	--				table.remove(heads,j);
+	--			end
+	--		end
+	--	elseif(heads[rand]== 4)then
+	--		for j=(#heads),1,-1 do
+	--			if(heads[j] == 2 or heads[j] == 3)then
+	--				table.remove(heads,j);
+	--			end
+	--		end
+	--	--if 2 of 5,6 or 7 are present, don't add the other to the array.
+	--	elseif(heads[rand] == 5)then
+	--		if(sixFound and sevenFound)then
+	--			valid = false;
+	--		end
+	--		fiveFound = true;
+	--	elseif(heads[rand] == 6)then
+	--		if(fiveFound and sevenFound)then
+	--			valid = false;
+	--		end
+	--		sixFound = true;
+	--	elseif(heads[rand] == 7)then
+	--		if(fiveFound and sixFound)then
+	--			valid = false;
+	--		end
+	--		sevenFound = true;
+	--	end
+
+	--	if(valid)then
+	--		table.insert(activeWaveIndices, heads[rand]);
+	--		i = i+1;
+	--	end
+	--	--remove head from array against
+	--	table.remove(heads,rand);
+
+	--end
+
+	--test data
+	Test2(7,5);
+	fiveFound = true;
+	simulWaveCount = 2;
+
+	table.sort(activeWaveIndices);
 	waveState = 0;
 	waveData = 0;
 	Encounter.Call("ToggleSway",false);
@@ -75,13 +139,13 @@ local lBeamXI = 9;
 local lBeamYI = 10;
 local lBeamArrStartI = 11;
 
-function InitLasers()
+function InitLasers(side)
 	Encounter.Call("ShowEye7");
 	if(waveSteps < 1)then
 		waveSteps = 1;
 	end
 
-	local side = math.random(0,1);
+	local side = side or math.random(0,1);
 	local head = nil;
 	local initSprite = "";
 	local initX = 0;
@@ -528,13 +592,15 @@ function InitHeadExtrude(side,startTime, startRand, startRot)
 	local initX = 0;
 	local initY = 0;
 	local initHandRot = 0;
-	if((side%2) == 1 or side == "right")then
+	if( (type(side) == "string" and side == "right") or
+		(type(side) == "number" and (side%2) == 1) )then
 		initX = Arena.width/2 - 50;
 		initY = 0;
 		initSprite = "Happy/tempSprites/attacks/headAimL";
 		Encounter.Call("ShowEye6");
 		initHandRot = 180;
-	elseif((side%2) == 0 or side == "left")then
+	elseif( (type(side) == "string" and side == "left") or
+			(type(side) == "number" and (side%2) == 0 ))then
 		initX = -Arena.width/2+50;
 		initY = 0;
 		initSprite = "Happy/tempSprites/attacks/headAimR";
@@ -558,6 +624,7 @@ function InitHeadExtrude(side,startTime, startRand, startRot)
 end
 
 function CreateWave(waveType)
+	DEBUG("IJJIJ" .. waveType);
 	if(waveType == 2)then		--tentacle thing in/out bounds
 		return InitWaveExtrude(2, 1.5, 0.5, 30);
 	elseif(waveType==3)then
@@ -569,7 +636,13 @@ function CreateWave(waveType)
 	elseif(waveType == 6)then
 		return InitHeadExtrude("right",1.5, 0.5, 60);
 	elseif(waveType == 7)then	--laser
-		return InitLasers();
+		if(fiveFound)then
+			return InitLasers(1);
+		elseif(sixFound)then
+			return InitLasers(0);
+		else
+			return InitLasers();
+		end
 	else
 		DEBUG("Invalid wave index found");
 	end
@@ -675,7 +748,7 @@ function Update()
 		for i=1,simulWaveCount do
 			local wave = activeWaves[i];
 			local index = activeWaveIndices[i];
-			allTrue = allTrue and UpdateWaves(wave,index);
+			allTrue = allTrue and (UpdateWaves(wave,index) == true);
 			if(allTrue)then
 				if(waveData < waveSteps-1)then
 					waveData = waveData + 1;

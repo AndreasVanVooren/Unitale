@@ -71,6 +71,7 @@ function EncounterStarting()
 	--enemies[1].Call("SetActive",true);
 	--enemies[1].SetVar("animRef", happyAnim);
 	Player.name = "";
+	local name = 4;
 	--Player.lv = 1;
 	maxhp = 16 + 4 * Player.lv;
 end
