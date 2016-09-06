@@ -276,7 +276,7 @@ public class LuaSpriteController {
         img.Anchor = new Vector2(x, y);
     }
 
-    public void Scale(float xs, float ys, bool alsoScaleChildren = false)
+    public void Scale(float xs, float ys, bool alsoScaleChildren = true)
     {
         xScale = xs;
         yScale = ys;

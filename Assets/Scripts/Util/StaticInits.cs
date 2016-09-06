@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using MoonSharp.Interpreter;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public class StaticInits : MonoBehaviour
 {
@@ -23,35 +24,39 @@ public class StaticInits : MonoBehaviour
 
     public void initAll()
     {
-        if (!Initialized)
+		Stopwatch sw = new Stopwatch(); //benchmarking terrible loading times
+		if (!Initialized)
         {
-            Stopwatch sw = new Stopwatch(); //benchmarking terrible loading times
+            
             sw.Start();
             ScriptRegistry.init();
             sw.Stop();
-            UnityEngine.Debug.Log("Script registry loading time: " + sw.ElapsedMilliseconds + "ms");
+            Debug.Log("Script registry loading time: " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
 
             sw.Start();
             SpriteRegistry.init();
             sw.Stop();
-            UnityEngine.Debug.Log("Sprite registry loading time: " + sw.ElapsedMilliseconds + "ms");
+            Debug.Log("Sprite registry loading time: " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
 
             sw.Start();
             AudioClipRegistry.init();
             sw.Stop();
-            UnityEngine.Debug.Log("Audio clip registry loading time: " + sw.ElapsedMilliseconds + "ms");
+            Debug.Log("Audio clip registry loading time: " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
 
             sw.Start();
             SpriteFontRegistry.init();
             sw.Stop();
-            UnityEngine.Debug.Log("Sprite font registry loading time: " + sw.ElapsedMilliseconds + "ms");
+            Debug.Log("Sprite font registry loading time: " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
         }
-        LateUpdater.init(); // must be last; lateupdater's initialization is for classes that depend on the above registries
-        MusicManager.src = Camera.main.GetComponent<AudioSource>();
+		sw.Start();
+		LateUpdater.init(); // must be last; lateupdater's initialization is for classes that depend on the above registries
+		sw.Stop();
+		Debug.Log("Late initializer loading time: " + sw.ElapsedMilliseconds + "ms");
+		MusicManager.src = Camera.main.GetComponent<AudioSource>(); 
     }
 
     public static void Reset()

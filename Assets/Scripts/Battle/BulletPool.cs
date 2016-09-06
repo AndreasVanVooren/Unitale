@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using SpriteLayout;
+using System.Collections;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// The bullet pool where Projectiles are drawn from for performance reasons.
@@ -18,14 +21,18 @@ public class BulletPool : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        instance = this;
+		Stopwatch watch = new Stopwatch(); //benchmarking terrible loading times
+		watch.Start();
+		instance = this;
         bPrefab = Resources.Load<LuaProjectile>("Prefabs/LUAProjectile");
         pool.Clear();
         for (int i = 0; i < POOLSIZE; i++)
         {
             createPooledBullet();
         }
-    }
+		watch.Stop();
+		Debug.Log("Projectile pool creation time: " + watch.ElapsedMilliseconds + "ms");
+	}
 
     /// <summary>
     /// Creates a new Projectile and adds it to the pool. Used during instantion and when the pool is empty.

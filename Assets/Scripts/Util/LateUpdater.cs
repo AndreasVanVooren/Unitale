@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 /// <summary>
 /// Stupid utility class that waits a frame before running whatever's inside because RectTransform's inherited positions aren't accurate on startup. Nice.
@@ -19,8 +20,12 @@ public class LateUpdater : MonoBehaviour {
 	void Update () {
         if (frametimer > 0)
         {
-            invokeList(lateActions);
+			Stopwatch sw = new Stopwatch(); //benchmarking terrible loading times
+			sw.Start();
+			invokeList(lateActions);
             Destroy(this);
+			sw.Stop();
+			Debug.Log("Late update actions: " + sw.ElapsedMilliseconds + "ms");
         }
 
         frametimer++;

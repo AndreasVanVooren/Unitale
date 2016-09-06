@@ -15,6 +15,7 @@ namespace SpriteLayout
         private const string _nullPath = "WhiteSquare";
         private static Sprite _null;
 
+		public SpriteRenderer InitialSpriteRenderer;
         public SpriteRenderer Renderer
 		{
 			get; private set;
@@ -169,9 +170,20 @@ namespace SpriteLayout
                 _null = Resources.Load<Sprite>(_nullPath);
             }
 
+			GameObject go = null;
+
+			if(InitialSpriteRenderer)
+			{
+				go = InitialSpriteRenderer.gameObject;
+			}
+			else
+			{
+				go = new GameObject();
+			}
 			//create sub-object with sprite renderer
-			var go = new GameObject(string.Format("Img of {0}", gameObject.name));
-			go.transform.parent = this.transform;
+			go.name = string.Format("Img of {0}", gameObject.name);
+			if(go.transform.parent != this.transform)
+				go.transform.SetParent(this.transform);
 			go.transform.localPosition = Vector3.zero;
 			go.transform.localRotation = Quaternion.identity;
 			Vector3 scale = DimensionRatio;
@@ -180,7 +192,14 @@ namespace SpriteLayout
 
 			var initialRenderer = GetComponent<SpriteRenderer>();
 
-			Renderer = go.AddComponent<SpriteRenderer>();
+			if(InitialSpriteRenderer)
+			{
+				Renderer = InitialSpriteRenderer;
+			}
+			else
+			{
+				Renderer = go.AddComponent<SpriteRenderer>();
+			}
 			
 			if(initialRenderer)
 			{
