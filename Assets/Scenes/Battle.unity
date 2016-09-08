@@ -2346,7 +2346,7 @@ MonoBehaviour:
   _anchor: {x: 0.5, y: 0}
   _pivot: {x: 0.5, y: 0}
   InitialSpriteRenderer: {fileID: 1195643672}
-  InitialSprite: {fileID: 0}
+  InitialSprite: {fileID: 21300000, guid: c9f3271be80940e43ba5e5eaa5513eff, type: 3}
   InitialColor: {r: 1, g: 1, b: 1, a: 1}
   InitialSortingLayerName: ArenaTop
   EnabledOnPlay: 1
