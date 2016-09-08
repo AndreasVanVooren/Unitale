@@ -26,81 +26,80 @@ local sixFound = false;
 local sevenFound = false;
 
 function PreInitialize()
-	--todo : get able heads
-	--waveType = math.random(1,7);
-	--local heads = Encounter.Call("GetLivingHeads");
-	--if(heads == nil)then
-	--	DEBUG("ERRSADFSADFSAFDSAFASDFASDFASDFSADFSADF");
-	--	Finalize();
-	--end
+	--actual code
+	local heads = Encounter.Call("GetLivingHeads");
+	if(heads == nil)then
+		DEBUG("ERRSADFSADFSAFDSAFASDFASDFASDFSADFSADF");
+		Finalize();
+	end
 
-	--local randCount = (#heads)/2;
-	--if(randCount < 1)then
-	--	randCount = 1;
-	--end
-	--if(randCount > 2)then
-	--	randCount = 2;
-	--end
+	local randCount = (#heads)/2;
+	if(randCount < 1)then
+		randCount = 1;
+	end
+	if(randCount > 2)then
+		randCount = 2;
+	end
 
 
-	--simulWaveCount = randCount;
-	--local i = 1;
-	--while (i <= simulWaveCount and #heads > 0) do
-	--	--get a random head from the array
-	--	local rand = math.random(1,#heads);
-	--	local valid = true;
-	--	--insert it in the activeWaveIndices
+	simulWaveCount = randCount;
+	local i = 1;
+	while (i <= simulWaveCount and #heads > 0) do
+		--get a random head from the array
+		local rand = math.random(1,#heads);
+		local valid = true;
+		--insert it in the activeWaveIndices
 
-	--	--if 2 or 3 or 4 is selected, remove the other ones.
-	--	if(heads[rand] == 2)then
-	--		for j=(#heads),1,-1 do
-	--			if(heads[j] == 3 or heads[j] == 4)then
-	--				table.remove(heads,j);
-	--			end
-	--		end
-	--	elseif(heads[rand]== 3)then
-	--		for j=(#heads),1,-1 do
-	--			if(heads[j] == 3 or heads[j] == 2)then
-	--				table.remove(heads,j);
-	--			end
-	--		end
-	--	elseif(heads[rand]== 4)then
-	--		for j=(#heads),1,-1 do
-	--			if(heads[j] == 2 or heads[j] == 3)then
-	--				table.remove(heads,j);
-	--			end
-	--		end
-	--	--if 2 of 5,6 or 7 are present, don't add the other to the array.
-	--	elseif(heads[rand] == 5)then
-	--		if(sixFound and sevenFound)then
-	--			valid = false;
-	--		end
-	--		fiveFound = true;
-	--	elseif(heads[rand] == 6)then
-	--		if(fiveFound and sevenFound)then
-	--			valid = false;
-	--		end
-	--		sixFound = true;
-	--	elseif(heads[rand] == 7)then
-	--		if(fiveFound and sixFound)then
-	--			valid = false;
-	--		end
-	--		sevenFound = true;
-	--	end
+		--if 2 or 3 or 4 is selected, remove the other ones.
+		if(heads[rand] == 2)then
+			for j=(#heads),1,-1 do
+				if(heads[j] == 3 or heads[j] == 4)then
+					table.remove(heads,j);
+				end
+			end
+		elseif(heads[rand]== 3)then
+			for j=(#heads),1,-1 do
+				if(heads[j] == 3 or heads[j] == 2)then
+					table.remove(heads,j);
+				end
+			end
+		elseif(heads[rand]== 4)then
+			for j=(#heads),1,-1 do
+				if(heads[j] == 2 or heads[j] == 3)then
+					table.remove(heads,j);
+				end
+			end
+		--if 2 of 5,6 or 7 are present, don't add the other to the array.
+		elseif(heads[rand] == 5)then
+			if(sixFound and sevenFound)then
+				valid = false;
+			end
+			fiveFound = true;
+		elseif(heads[rand] == 6)then
+			if(fiveFound and sevenFound)then
+				valid = false;
+			end
+			sixFound = true;
+		elseif(heads[rand] == 7)then
+			if(fiveFound and sixFound)then
+				valid = false;
+			end
+			sevenFound = true;
+		end
 
-	--	if(valid)then
-	--		table.insert(activeWaveIndices, heads[rand]);
-	--		i = i+1;
-	--	end
-	--	--remove head from array against
-	--	table.remove(heads,rand);
+		if(valid)then
+			table.insert(activeWaveIndices, heads[rand]);
+			i = i+1;
+		end
+		--remove head from array against
+		table.remove(heads,rand);
 
-	--end
+	end
 
 	--test data
-	Test2(7,5);
-	fiveFound = true;
-	simulWaveCount = 2;
+	--Test2(5,6);
+	--sixFound = true;
+	--simulWaveCount = 2;
 
 	table.sort(activeWaveIndices);
 	waveState = 0;
@@ -153,13 +152,13 @@ function InitLasers(side)
 	local beamInitX = 0;
 	local beamInitY = 0;
 	if((side % 2) == 1)then
-		initX = Arena.width/3;
+		initX = Arena.width/2 + (25 / 3 * 2);
 		initY = Arena.height/8;
 		initSprite = "Happy/tempSprites/attacks/headAimL";
 		beamInitX = initX - (25 / 3 * 2) ;
 		beamInitY = Arena.height/8*3 - 10;
 	else
-		initX = -Arena.width/3;
+		initX = -Arena.width/2 - (25 / 3 * 2);
 		initY = Arena.height/8;
 		initSprite = "Happy/tempSprites/attacks/headAimR";
 		beamInitX = initX + (25 / 3 * 2) ;
@@ -173,14 +172,15 @@ function InitLasers(side)
 	return {head,side,0,0,initX,initY,1,1, beamInitX,beamInitY};
 end
 
-function UpdateLasers(bulletArr, beamCount, useOrange, travelTime, descentDelay)
+function UpdateLasers(bulletArr, beamCount, useOrange, travelTime, descentDelay, targetY, laserTargetY)
 	local counter = bulletArr[lCountI];
 	local timer = bulletArr[lTimeI] + Time.dt;
 	bulletArr[lTimeI] = timer;
 	if(counter < beamCount)then
 		if(timer > 0.01)then
 			--DEBUG("beep")
-			local beam = CreateProjectile("Happy/tempSprites/attacks/beam",bulletArr[lBeamXI],bulletArr[lBeamYI])
+			local beam = CreateProjectile("Happy/tempSprites/attacks/beam1",bulletArr[lBeamXI],bulletArr[lBeamYI]);
+			beam.sprite.SetAnimation({"Happy/tempSprites/attacks/beam1","Happy/tempSprites/attacks/beam2"},1/15);
 
 			local side = bulletArr[lSideI];
 			if((side%2) == 1)then
@@ -209,6 +209,29 @@ function UpdateLasers(bulletArr, beamCount, useOrange, travelTime, descentDelay)
 
 			bulletArr[lBeamArrStartI+counter] = beam;
 
+			if(counter + 1 >= beamCount) then
+				--spawn spout
+				local spout = CreateProjectile("Happy/tempSprites/attacks/beamColl1",bulletArr[lBeamXI],bulletArr[lBeamYI]);
+				spout.sprite.SetAnimation({"Happy/tempSprites/attacks/beamColl1","Happy/tempSprites/attacks/beamColl2"},1/15);
+				if((side%2) == 1)then
+					spout.sprite.SetPivot(0,0.5);
+				else
+					spout.sprite.SetPivot(0,0.5);
+					spout.sprite.rotation = 180;
+				end
+				spout.SetVar("dmg",3);
+				if(isSpecial < chance)then
+					if(useOrange)then
+						spout.SetVar("orange",true);
+						spout.sprite.color = {255/255, 154/255, 34/255};
+					else
+						spout.SetVar("blue",true);
+						spout.sprite.color = {0/255, 162/255, 232/255};
+					end
+				end
+				bulletArr[lBeamArrStartI+counter+1] = spout;
+			end
+
 			bulletArr[lTimeI] = 0;
 			bulletArr[lCountI] = counter + 1;
 
@@ -217,14 +240,17 @@ function UpdateLasers(bulletArr, beamCount, useOrange, travelTime, descentDelay)
 		if(timer > descentDelay)then
 			--make head descend
 			local travelTimer = timer - descentDelay;
+			local rate = (math.sin( (travelTimer/travelTime + 1.5) * math.pi )+1)/2;
+
 			local initX = bulletArr[lInitXI];
 			local initY = bulletArr[lInitYI];
-			bulletArr[lHeadI].MoveTo(initX, initY - (initY * 2) * travelTimer/travelTime);
+			local y = initY + ((targetY - initY) * rate);
+			bulletArr[lHeadI].MoveTo(initX, y);
 
 			--make all lasers descend
-			for i=lBeamArrStartI, (lBeamArrStartI+beamCount-1)do
+			for i=lBeamArrStartI, (lBeamArrStartI+beamCount)do
 				local beamX = bulletArr[i].x;
-				local beamY = bulletArr[lBeamYI] - (Arena.height/8*5 - 20) * travelTimer/travelTime;
+				local beamY = bulletArr[lBeamYI] + ((laserTargetY - bulletArr[lBeamYI]) * rate);
 				bulletArr[i].MoveTo(beamX, beamY);
 			end
 
@@ -246,10 +272,12 @@ local eRotVI = 8;
 local eTimeI = 9;
 local eBoneStartI = 10;
 
-function InitWaveExtrude(index,startTime, startRand, startRot)
+function InitWaveExtrude(index,startTime, startRand, startRot, toggleHand)
 	--disable hand
-	Encounter.Call("ToggleHand");
-	toggleWhenDone = true;
+	if(toggleHand ~= false) then
+		Encounter.Call("ToggleHand");
+		toggleWhenDone = true;
+	end
 	if(index >= 2 and index <= 7)then
 		Encounter.Call("ShowEye" .. index);
 	end
@@ -383,7 +411,7 @@ function UpdateWaveBoneExtrude(
 			hand.MoveToAbs(x,y);
 
 			bulletTable[eBoneCI] = counter + 1;
-			local newTime = baseTimer - (counterTimeDecrease*waveCounter);
+			local newTime = baseTimer - (counterTimeDecrease*(counter+1));
 			if(newTime < 0.0)then
 				newTime = 0;
 			end
@@ -392,7 +420,7 @@ function UpdateWaveBoneExtrude(
 			bulletTable[eInitYI] = y;
 			bulletTable[eRotVI] = rotSpeed + rotSpeedIncrease;
 			bulletTable[eTimeI] = 0;
-			bulletTable[eBoneStartI + counter-1] = bone;
+			bulletTable[eBoneStartI + counter] = bone;
 		end
 	else
 		if(timer > timerlimit)then
@@ -430,11 +458,12 @@ local b1RotVI = 6;
 local b2BurstCI = 2;
 local b2TimerI = 3;
 local b2PartSysI = 4;
+local b2ArmStartI = 5;
 
 function InitWaveBurst()
 	Encounter.Call("ToggleHand");
 	Encounter.Call("ShowEye4");
-
+	toggleWhenDone = true;
 	if(waveSteps < 1)then
 		waveSteps = 1;
 	end
@@ -574,7 +603,7 @@ function UpdateWaveBoneBurst(bulletArr,travelDistance,travelTime,targetYMin,targ
 		if(timer < travelTime )then
 			local burstAmount = bulletArr[b2BurstCI];
 			for i=0,burstAmount-1 do
-				local index = 4 + i*2;
+				local index = b2ArmStartI + i*2;
 				local arm = bulletArr[index+1];
 				arm[1].MoveTo( bulletArr[index], arm[1].y + travelDistance * Time.dt/travelTime );
 				arm[2].MoveTo( bulletArr[index], arm[2].y + travelDistance * Time.dt/travelTime );
@@ -613,7 +642,7 @@ function InitHeadExtrude(side,startTime, startRand, startRot)
 	local handInitY = head.absy + Arena.height/8*1 - 10;
 
 	--initWaveExtrude also deals with toggle hand and bool setup
-	local wave = InitWaveExtrude(-1,startTime,startRand,startRot);
+	local wave = InitWaveExtrude(-1,startTime,startRand,startRot,false);
 	local hand = wave[eHandI];
 	hand.MoveToAbs(handInitX,handInitY);
 	hand.sprite.rotation = initHandRot;
@@ -624,7 +653,7 @@ function InitHeadExtrude(side,startTime, startRand, startRot)
 end
 
 function CreateWave(waveType)
-	DEBUG("IJJIJ" .. waveType);
+	--DEBUG("IJJIJ" .. waveType);
 	if(waveType == 2)then		--tentacle thing in/out bounds
 		return InitWaveExtrude(2, 1.5, 0.5, 30);
 	elseif(waveType==3)then
@@ -721,7 +750,7 @@ function UpdateWaves(waveBullets, waveType)
 		);
 	elseif(waveType == 7)then	--laser
 		--only use blue lasers when no other wave is playing
-		return UpdateLasers(waveBullets,10,(simulWaveCount <= 1),2,0.75);
+		return UpdateLasers(waveBullets,13,(simulWaveCount > 1),2,1.25, -Arena.height/2+12 ,-Arena.height/2 + 12);
 	else
 		DEBUG("Invalid wave index found");
 	end
@@ -748,14 +777,20 @@ function Update()
 		for i=1,simulWaveCount do
 			local wave = activeWaves[i];
 			local index = activeWaveIndices[i];
-			allTrue = allTrue and (UpdateWaves(wave,index) == true);
-			if(allTrue)then
-				if(waveData < waveSteps-1)then
-					waveData = waveData + 1;
-				else
-					Finalize();
-				end
+			--DEBUG("Wave" .. index);
+			local result = UpdateWaves(wave,index);
+			allTrue = allTrue and (result == true);
+		end
+		if(allTrue == true)then
+			if(waveData < waveSteps-1)then
+				waveData = waveData + 1;
+			else
+				Finalize();
 			end
+		end
+	else
+		if(waveTimer > 1.0 and false == true)then
+			Finalize();
 		end
 	end
 end
@@ -896,11 +931,29 @@ function OnHit(bullet)
 end
 
 function OnHitProjectile(bullet,other)
-	if(bullet.isactive and other.isactive)then
+	if(bullet.isactive and other.isactive and waveState <= 1)then
 		--bullet.Remove();
 		--other.Remove();
 		--do the eye glowey thing
-		waveData = 999;
+		for i=1,simulWaveCount do
+			if(activeWaveIndices[i] == 5 or activeWaveIndices[i] == 6)then
+				--get head position;
+				local wave = activeWaves[i];
+				local head = wave[eExtraI];
+				local eye = CreateProjectile("Happy/tempSprites/eyes/eyeAtk",head.x,head.y);
+				eye.SetVar("dmg", 2);
+				if(head.x < 0)then
+					eye.sprite.Scale(-3,3);
+					eye.MoveTo( head.x + 12, head.y + 15 );
+				else
+					eye.sprite.Scale(3,3);
+					eye.MoveTo( head.x - 12, head.y + 15 );
+
+				end
+			end
+		end
+
+		waveState = 999;
 		waveTimer = 0;
 	end
 end

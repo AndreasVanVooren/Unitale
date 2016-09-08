@@ -1,6 +1,9 @@
+
 #Unitale ignored directories
 /Assets/Default/
-/Assets/Mods/
+/Assets/Mods/Encounter Skeleton/
+/Assets/Mods/Examples/
+/Assets/Mods/It/
 /Assets/Sprites/ScreenReference/
 /Assets/Scripts/Unused/
 /Assets/Tests/
@@ -13,9 +16,8 @@
 !MoonSharp.Interpreter.dll
 
 #Custom added
-!/Assets/Mods/luckySeven/
-/Assets/Mods/luckySeven/**/*.meta
-/Assets/Mods/luckySeven/**/Thumbs.db
+/Assets/Mods/**/*.meta
+*.db
 
 #Github default gitignore settings for Unity projects
 /[Ll]ibrary/
