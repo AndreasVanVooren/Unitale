@@ -751,7 +751,7 @@ function Update()
 			end
 		end
 	else
-		if(waveTimer > 1.0 and false == true)then
+		if(waveTimer > 1.0)then
 			Finalize();
 		end
 	end

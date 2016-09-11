@@ -1,7 +1,7 @@
 -- A basic monster script skeleton you can copy and modify for your own creations.
 comments = {
-	"It's tearing at itself.", 
-	"Piercing screams echo through\rthe area.", 
+	"It's tearing at itself.",
+	"Piercing screams echo through\rthe area.",
 	"It undulates rhythmically.",
 	"Smells like rotting meat.",
 	"The snow is falling."
@@ -28,6 +28,7 @@ batheCount = 0;
 
 headHealth = {111,111,111,111,111,111,111};
 
+headKilled = false;
 feelsAttacked = false;
 feelsDeaded = false;
 hasDied = false;
@@ -35,7 +36,7 @@ hasDied = false;
 --Comes before damage is actually calculated, and can replace damage calculation entirely
 --Parameters :
 --	+ rateToCenter => The position ratio of the target cursor relative to the center of the UI thing. Goes from -1 (left) to 1 (right)
---Return values : 
+--Return values :
 --	+ void (end function without returning a value, or do return;) => Use default behaviour
 --	+ nil (explicitly state return nil;) => Miss target;
 --  + number (eg. return 5) => damage taken, in the future damage healed, but this isn't implemented yet.
@@ -46,38 +47,43 @@ function HandlePreAttack(rateToCenter)
 	--if(not(rateToCenter < math.huge and rateToCenter > -math.huge and rateToCenter == rateToCenter))then
 	--	DEBUG("To infinity");
 	--end
-	
+
 	--keep standard on miss behaviour
 	if(not(rateToCenter < math.huge and rateToCenter > -math.huge and rateToCenter == rateToCenter))then
 		return nil;
 	end
-	
+
 	if(GetGlobal("isSprung") == false)then
 		--just do normal calculations
-		
+
 		local mult = (2-math.abs(rateToCenter));
 		if(math.abs(rateToCenter) < 12/115)then
 			mult = 2.2;
 		end
-		
+
 		local dmg = math.ceil ( (29 + math.random()*2) * mult);
-		
+
 		headHealth[1] = headHealth[1] - dmg;
-		
+
 		if(headHealth[1] <= 0)then
 			dmg = dmg + headHealth[1];
 			headHealth[1] = 0;
-			
+
 			--animRef.KillHead(1);
-			
+			headKilled = true;
 			feelsAttacked = true;
 		end
-			
+
 		return dmg;
 	elseif(GetGlobal("isSprung") == true)then
 		-- Compare RateToCenter to deduce which head is hit. Then KILL THAT HEAD.
 		local dmg = math.floor(29 + math.random()*2);
-		
+
+		if(feelsAttacked == false)then
+			dmg = dmg * 2;
+			--feelsAttacked = true;
+		end
+
 		local ind = 0;
 		if(rateToCenter > -0.934 and rateToCenter < -0.814)then
 			ind = 2;
@@ -92,16 +98,16 @@ function HandlePreAttack(rateToCenter)
 		elseif(rateToCenter > 0.80 and rateToCenter < 0.926)then
 			ind = 7;
 		end
-		
+
 		if(ind ~= 0)then
-		
+
 			if(headHealth[ind] > 0)then
 				headHealth[ind] = headHealth[ind] - dmg;
 				if(headHealth[ind] <= 0)then
 					dmg = dmg + headHealth[ind];
 					headHealth[ind] = 0;
 				end
-				
+
 				hp = headHealth[1]+
 					headHealth[2]+
 					headHealth[3]+
@@ -109,11 +115,12 @@ function HandlePreAttack(rateToCenter)
 					headHealth[5]+
 					headHealth[6]+
 					headHealth[7];
-		
+
 				if(hp == 0)then
 					feelsDeaded = true;
+					hasDied = true;
 				end
-				
+
 				return dmg;
 			else
 				return nil;
@@ -122,11 +129,11 @@ function HandlePreAttack(rateToCenter)
 			return nil;
 		end
 	end
-	
+
 	return "YOU DUN FUCKED UP"
 end
 
--- Happens after the slash animation but before 
+-- Happens after the slash animation but before
 function HandleAttack(attackstatus)
     if attackstatus == -1 then
         -- player pressed fight but didn't press Z afterwards
@@ -134,8 +141,8 @@ function HandleAttack(attackstatus)
         -- player did actually attack
 		--hp = hp + attackstatus;
 		--isHugged
-		
-		
+
+
 		hp = headHealth[1]+
 			 headHealth[2]+
 			 headHealth[3]+
@@ -143,21 +150,22 @@ function HandleAttack(attackstatus)
 			 headHealth[5]+
 			 headHealth[6]+
 			 headHealth[7];
-		
+
 		if(hp == 0)then
 			feelsDeaded = true;
+			hasDied = true;
 		end
-			
-		for	i=1, (#headHealth) do
-			if(headHealth[i] <= 0)then
-				Encounter.Call("KillHead",i);
-			end
+
+		local phase2HP = headHealth[2]+headHealth[3]+headHealth[4]+headHealth[5]+headHealth[6]+headHealth[7]
+		if(phase2HP <= 0)then
+			feelsDeaded = true;
+			hasDied = true;
 		end
-		
+
 		Encounter.Call("Shake",0.5);
     end
 end
- 
+
 function Cheat()
 	headHealth[2] = 0;
 	headHealth[3] = 0;
@@ -171,32 +179,54 @@ function Cheat()
 		end
 	end
 end
- 
+
 -- This handles the commands; all-caps versions of the commands list you have above.
 function HandleCustomCommand(command)
 	if command == "CHECK" then
 		BattleDialog({"???_??? ATK -"..math.random(100000000,999999999) ..math.random(100000000,999999999)..math.random(100000000,999999999).."\nLooks tasty."});
     elseif command == "BATHE" then
 		if(isHugged) then
-			BattleDialog("TODO.");
+
 			batheCount = batheCount+1;
-			if(batheCount >= 2)then
-				AddMercy("Separate");
+			if(batheCount == 1)then
+				BattleDialog({"You bathe It. It starts\rsplashing water on you.",
+								"Its heads stop screaming,\rif just for a moment."});
+			elseif(batheCount == 2)then
+				BattleDialog({"You bathe It some more.\rYou scrub the inside\rof Its skulls.", "It's standing a bit\rmore straight."});
+			elseif(batheCount == 3)then
+				BattleDialog({"You bathe it even more.\rIts bones sparkle like diamonds.","It looks more... friendly?","The Papalgamate is content."});
+				if(feelsAttacked == false)then
+					Encounter.Call("AddMercy","Separate");
+				end
+			else
+				BattleDialog({"The Papalgamate is already\rsparkly clean."});
 			end
-			
+
 		else
 			BattleDialog("It won't let you.");
 		end
-		
+
     elseif command == "RUN" then
-		BattleDialog({"TODO."});
+		if(headKilled and batheCount >=3)then
+			Encounter.Call("NeutralEnding");
+		elseif(hasDied == true and headHealth[1] > 0)then
+			Encounter.Call("NeutralEnding");
+		else
+			BattleDialog({"Can't run."});
+		end
     elseif command == "HUG" then
-		isHugged = true;
-		BattleDialog({"TODO."});
+		if(GetGlobal("isSprung") == true)then
+			isHugged = true;
+			BattleDialog({"You hug It. Its many limbs\rwrap around you, tickling."});
+		else
+			BattleDialog({"You try to hug It.\rIt tries to hug you,\rbut It has no arms."});
+		end
+
+
     end
     --currentdialogue = {"[font:sans]" .. currentdialogue[1]}
     --BattleDialog({"You selected " .. command .. "."})
-    
+
 end
 
 --Empty onDeath to get the battle dialog playing

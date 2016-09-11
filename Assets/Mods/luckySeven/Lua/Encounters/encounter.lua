@@ -133,7 +133,7 @@ function Konami()
 
 
 end
-
+local playTrack = false;
 function Update()
 	SeparateAnim();
 	Konami();
@@ -144,7 +144,8 @@ function Update()
 
 	if(Input.Menu == 1)then
 		--enemies[1].Call("Cheat");
-		Player.Hurt(98456946);
+		PlaySeparate();
+
 	end
 
 end
@@ -152,8 +153,17 @@ end
 function EnemyDialogueEnding()
     -- Good location to fill the 'nextwaves' table with the attacks you want to have simultaneously.
     -- This example line below takes a random attack from 'possible_attacks'.
-	local wave = possible_attacks[math.random(#possible_attacks)]
 
+	if(enemies[1].GetVar("batheCount") >= 3 or GetGlobal("isSprung") == false)then
+		wave = "waveNull";
+		wavetimer = 0;
+	elseif(enemies[1].GetVar("headKilled") == true and enemies[1].GetVar("hasDied") == false)then
+		wave = "waveCombatAngry";
+		wavetimer = 999;
+	else
+		wave = "waveCombat";
+		wavetimer = 999;
+	end
 	--if(GetGlobal("angry") == true) then
 	--	wave = wave .. "Angry";
 	--end
@@ -196,23 +206,38 @@ function HandleItem(ItemID)
 		--music ="the locket"
 		--Audio.LoadFile(music);
 
-		PlayMusic("the locket")
+		--PlayMusic("the locket")
 
 		--PlaySeparate();
 		--return;
-
+		StartTempMusic("the locket");
+		--still in first phase
 		if(GetGlobal("isSprung") == false)then
-			BattleDialog({"The locket whispers to you...\rMake It remember...\rOr make It undone..."});
-		elseif(enemies[1].GetVar("feelsAttacked") == true)then
-
+			BattleDialog({"The locket whispers to you...\r[waitall:4][color:ffffc0]Make It remember...\r[color:ffc0c0]Or make It undone...","[func:StopTempMusic][func:State,ENEMYDIALOGUE]"});
+		--is ded
 		elseif(enemies[1].GetVar("hasDied") == true)then
-			BattleDialog({"The locket whispers to you...\r[color:FF0000]Show it the mercy it deserves..."});
-		elseif(enemies[1].GetVar("isHugged") ~= true)then
-			BattleDialog({"The locket whispers to you...\rSo alone... So cold..."});
-		elseif(enemies[1].GetVar("batheCount") >= 2)then
-			BattleDialog({"The locket whispers to you...\rIt is time. You know what to do."});
+			BattleDialog({"The locket whispers to you...\r[waitall:4][color:ff0000]Show it the mercy it deserves...","[func:StopTempMusic][func:State,ENEMYDIALOGUE]"});
+		--has been attacked, and a head has been killed
+		elseif(enemies[1].GetVar("headKilled") == true)then
+			--but the player reached the end of mercy route.
+			if(enemies[1].GetVar("batheCount") >= 3)then
+				BattleDialog({"The locket whispers to you...\r[waitall:4][color:c0c000]You tried your best.\rNow you can only leave.","[func:StopTempMusic][func:State,ENEMYDIALOGUE]"});
+			--but player decided to hug anyway
+			elseif(enemies[1].GetVar("isHugged") == true)then
+				BattleDialog({"The locket questions your judgement,\rbut remains silent otherwise.","[func:StopTempMusic][func:State,ENEMYDIALOGUE]"});
+			--player is bashing his fokken 'ead in
+			else
+				BattleDialog({"The locket whispers to you...\r[waitall:4][color:ffa0a0]The game has changed.\rAim with care.","[func:StopTempMusic][func:State,ENEMYDIALOGUE]"});
+			end
+		--no head is kill, end of mercy route
+		elseif(enemies[1].GetVar("batheCount") >= 3)then
+			BattleDialog({"The locket whispers to you...\r[waitall:4][color:ffff00]It is time. You know what to do.","[func:StopTempMusic][func:State,ENEMYDIALOGUE]"});
+		--no bathes yet, but hugged
+		elseif(enemies[1].GetVar("isHugged") == true)then
+			BattleDialog({"The locket whispers to you...\r[waitall:4][color:ffff30]Tidy for the big day...","[func:StopTempMusic][func:State,ENEMYDIALOGUE]"});
+		--no bathes, not hugged, no heads killed, second phase
 		else
-			BattleDialog({"The locket whispers to you...\rTidy for the big day..."});
+			BattleDialog({"The locket whispers to you...\r[waitall:4][color:ffffa0]So alone... So cold...","[func:StopTempMusic][func:State,ENEMYDIALOGUE]"});
 		end
 
 		--State("ACTIONSELECT")
@@ -225,34 +250,21 @@ function HandleItem(ItemID)
 
 	elseif(ItemID == "DOGTEST2")then
 		--Generic healing item (Spider cider equivalent)
-		if(itemUsed[2] == false) then
-			if(Player.hp < maxhp) then
-				BattleDialog({
-				"[noskip]You drink up the cider spiders.",
-				"[noskip]The spiders crawl down\ryour esophagus...",
-				"[noskip][waitall:2]Into your stomach...",
-				"[noskip][waitall:4]Where the acids...\r[waitall:0][color:1A0000][novoice]NONONONONONONONONONONONONONONO\r[voice:default][waitall:4][color:ffffff]boil them alive.",
-				"[noskip][waitall:8]...[waitall:2]Your HP[waitall:8]...[func:Heal,24]"
-				});
-				itemUsed[2] = true;
-			else
-				BattleDialog("You feel fine.\nYou'll leave the spiders alone...\r[waitall:8]...for now...")
-				toItems = true;
-			end
-
-
+		if(Player.hp < maxhp) then
+			BattleDialog({
+			"[noskip]You drink up the cider spiders.",
+			"[noskip]The spiders crawl down\ryour esophagus...",
+			"[noskip][waitall:2]Into your stomach...",
+			"[noskip][waitall:4]Where the acids...\r[waitall:0][color:1A0000][novoice]NONONONONONONONONONONONONONONO\r[voice:default][waitall:4][color:ffffff]boil them alive.",
+			"[noskip][waitall:8]...[waitall:2]Your HP[waitall:8]...[func:Heal,24]"
+			});
+			RemoveItem(ItemID);
 		else
-			if(Player.hp < maxhp) then
-				BattleDialog({
-					"You asked the spiders for help.",
-					"[waitall:2]But nobody came..."
-				});
-			else
-				BattleDialog("Your craving for spiders\rwas already sated.");
-
-			end
+			BattleDialog("You feel fine.\nYou'll leave the spiders alone...\r[waitall:8]...for now...")
 			toItems = true;
 		end
+
+
 	elseif(ItemID == "DOGTEST3")then
 		--Generic healing item (Spider Donut equivalent)
 		if(itemUsed[3] == false) then
@@ -378,6 +390,11 @@ customMercy = {"Flee"};
 
 function HandleMercy(mercyID)
 	if(mercyID == "Flee")then
+		if(enemies[1].GetVar("headKilled") == true and enemies[1].GetVar("batheCount") >= 3)then
+			NeutralEnding();
+		elseif(enemies[1].GetVar("hasDied") == true and enemies[1].GetVar("headHealth")[1] > 0)then
+			NeutralEnding();
+		end
 		BattleDialog({"You try to run...", "But there's no escape..."});
 	elseif(mercyID == "Separate")then
 
@@ -388,16 +405,16 @@ function HandleMercy(mercyID)
 		BattleDialog({
 					"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
 					"...you reach out to the SOULS.",
-						"[noskip][novoice][func:State,DONE]"--playseparate
+						"[noskip][novoice][func:PlaySeparate]"--playseparate
 				});
 
 	elseif(mercyID == "Consume")then
-		PlayMusic("Happy_Fuckit")
-	    BattleDialog({
-	    	"BEPIS",
-			"We're still in the process of making of this shit",
-	    	"[noskip][novoice][func:State,DONE]"
-		});
+		PlayMusic("the locket")
+		BattleDialog({
+					"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
+					"...you reach for the SOULS.",
+						"[noskip][novoice][func:State,DONE]"--playseparate
+				});
 	end
 
 end
@@ -427,16 +444,30 @@ function Heal(amount)
 end
 
 function Spare()
-	--State("DONE");
+
+	--All heads dead
 	if(enemies[1].GetVar("hasDied") == true)then
-		BattleDialog("Too late for mercy.");
+		if(enemies[1].GetVar("feelsAttacked") == true)then
+			BattleDialog("Too late for mercy.");
+		else
+			BattleDialog("Too late for mercy.");
+		end
+
 	elseif(GetGlobal("isSprung") == false)then
 		BattleDialog({
-				"[noskip][waitall:4]You show mercy to It.[w:8]\n[func:PrepareSpring]It seems to remember something...",
+				"[noskip][waitall:3]You show mercy to It.[w:6]\n[func:PrepareSpring]It seems to remember something...",
 				happyIntro
 		});
+	elseif(enemies[1].GetVar("feelsAttacked") == true)then
+		if(enemies[1].GetVar("batheCount")>=2)then
+			BattleDialog({"It doesn't want your mercy...\rYou can only run."
+			});
+		else
+			BattleDialog({"It doesn't want your mercy..."
+			});
+		end
 	else
-		BattleDialog({"It doesn't look like it's working..."
+		BattleDialog({"It doesn't look like\rit's working..."
 		});
 	end
 end
@@ -459,7 +490,7 @@ end
 function Deaded()
 	Audio.LoadFile("Happy_Intro");
 	Audio.Pitch(0.5);
-	happyAnim.ShowEye(1);
+	happyAnim.HideEye(1);
 	happyAnim.ToggleSway(false);
 	happyAnim.ResetTimer();
 	--enableTorseye
@@ -518,8 +549,8 @@ function Spring()
 	--DEBUG("sadfasdf");
 	happyAnim.SpringUp();
 	--change attacks, set wave timer
-	wavetimer = 999;	--gonna manually end wave;
-	possible_attacks = {"waveCombatAngry"};
+	--wavetimer = 999;	--gonna manually end wave;
+	--possible_attacks = {"waveCombatAngry"};
 end
 
 function KillHead(index)
@@ -545,4 +576,20 @@ end
 --usually done at endgame
 function DisableSpecials()
 	disableSpecials = true;
+end
+
+function StartTempMusic(name)
+	Audio.Crossfade(name);
+end
+
+function StopTempMusic()
+	if(GetGlobal("isSprung") == false)then
+		Audio.Crossfade("Happy_Intro",0.75,1);
+	else
+		Audio.Crossfade("Happy_Loop",0.75,1);
+	end
+end
+
+function NeutralEnding()
+	State("DONE");
 end
