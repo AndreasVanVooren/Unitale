@@ -41,7 +41,8 @@ public class UserDebugger : MonoBehaviour
     {
         // enqueue the new line and keep queue at capacity
         dbgContent.Enqueue(line);
-        if (dbgContent.Count > maxLines)
+		Debug.LogFormat("DEBUG INFO: {0}", line);
+		if (dbgContent.Count > maxLines)
         {
             dbgContent.Dequeue();
         }

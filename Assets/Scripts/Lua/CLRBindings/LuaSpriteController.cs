@@ -185,6 +185,12 @@ public class LuaSpriteController {
 		}
 	}
 
+	public int order
+	{
+		get { return img.SortingOrder; }
+		set { img.SortingOrder = value; }
+	}
+
 	/*
     public bool filter
     {
@@ -367,11 +373,6 @@ public class LuaSpriteController {
         //Debug.Log("[LuaSpriteController::SendToBottom] TODO");
 		img.SendToBottom();
         //img.rectTransform.SetAsFirstSibling();
-    }
-
-    public void SetSortOrder(int orderVal)
-    {
-        
     }
 
     public void Remove()

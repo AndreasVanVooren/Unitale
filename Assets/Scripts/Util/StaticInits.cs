@@ -56,7 +56,7 @@ public class StaticInits : MonoBehaviour
 		LateUpdater.init(); // must be last; lateupdater's initialization is for classes that depend on the above registries
 		sw.Stop();
 		Debug.Log("Late initializer loading time: " + sw.ElapsedMilliseconds + "ms");
-		MusicManager.src = Camera.main.GetComponent<AudioSource>(); 
+		MusicManager.manager = Camera.main.GetComponentInChildren<AudioManager>(); 
     }
 
     public static void Reset()

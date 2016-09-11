@@ -69,10 +69,12 @@ internal class LuaEnemyEncounter : EnemyEncounter
     private DynValue CreateProjectileAbs(Script s, string sprite, float xpos, float ypos)
     {
         LuaProjectile projectile = (LuaProjectile)BulletPool.instance.Retrieve();
+		((SpriteLayoutImage)projectile.self).Color = Color.white;
         SpriteUtil.SwapSpriteFromFile(projectile, sprite);
 		projectile.ctrl.SetCollider("rect");
 		projectile.ctrl.SetRectColliderSize( projectile.self.Width, projectile.self.Height );
 		projectile.ctrl.sprite.Scale (1, 1);
+		projectile.ctrl.SendToTop();
         projectile.owner = s;
         projectile.gameObject.SetActive(true); 
         projectile.ctrl.MoveToAbs(xpos, ypos);
@@ -132,7 +134,6 @@ internal class LuaEnemyEncounter : EnemyEncounter
 
     protected override void loadEnemiesAndPositions()
     {
-        AudioSource musicSource = Camera.main.GetComponent<AudioSource>();
         EncounterText = script.GetVar("encountertext").String;
         DynValue enemyScriptsLua = script.GetVar("enemies");
         DynValue enemyPositionsLua = script.GetVar("enemypositions");
@@ -175,8 +176,7 @@ internal class LuaEnemyEncounter : EnemyEncounter
         {
             try
             {
-                AudioClip music = AudioClipRegistry.GetMusic(musicFile);
-                musicSource.clip = music;
+				MusicManager.LoadFile(musicFile);
             }
             catch (Exception)
             {
@@ -185,7 +185,7 @@ internal class LuaEnemyEncounter : EnemyEncounter
         }
         else
         {
-            musicSource.clip = AudioClipRegistry.GetMusic("mus_battle1");
+			MusicManager.LoadFile("mus_battle1");
         }
 
         // Instantiate all the enemy objects
@@ -218,7 +218,7 @@ internal class LuaEnemyEncounter : EnemyEncounter
             luaEnemyTable.Set(i + 1, UserData.Create(enemies[i].script));
         }
         script.SetVar("enemies", DynValue.NewTable(luaEnemyTable));
-        musicSource.Play(); // play that funky music
+        //musicSource.Play(); // play that funky music
 
 		//TEMP : Items in enemy script
 		try

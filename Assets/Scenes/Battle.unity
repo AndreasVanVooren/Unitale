@@ -2750,11 +2750,13 @@ GameObject:
   - 81: {fileID: 1727881045}
   - 114: {fileID: 1727881052}
   - 82: {fileID: 1727881050}
+  - 114: {fileID: 1727881057}
   - 114: {fileID: 1727881051}
   - 114: {fileID: 1727881053}
   - 114: {fileID: 1727881054}
   - 114: {fileID: 1727881055}
   - 114: {fileID: 1727881056}
+  - 114: {fileID: 1727881058}
   m_Layer: 0
   m_Name: PseudoCanvas
   m_TagString: MainCamera
@@ -2990,6 +2992,31 @@ MonoBehaviour:
   _pivot: {x: 0.5, y: 0.5}
   SpriteCamera: {fileID: 1727881048}
   PixelsPerUnit: 1
+--- !u!114 &1727881057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1727881044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25af5cdff0edd4946bdd4b7206c195b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  src: {fileID: 1727881050}
+  baseVolume: 0.75
+--- !u!114 &1727881058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1727881044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc2c1f81acdfa2f4fa6cf3d8dd37d102, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MusicSource: {fileID: 1727881057}
 --- !u!1 &1812957999
 GameObject:
   m_ObjectHideFlags: 0

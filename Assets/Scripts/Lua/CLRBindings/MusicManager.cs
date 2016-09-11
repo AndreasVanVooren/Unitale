@@ -5,13 +5,15 @@
 /// </summary>
 public class MusicManager
 {
-    internal static AudioSource src;
+    internal static AudioManager manager;
+	internal static string primary = "";
+	internal static string secondary = "";
 
     public static float playtime
     {
         get
         {
-            return src.time;
+            return manager.playtime;
         }
     }
 
@@ -19,57 +21,104 @@ public class MusicManager
     {
         get
         {
-            return src.clip.length;
+            return manager.totaltime;
         }
     }
 
     public static void LoadFile(string name)
     {
-        src.Stop();
-        src.clip = AudioClipRegistry.GetMusic(name);
-        src.Play();
-    }
+		primary = name;
+		manager.PlayMusic(name);
 
-    public static void PlaySound(string name)
+		if(secondary.Length != 0)
+		{
+			manager.StopSound(secondary);
+		}
+	}
+
+    public static void PlaySound(string name, float volume = 0.65f)
     {
-        AudioSource.PlayClipAtPoint(AudioClipRegistry.GetSound(name), Camera.main.transform.position, 0.65f);
-    }
+		manager.PlaySound(name,volume);
+	}
+
+	public static void StartSound(string name, float volume = 0.65f, float fadeTime = 0)
+	{
+		manager.StartSound(name, volume,fadeTime);
+	}
+
+	public static void StopSound(string name, float fadeTime = 0)
+	{
+		manager.StopSound(name, fadeTime);
+	}
+
+	public static void FadeIn(float time)
+	{
+		manager.MusicSource.FadeIn(time);
+	}
+
+	public static void FadeOut(float time)
+	{
+		manager.MusicSource.FadeOut(time);
+	}
 
     public static void Pitch(double value)
     {
-        if (value < -3)
-            value = -3;
-        if (value > 3)
-            value = 3;
-        src.pitch = (float)value;
+		//Mathf.Clamp((float)value,-3,3);
+		manager.pitch = (float)value;
     }
 
     public static void Volume(double value)
     {
-        if (value < 0)
-            value = 0;
-        if (value > 1)
-            value = 1;
-        src.volume = (float)value;
+        //Mathf.Clamp01((float)value);
+        manager.basevolume = (float)value;
     }
+
+	public static void Crossfade(string name, float vol = 0.75f, float time = 0.5f)
+	{
+		if(name == primary && secondary.Length == 0)
+		{
+			return;
+		}	
+
+
+		if(secondary.Length == 0)
+		{
+			manager.MusicSource.FadeOut(time);
+		}
+		else
+		{
+			manager.StopSound(secondary, time);
+		}
+
+		if(name == primary)
+		{
+			secondary = "";
+			manager.MusicSource.FadeIn(time);
+		}
+		else
+		{
+			manager.StartMusicAsSound(name, vol, time);
+			secondary = name;
+		}
+	}
 
     public static void Play()
     {
-        src.Play();
+		manager.Play();
     }
 
     public static void Stop()
     {
-        src.Stop();
+		manager.Stop();
     }
 
     public static void Pause()
     {
-        src.Pause();
+		manager.Pause();
     }
 
     public static void Unpause()
     {
-        src.UnPause();
+		manager.UnPause();
     }
 }
