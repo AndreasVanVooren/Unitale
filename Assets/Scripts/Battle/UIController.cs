@@ -681,7 +681,7 @@ public class UIController : MonoBehaviour
                 }
 				else
 				{
-					Debug.Log(selectedMercy - (encounter.CanRun ? 2 : 1));
+					//Debug.Log(selectedMercy - (encounter.CanRun ? 2 : 1));
 					if (!encounter.CustomMercy(encounter.customMercy[selectedMercy - (encounter.CanRun?2:1)]))
 					{
 						Debug.LogWarningFormat("No CustomMercy for {0}", encounter.customMercy[selectedMercy - (encounter.CanRun ? 2 : 1)]);

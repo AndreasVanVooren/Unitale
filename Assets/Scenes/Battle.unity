@@ -152,7 +152,6 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 110721878}
-  - 212: {fileID: 110721880}
   - 114: {fileID: 110721879}
   m_Layer: 0
   m_Name: HPBarOutline
@@ -171,7 +170,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 25.277779, y: 23.076923, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_Children: []
+  m_Children:
+  - {fileID: 1697559430}
   m_Father: {fileID: 1895438721}
   m_RootOrder: 0
 --- !u!114 &110721879
@@ -186,48 +186,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DebugMe: 0
-  _localPosition: {x: 0, y: 0, z: 0}
+  _localPosition: {x: -1, y: 0, z: 0}
   _localRotation: {x: 0, y: 0, z: 0, w: 1}
   _localScale: {x: 1, y: 1, z: 1}
   _initialDimensions: {x: 1, y: 1}
   _dimensions: {x: 182, y: 15}
-  _anchor: {x: 0.5, y: 0.5}
-  _pivot: {x: 0.5, y: 0.5}
-  InitialSpriteRenderer: {fileID: 0}
+  _anchor: {x: 0, y: 0.5}
+  _pivot: {x: 0, y: 0.5}
+  InitialSpriteRenderer: {fileID: 1697559431}
   InitialSprite: {fileID: 0}
-  InitialColor: {r: 1, g: 1, b: 1, a: 1}
-  InitialSortingLayerName: Default
+  InitialColor: {r: 0, g: 0, b: 0, a: 1}
+  InitialSortingLayerName: ArenaTop
   EnabledOnPlay: 1
---- !u!212 &110721880
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 110721877}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_Materials:
-  - {fileID: 10754, guid: 0000000000000000e000000000000000, type: 0}
-  m_SubsetIndices: 
-  m_StaticBatchRoot: {fileID: 0}
-  m_UseLightProbes: 0
-  m_ReflectionProbeUsage: 0
-  m_ProbeAnchor: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
 --- !u!1 &279337224
 GameObject:
   m_ObjectHideFlags: 0
@@ -667,7 +637,7 @@ MonoBehaviour:
   InitialSpriteRenderer: {fileID: 1927661568}
   InitialSprite: {fileID: 21300000, guid: 562f3f4f4fb3c4cb4a44391374cb8748, type: 3}
   InitialColor: {r: 1, g: 1, b: 1, a: 1}
-  InitialSortingLayerName: Default
+  InitialSortingLayerName: Arena
   EnabledOnPlay: 1
 --- !u!114 &808258660 stripped
 MonoBehaviour:
@@ -1721,11 +1691,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11442466, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
       propertyPath: InitialSortingLayerName
-      value: Default
+      value: ArenaTop
       objectReference: {fileID: 0}
     - target: {fileID: 11402160, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
       propertyPath: InitialSortingLayerName
-      value: Default
+      value: ArenaTop
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
@@ -1867,7 +1837,7 @@ MonoBehaviour:
   InitialSpriteRenderer: {fileID: 2000140793}
   InitialSprite: {fileID: 0}
   InitialColor: {r: 1, g: 1, b: 1, a: 1}
-  InitialSortingLayerName: ArenaTop
+  InitialSortingLayerName: Player
   EnabledOnPlay: 1
 --- !u!82 &1509689748
 AudioSource:
@@ -2732,6 +2702,65 @@ SpriteRenderer:
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
+--- !u!1 &1697559429
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1697559430}
+  - 212: {fileID: 1697559431}
+  m_Layer: 0
+  m_Name: Img of HPBarOutline
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1697559430
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1697559429}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 110721878}
+  m_RootOrder: 0
+--- !u!212 &1697559431
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1697559429}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000e000000000000000, type: 0}
+  m_SubsetIndices: 
+  m_StaticBatchRoot: {fileID: 0}
+  m_UseLightProbes: 0
+  m_ReflectionProbeUsage: 0
+  m_ProbeAnchor: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
 --- !u!1 &1707868075 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 157740, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
@@ -2749,8 +2778,6 @@ GameObject:
   - 124: {fileID: 1727881046}
   - 81: {fileID: 1727881045}
   - 114: {fileID: 1727881052}
-  - 82: {fileID: 1727881050}
-  - 114: {fileID: 1727881057}
   - 114: {fileID: 1727881051}
   - 114: {fileID: 1727881053}
   - 114: {fileID: 1727881054}
@@ -2840,80 +2867,6 @@ Transform:
   - {fileID: 921107581}
   m_Father: {fileID: 0}
   m_RootOrder: 0
---- !u!82 &1727881050
-AudioSource:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1727881044}
-  m_Enabled: 1
-  serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 0
-  m_Volume: 0.75
-  m_Pitch: 1
-  Loop: 1
-  Mute: 0
-  Spatialize: 0
-  Priority: 128
-  DopplerLevel: 1
-  MinDistance: 200
-  MaxDistance: 500
-  Pan2D: 0
-  rolloffMode: 0
-  BypassEffects: 1
-  BypassListenerEffects: 1
-  BypassReverbZones: 1
-  rolloffCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    - time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  panLevelCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
 --- !u!114 &1727881051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2992,19 +2945,6 @@ MonoBehaviour:
   _pivot: {x: 0.5, y: 0.5}
   SpriteCamera: {fileID: 1727881048}
   PixelsPerUnit: 1
---- !u!114 &1727881057
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1727881044}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25af5cdff0edd4946bdd4b7206c195b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  src: {fileID: 1727881050}
-  baseVolume: 0.75
 --- !u!114 &1727881058
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3016,7 +2956,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c1f81acdfa2f4fa6cf3d8dd37d102, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MusicSource: {fileID: 1727881057}
+  MusicSource1: {fileID: 0}
+  MusicSource2: {fileID: 0}
 --- !u!1 &1812957999
 GameObject:
   m_ObjectHideFlags: 0
@@ -3281,14 +3222,6 @@ Prefab:
       propertyPath: background
       value: 
       objectReference: {fileID: 808258660}
-    - target: {fileID: 11402160, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
-      propertyPath: InitialSortingLayerName
-      value: Default
-      objectReference: {fileID: 0}
-    - target: {fileID: 11442466, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
-      propertyPath: InitialSortingLayerName
-      value: Default
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 395d68b8bb1fcdb48a7c47668f565115, type: 2}
   m_IsPrefabParent: 0

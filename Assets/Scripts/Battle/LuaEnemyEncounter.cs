@@ -69,17 +69,20 @@ internal class LuaEnemyEncounter : EnemyEncounter
     private DynValue CreateProjectileAbs(Script s, string sprite, float xpos, float ypos)
     {
         LuaProjectile projectile = (LuaProjectile)BulletPool.instance.Retrieve();
-		((SpriteLayoutImage)projectile.self).Color = Color.white;
         SpriteUtil.SwapSpriteFromFile(projectile, sprite);
+		var img = (SpriteLayoutImage)projectile.self;
+		img.Color = Color.white;
+		img.SortingLayerName = "BulletLayer";
 		projectile.ctrl.SetCollider("rect");
 		projectile.ctrl.SetRectColliderSize( projectile.self.Width, projectile.self.Height );
+		projectile.ctrl.canCollideWithProjectiles = false;
 		projectile.ctrl.sprite.Scale (1, 1);
 		projectile.ctrl.SendToTop();
         projectile.owner = s;
         projectile.gameObject.SetActive(true); 
         projectile.ctrl.MoveToAbs(xpos, ypos);
         //projectile.ctrl.z = Projectile.Z_INDEX_NEXT; //doesn't work yet, thanks unity UI
-        projectile.transform.SetAsLastSibling();
+        //projectile.transform.SetAsLastSibling();	//honestly this isn't necessary since sendtotop does this for us.
         projectile.ctrl.UpdatePosition();
         DynValue projectileController = UserData.Create(projectile.ctrl);
         return projectileController;

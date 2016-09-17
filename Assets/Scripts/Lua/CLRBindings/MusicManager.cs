@@ -6,8 +6,6 @@
 public class MusicManager
 {
     internal static AudioManager manager;
-	internal static string primary = "";
-	internal static string secondary = "";
 
     public static float playtime
     {
@@ -27,13 +25,7 @@ public class MusicManager
 
     public static void LoadFile(string name)
     {
-		primary = name;
-		manager.PlayMusic(name);
-
-		if(secondary.Length != 0)
-		{
-			manager.StopSound(secondary);
-		}
+		manager.PlayMusic(name,0);
 	}
 
     public static void PlaySound(string name, float volume = 0.65f)
@@ -53,12 +45,12 @@ public class MusicManager
 
 	public static void FadeIn(float time)
 	{
-		manager.MusicSource.FadeIn(time);
+		manager.ActiveSource.FadeIn(time);
 	}
 
 	public static void FadeOut(float time)
 	{
-		manager.MusicSource.FadeOut(time);
+		manager.ActiveSource.FadeOut(time);
 	}
 
     public static void Pitch(double value)
@@ -73,33 +65,9 @@ public class MusicManager
         manager.basevolume = (float)value;
     }
 
-	public static void Crossfade(string name, float vol = 0.75f, float time = 0.5f)
+	public static void Crossfade(string name, float time = 0.5f)
 	{
-		if(name == primary && secondary.Length == 0)
-		{
-			return;
-		}	
-
-
-		if(secondary.Length == 0)
-		{
-			manager.MusicSource.FadeOut(time);
-		}
-		else
-		{
-			manager.StopSound(secondary, time);
-		}
-
-		if(name == primary)
-		{
-			secondary = "";
-			manager.MusicSource.FadeIn(time);
-		}
-		else
-		{
-			manager.StartMusicAsSound(name, vol, time);
-			secondary = name;
-		}
+		manager.PlayMusic(name, time, false);
 	}
 
     public static void Play()

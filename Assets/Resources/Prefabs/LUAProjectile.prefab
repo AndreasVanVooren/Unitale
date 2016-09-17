@@ -61,8 +61,11 @@ MonoBehaviour:
   _dimensions: {x: 12, y: 12}
   _anchor: {x: 0.5, y: 0.5}
   _pivot: {x: 0.5, y: 0.5}
+  InitialSpriteRenderer: {fileID: 0}
   InitialSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  InitialSortingLayerName: Default
+  InitialColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialSortingLayerName: BulletLayer
+  EnabledOnPlay: 1
 --- !u!212 &21235556
 SpriteRenderer:
   m_ObjectHideFlags: 1

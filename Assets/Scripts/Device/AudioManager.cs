@@ -4,28 +4,66 @@ using System.Collections.Generic;
 public class AudioManager : MonoBehaviour
 {
 	[HideInInspector]
-	public AudioFader MusicSource;
-	public float playtime { get { return MusicSource.src.time; } }
-	public float totaltime { get { return MusicSource.src.clip.length; } }
-	public float basevolume { get { return MusicSource.baseVolume; } set { MusicSource.baseVolume = value; } }
-	public float volume { get { return MusicSource.src.volume; } }
-	public float pitch { get { return MusicSource.src.pitch; } set { MusicSource.src.pitch = value; } }
-
-	public void PlayMusic(string name)
-	{
-		MusicSource.src.Stop();
-		MusicSource.src.clip = AudioClipRegistry.GetMusic(name);
-		MusicSource.src.Play();
+	public AudioFader MusicSource1;
+	[HideInInspector]
+	public AudioFader MusicSource2;
+	bool usingSecondary = true;	//set to true so it will be set to false when the game starts
+	public AudioFader ActiveSource 
+	{ 
+		get 
+		{
+			if (usingSecondary) return MusicSource2;
+			else return MusicSource1;
+		} 
 	}
+
+	public float playtime { get { return ActiveSource.src.time; } }
+	public float totaltime { get { return ActiveSource.src.clip.length; } }
+	public float basevolume { get { return ActiveSource.baseVolume; } set { MusicSource1.baseVolume = value; MusicSource2.baseVolume = value; } }
+	public float volume { get { return ActiveSource.src.volume; } }
+	public float pitch { get { return ActiveSource.src.pitch; } set { MusicSource1.src.pitch = value; MusicSource2.src.pitch = value; } }
+
+	public void PlayMusic(string name, float fadeTime = 0, bool disableStoppedTrack = true)
+	{
+		ActiveSource.deactivateAfterFadeOut = disableStoppedTrack;
+		ActiveSource.FadeOut(fadeTime);
+
+		usingSecondary = !usingSecondary;
+
+		var clip = AudioClipRegistry.GetMusic(name);
+		if(ActiveSource.src.clip != clip)
+		{
+			ActiveSource.src.clip = clip;
+		}
+		ActiveSource.FadeIn(fadeTime);
+	}
+
 
 	Queue<AudioFader> LoopUnits = new Queue<AudioFader>();
 	Dictionary<string, AudioFader> ActiveLoops = new Dictionary<string, AudioFader>();
 	const int POOL_AMOUNT = 10;
 	// Use this for initialization
-	void Start()
+	void Awake()
 	{
 		AllocateMoreUnits();
-		MusicSource.deactivateAfterFadeOut = false;
+
+		var go = new GameObject("Primary Music Source");
+		go.transform.SetParent(this.transform);
+		MusicSource1 = go.AddComponent<AudioFader>();
+
+		MusicSource1.src.loop = true;
+		MusicSource1.src.playOnAwake = true;
+		MusicSource1.enabled = true;
+		MusicSource1.deactivateAfterFadeOut = false;
+		
+		var go2 = new GameObject("Secondary Music Source");
+		go2.transform.SetParent(this.transform);
+		MusicSource2 = go2.AddComponent<AudioFader>();
+
+		MusicSource2.src.loop = true;
+		MusicSource2.src.playOnAwake = true;
+		MusicSource2.enabled = true;
+		MusicSource2.deactivateAfterFadeOut = false;
 	}
 
 	void AllocateMoreUnits()
@@ -75,6 +113,16 @@ public class AudioManager : MonoBehaviour
 		}
 	}
 
+	public AudioFader GetSound(string sound)
+	{
+		AudioFader fader = null;
+		if(ActiveLoops.TryGetValue(sound,out fader))
+		{
+			return fader;
+		}
+		return null;
+	}
+
 	public void StartMusicAsSound(string sound,float vol, float fadeTime = 0)
 	{
 		if (LoopUnits.Count <= 0)
@@ -100,18 +148,18 @@ public class AudioManager : MonoBehaviour
 	
 	public void Play()
 	{
-		MusicSource.src.Play();
+		ActiveSource.src.Play();
 	}
 	public void Stop()
 	{
-		MusicSource.src.Stop();
+		ActiveSource.src.Stop();
 	}
 	public void Pause()
 	{
-		MusicSource.src.Pause();
+		ActiveSource.src.Pause();
 	}
 	public void UnPause()
 	{
-		MusicSource.src.UnPause();
+		ActiveSource.src.UnPause();
 	}
 }

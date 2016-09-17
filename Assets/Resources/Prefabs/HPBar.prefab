@@ -221,7 +221,7 @@ MonoBehaviour:
   InitialSpriteRenderer: {fileID: 21230104}
   InitialSprite: {fileID: 0}
   InitialColor: {r: 1, g: 1, b: 1, a: 1}
-  InitialSortingLayerName: 
+  InitialSortingLayerName: ArenaTop
   EnabledOnPlay: 1
 --- !u!114 &11407988
 MonoBehaviour:
@@ -279,7 +279,7 @@ MonoBehaviour:
   InitialSpriteRenderer: {fileID: 21217334}
   InitialSprite: {fileID: 0}
   InitialColor: {r: 1, g: 1, b: 1, a: 1}
-  InitialSortingLayerName: 
+  InitialSortingLayerName: ArenaTop
   EnabledOnPlay: 1
 --- !u!212 &21217334
 SpriteRenderer:

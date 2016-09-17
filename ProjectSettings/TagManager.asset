@@ -57,6 +57,15 @@ TagManager:
   - name: AboveArena
     uniqueID: 3494561823
     locked: 0
+  - name: BelowPlayer
+    uniqueID: 2819014763
+    locked: 0
+  - name: Player
+    uniqueID: 3860601263
+    locked: 0
+  - name: AbovePlayer
+    uniqueID: 571307163
+    locked: 0
   - name: BelowBulletLayer
     uniqueID: 111963235
     locked: 0

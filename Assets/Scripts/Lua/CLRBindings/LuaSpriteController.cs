@@ -191,6 +191,17 @@ public class LuaSpriteController {
 		set { img.SortingOrder = value; }
 	}
 
+	public string layer
+	{
+		get { return img.SortingLayerName; }
+		set { img.SortingLayerName = value; }
+	}
+	public int layerID
+	{
+		get { return img.SortingLayerID; }
+		set { img.SortingLayerID = value; }
+	}
+
 	/*
     public bool filter
     {
@@ -378,7 +389,14 @@ public class LuaSpriteController {
     public void Remove()
     {
         GameObject.Destroy(img.gameObject);
-		parent.children.Remove(this);
+		for (int i = 0; i < children.Count; i++)
+		{
+			children[i].Remove();
+		}
+		if (parent != null && parent.children != null)
+		{
+			parent.children.Remove(this);
+		}
 		this.parent = null;
 		img = null;
     }
