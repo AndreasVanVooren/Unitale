@@ -123,7 +123,8 @@ function InitLasers(side)
 
 
 	head = CreateProjectile(initSprite,initX,initY);
-	head.SendToBottom();
+	--head.SendToBottom();
+	head.sprite.layer = "BelowPlayer";
 	head.sprite.Scale(3,3);
 	return {head,side,0,0,initX,initY,1,1, beamInitX,beamInitY};
 end
@@ -593,7 +594,8 @@ function InitHeadExtrude(side,startTime, startRand, startRot)
 	end
 	local head = CreateProjectile(initSprite,initX,initY);	--autodestroys upon wave end
 	head.sprite.Scale(3,3);
-	head.SendToBottom();
+	--head.SendToBottom();
+	head.sprite.layer = "BelowPlayer";
 	local handInitX = head.absx;
 	local handInitY = head.absy + Arena.height/8*1 - 10;
 
@@ -645,9 +647,9 @@ function UpdateWaves(waveBullets, waveType)
 		end
 		local val = UpdateWaveBoneExtrude(
 						waveBullets, 			--ref bullets
-						1.1,					--base timer
-						0.08,					--counter time decrease
-						0.3, 					--random factor
+						1.2,					--base timer
+						0.03,					--counter time decrease
+						0.4, 					--random factor
 						1,
 						12,
 						x,

@@ -55,36 +55,48 @@ function PreInitialize()
 			for j=(#heads),1,-1 do
 				if(heads[j] == 3 or heads[j] == 4)then
 					table.remove(heads,j);
+					if(rand > j)then
+						rand = rand-1;
+					end
 				end
 			end
 		elseif(heads[rand]== 3)then
 			for j=(#heads),1,-1 do
-				if(heads[j] == 3 or heads[j] == 2)then
+				if(heads[j] == 2 or heads[j] == 4)then
 					table.remove(heads,j);
+					if(rand > j)then
+						rand = rand-1;
+					end
 				end
 			end
 		elseif(heads[rand]== 4)then
 			for j=(#heads),1,-1 do
 				if(heads[j] == 2 or heads[j] == 3)then
 					table.remove(heads,j);
+					if(rand > j)then
+						rand = rand-1;
+					end
 				end
 			end
 		--if 2 of 5,6 or 7 are present, don't add the other to the array.
 		elseif(heads[rand] == 5)then
 			if(sixFound and sevenFound)then
 				valid = false;
+			else
+				fiveFound = true;
 			end
-			fiveFound = true;
 		elseif(heads[rand] == 6)then
 			if(fiveFound and sevenFound)then
 				valid = false;
+			else
+				sixFound = true;
 			end
-			sixFound = true;
 		elseif(heads[rand] == 7)then
 			if(fiveFound and sixFound)then
 				valid = false;
+			else
+				sevenFound = true;
 			end
-			sevenFound = true;
 		end
 
 		if(valid)then
@@ -122,6 +134,7 @@ function CreateHandProjectile(initX,initY)
 	hand.SetColliderOffset(-0.76,-2.33);
 	hand.sprite.SetPivot(0.1571406, 0.17743);
 	hand.sprite.Scale(1.6,1.6);
+	hand.sprite.layer = "AbovePlayer"
 
 	return hand;
 end
@@ -144,14 +157,17 @@ function InitLasers(side)
 		waveSteps = 1;
 	end
 
-	local side = side or math.random(0,1);
+	local s = side;
+	if(s == nil)then
+		s = math.random(0,1);
+	end
 	local head = nil;
 	local initSprite = "";
 	local initX = 0;
 	local initY = 0;
 	local beamInitX = 0;
 	local beamInitY = 0;
-	if((side % 2) == 1)then
+	if((s % 2) == 1)then
 		initX = Arena.width/2 + (25 / 3 * 2);
 		initY = Arena.height/8;
 		initSprite = "Happy/tempSprites/attacks/headAimL";
@@ -167,9 +183,10 @@ function InitLasers(side)
 
 
 	head = CreateProjectile(initSprite,initX,initY);
-	head.SendToBottom();
+	--head.SendToBottom();
+	head.sprite.layer = "BelowPlayer";
 	head.sprite.Scale(3,3);
-	return {head,side,0,0,initX,initY,1,1, beamInitX,beamInitY};
+	return {head,s,0,0,initX,initY,1,1, beamInitX,beamInitY};
 end
 
 function UpdateLasers(bulletArr, beamCount, useOrange, travelTime, descentDelay, targetY, laserTargetY)
@@ -403,6 +420,7 @@ function UpdateWaveBoneExtrude(
 			local i = math.random(1,#possibilities);
 
 			local bone = CreateProjectileAbs(possibilities[i], x,y);
+			bone.sprite.layer = "AbovePlayer"
 			bone.SetVar("dmg",4);
 			bone.sprite.SetPivot(0,0.5);
 			bone.sprite.rotation = curRot;
@@ -621,15 +639,13 @@ function InitHeadExtrude(side,startTime, startRand, startRot)
 	local initX = 0;
 	local initY = 0;
 	local initHandRot = 0;
-	if( (type(side) == "string" and side == "right") or
-		(type(side) == "number" and (side%2) == 1) )then
+	if(side == "right")then
 		initX = Arena.width/2 - 50;
 		initY = 0;
 		initSprite = "Happy/tempSprites/attacks/headAimL";
 		Encounter.Call("ShowEye6");
 		initHandRot = 180;
-	elseif( (type(side) == "string" and side == "left") or
-			(type(side) == "number" and (side%2) == 0 ))then
+	elseif( side == "left")then
 		initX = -Arena.width/2+50;
 		initY = 0;
 		initSprite = "Happy/tempSprites/attacks/headAimR";
@@ -637,7 +653,8 @@ function InitHeadExtrude(side,startTime, startRand, startRot)
 	end
 	local head = CreateProjectile(initSprite,initX,initY);	--autodestroys upon wave end
 	head.sprite.Scale(3,3);
-	head.SendToBottom();
+	--head.SendToBottom();
+	head.sprite.layer = "BelowPlayer";
 	local handInitX = head.absx;
 	local handInitY = head.absy + Arena.height/8*1 - 10;
 
@@ -689,9 +706,9 @@ function UpdateWaves(waveBullets, waveType)
 		end
 		local val = UpdateWaveBoneExtrude(
 						waveBullets, 			--ref bullets
-						1.1,					--base timer
-						0.08,					--counter time decrease
-						0.3, 					--random factor
+						1.15,					--base timer
+						0.04,					--counter time decrease
+						0.4, 					--random factor
 						1,
 						12,
 						x,

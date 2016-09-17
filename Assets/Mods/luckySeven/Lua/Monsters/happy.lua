@@ -79,7 +79,7 @@ function HandlePreAttack(rateToCenter)
 		-- Compare RateToCenter to deduce which head is hit. Then KILL THAT HEAD.
 		local dmg = math.floor(29 + math.random()*2);
 
-		if(feelsAttacked == false)then
+		if(headKilled == false)then
 			dmg = dmg * 2;
 			--feelsAttacked = true;
 		end
@@ -106,6 +106,7 @@ function HandlePreAttack(rateToCenter)
 				if(headHealth[ind] <= 0)then
 					dmg = dmg + headHealth[ind];
 					headHealth[ind] = 0;
+					headKilled = true;
 				end
 
 				hp = headHealth[1]+
@@ -162,6 +163,13 @@ function HandleAttack(attackstatus)
 			hasDied = true;
 		end
 
+		for i=1,#headHealth do
+			if(headHealth[i] <= 0)then
+				Encounter.Call("KillHead",i);
+				headKilled = true;
+			end
+		end
+
 		Encounter.Call("Shake",0.5);
     end
 end
@@ -195,7 +203,7 @@ function HandleCustomCommand(command)
 				BattleDialog({"You bathe It some more.\rYou scrub the inside\rof Its skulls.", "It's standing a bit\rmore straight."});
 			elseif(batheCount == 3)then
 				BattleDialog({"You bathe it even more.\rIts bones sparkle like diamonds.","It looks more... friendly?","The Papalgamate is content."});
-				if(feelsAttacked == false)then
+				if(headKilled == false)then
 					Encounter.Call("AddMercy","Separate");
 				end
 			else
@@ -208,9 +216,9 @@ function HandleCustomCommand(command)
 
     elseif command == "RUN" then
 		if(headKilled and batheCount >=3)then
-			Encounter.Call("NeutralEnding");
+			NeutralEnding();
 		elseif(hasDied == true and headHealth[1] > 0)then
-			Encounter.Call("NeutralEnding");
+			NeutralEnding();
 		else
 			BattleDialog({"Can't run."});
 		end
@@ -234,4 +242,19 @@ function OnDeath()
 	Encounter.Call("State", "ENEMYDIALOGUE");
 	hasDied = true;
 	AddMercy("Consume");
+end
+
+function DoTheBooty()
+	Encounter.Call("FadeOutShit");
+end
+
+function NeutralEnding()
+	BattleDialog({"[noskip][func:DoTheBooty]There's nothing more you can do.\rYou can only run.",
+				"[noskip][waitall:2]You run as far as you can.\rAway from the memories.\rAway from the pain.",
+				"[noskip][waitall:3][starcolor:f0f0f0][color:f0f0f0]You run until your legs give out.\r[color:e0e0e0]Until your legs disappear.",
+				"[noskip][waitall:4][starcolor:d0d0d0][color:d0d0d0]You're disappearing.\r[color:c0c0c0]You're no longer relevant.\r[color:b0b0b0]You're useless.",
+				"[noskip][waitall:4][starcolor:909090][color:909090]...",
+				"[noskip][waitall:5][starcolor:707070][color:707070]There's nothing more you can do.\r\rIt's time to reset.",
+				"[noskip][starcolor:000000][func:State,DONE]"});
+	--State("DONE");
 end

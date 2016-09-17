@@ -11,6 +11,7 @@ enemies = {"happy"}
 enemypositions = {{0,0},{-50, 80},{50, -80},{-50, -80},{50, 80}}
 
 happyAnim = nil;
+consumeAnim = nil;
 dialogue = nil
 
 -- A custom list with attacks to choose from. Actual selection happens in EnemyDialogueEnding(). Put here in case you want to use it.
@@ -65,6 +66,7 @@ function EncounterStarting()
     --require "Animations/it_anim"
 	happyAnim = require "Animations/happy_anim";
 	require "Animations/separate_anim" ;
+	consumeAnim = require "Animations/consume_anim";
 	--dialogue =  require "Animations/itDialogue_anim"
 
 	--enemypositions[1] = {0, 0};
@@ -78,6 +80,7 @@ end
 
 successes = 0;
 codeTimer = 0;
+fullSuccess = false;
 function Konami()
 
 	if(codeTimer > 0)then
@@ -117,9 +120,10 @@ function Konami()
 		successes = 10;
 		codeTimer = 0.5;
 	elseif(successes == 10 and Input.Menu == 1) then
-		DEBUG("Konami");
-		successes = 11
-		AddItem("CHARA", "OtherItm");
+		--DEBUG("Konami");
+		successes = 11;
+		fullSuccess = true;
+		--AddItem("CHARA", "OtherItm");
 	elseif((
 	Input.Up == 1 or
 	Input.Down == 1 or
@@ -142,9 +146,17 @@ function Update()
 		happyAnim.Update();
 	end
 
+	if(consumeAnim ~= nil)then
+		consumeAnim.Update();
+	end
+
 	if(Input.Menu == 1)then
 		--enemies[1].Call("Cheat");
-		PlaySeparate();
+		--PlaySeparate();
+		--Player.hp = 20;
+		if(consumeAnim ~= nil)then
+			consumeAnim.StartConsume();
+		end
 
 	end
 
@@ -154,10 +166,10 @@ function EnemyDialogueEnding()
     -- Good location to fill the 'nextwaves' table with the attacks you want to have simultaneously.
     -- This example line below takes a random attack from 'possible_attacks'.
 
-	if(enemies[1].GetVar("batheCount") >= 3 or GetGlobal("isSprung") == false)then
+	if(GetGlobal("isSprung") == false or enemies[1].GetVar("hasDied") == true or enemies[1].GetVar("batheCount") >= 3)then
 		wave = "waveNull";
 		wavetimer = 0;
-	elseif(enemies[1].GetVar("headKilled") == true and enemies[1].GetVar("hasDied") == false)then
+	elseif(enemies[1].GetVar("headKilled") == true)then
 		wave = "waveCombatAngry";
 		wavetimer = 999;
 	else
@@ -224,7 +236,7 @@ function HandleItem(ItemID)
 				BattleDialog({"The locket whispers to you...\r[waitall:4][color:c0c000]You tried your best.\rNow you can only leave.","[func:StopTempMusic][func:State,ENEMYDIALOGUE]"});
 			--but player decided to hug anyway
 			elseif(enemies[1].GetVar("isHugged") == true)then
-				BattleDialog({"The locket questions your judgement,\rbut remains silent otherwise.","[func:StopTempMusic][func:State,ENEMYDIALOGUE]"});
+				BattleDialog({"The locket questions\ryour judgement, but remains\rsilent otherwise.","[func:StopTempMusic][func:State,ENEMYDIALOGUE]"});
 			--player is bashing his fokken 'ead in
 			else
 				BattleDialog({"The locket whispers to you...\r[waitall:4][color:ffa0a0]The game has changed.\rAim with care.","[func:StopTempMusic][func:State,ENEMYDIALOGUE]"});
@@ -394,8 +406,9 @@ function HandleMercy(mercyID)
 			NeutralEnding();
 		elseif(enemies[1].GetVar("hasDied") == true and enemies[1].GetVar("headHealth")[1] > 0)then
 			NeutralEnding();
+		else
+			BattleDialog({"You try to run...", "But there's no escape..."});
 		end
-		BattleDialog({"You try to run...", "But there's no escape..."});
 	elseif(mercyID == "Separate")then
 
 		PlayMusic("the locket")
@@ -444,23 +457,23 @@ function Heal(amount)
 end
 
 function Spare()
-
 	--All heads dead
 	if(enemies[1].GetVar("hasDied") == true)then
-		if(enemies[1].GetVar("feelsAttacked") == true)then
+		--first head still intact
+		if(enemies[1].GetVar("headHealth")[1] > 0)then
 			BattleDialog("Too late for mercy.");
 		else
-			BattleDialog("Too late for mercy.");
+			BattleDialog("[starcolor:ff0000][color:ff0000]Don't even bother.");
 		end
 
 	elseif(GetGlobal("isSprung") == false)then
 		BattleDialog({
-				"[noskip][waitall:3]You show mercy to It.[w:6]\n[func:PrepareSpring]It seems to remember something...",
+				"[noskip][waitall:3][func:PREPrepareSpring]You show mercy to It.[w:6]\n[func:PrepareSpring]It seems to remember something...",
 				happyIntro
 		});
-	elseif(enemies[1].GetVar("feelsAttacked") == true)then
+	elseif(enemies[1].GetVar("headKilled") == true)then
 		if(enemies[1].GetVar("batheCount")>=2)then
-			BattleDialog({"It doesn't want your mercy...\rYou can only run."
+			BattleDialog({"It doesn't want your mercy...\rYou can only run..."
 			});
 		else
 			BattleDialog({"It doesn't want your mercy..."
@@ -472,8 +485,12 @@ function Spare()
 	end
 end
 
+function PREPrepareSpring()
+	Audio.FadeOut(1.25);
+end
+
 function PrepareSpring()
-	Audio.Stop();
+	Audio.FadeOut(1.25);
 	happyAnim.ShowEye(1);
 	happyAnim.ToggleSway(false);
 	--enableTorseye
@@ -591,5 +608,18 @@ function StopTempMusic()
 end
 
 function NeutralEnding()
-	State("DONE");
+	BattleDialog({"[noskip][func:FadeOutShit]There's nothing more you can do.\rYou can only run.",
+		"[noskip][waitall:2]You run as far as you can.\rAway from the memories.\rAway from the pain.",
+		"[noskip][waitall:3][starcolor:f0f0f0][color:f0f0f0]You run until your legs give out.\r[color:e0e0e0]Until your legs disappear.",
+		"[noskip][waitall:4][starcolor:d0d0d0][color:d0d0d0]You're disappearing.\r[color:c0c0c0]You're no longer relevant.\r[color:b0b0b0]You're useless.",
+		"[noskip][waitall:4][starcolor:909090][color:909090]...",
+		"[noskip][waitall:5][starcolor:707070][color:707070]There's nothing more you can do.\r\rIt's time to reset.",
+		"[noskip][starcolor:000000][func:State,DONE]"});
+	--State("DONE");
+end
+
+function FadeOutShit()
+	DEBUG("ASFDS");
+	happyAnim.FadeToBlack(0.1);
+	Audio.FadeOut(1);
 end

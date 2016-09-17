@@ -56,8 +56,17 @@ local hand2 = nil;
 	local hand2Rot = 23.6;
 
 local generalVal = 1;
+local fadeTarget = 1;
+local fadeSpeed = 1;
 
-	
+local Darkness = CreateSprite("darkness");
+Darkness.layer = "Default";
+Darkness.MoveTo(320,240);
+Darkness.color = {0,0,0};
+Darkness.alpha = 0;
+
+local partSystem = require "Libraries/ParticleManager";
+
 -------------------
 --Private Functions
 -------------------
@@ -72,31 +81,31 @@ local function Recenter(obj, speed, tgtRot)
 		tgtRot = tgtRot - 360;
 	end
 	speed = speed or 5;
-	
+
 	local curRot = obj.localRotation;
-	
+
 	local diff = Time.dt*speed;
-	
+
 	if(curRot - tgtRot > 180)then
 		curRot = curRot - 360;
 	elseif (tgtRot - curRot > 180)then
 		curRot = curRot + 360;
 	end
-	
+
 	--DEBUG(curRot);
 	if (curRot > tgtRot ) then
-	
+
 		curRot = curRot - diff;
 		if(curRot < tgtRot) then
 			curRot = tgtRot;
 		end
 	elseif ( curRot <tgtRot ) then
-	
+
 		curRot = curRot + diff;
 		if(curRot > tgtRot ) then
 			curRot = tgtRot;
 		end
-	else 
+	else
 		diff = 0;
 	end
 	obj.localRotation = curRot;
@@ -108,7 +117,7 @@ local function CreateHead(X, Y, pivotX, pivotY, withJaw, hasEye)
 	--Default params
 	withJaw = withJaw or true;
 	hasEye = hasEye or 1;
-	
+
 	--Create skull, in my lazy haze called head.
 	local head  = CreateSprite("Happy/tempSprites/headUpper");
 	--head1.SetAnchor(0.4,0.79);
@@ -116,7 +125,7 @@ local function CreateHead(X, Y, pivotX, pivotY, withJaw, hasEye)
 	head.SetParent(legs);
 	head.SendToBottom();
 	head.MoveTo(X,Y);
-	
+
 	local jaw = nil;
 	--if a jaw is defined, add it.
 	if(withJaw == true)then
@@ -127,7 +136,7 @@ local function CreateHead(X, Y, pivotX, pivotY, withJaw, hasEye)
 		jaw.MoveTo(0,0);
 		jaw.SendToBottom();
 	end
-	
+
 	local eye = nil;
 	if(hasEye > 0)then
 		if(hasEye > 1)then
@@ -140,10 +149,10 @@ local function CreateHead(X, Y, pivotX, pivotY, withJaw, hasEye)
 		eye.SetPivot(0.5,0.5);
 		eye.MoveTo(0,0);
 	end
-	
+
 	return { head, eye, jaw };
 end
-	
+
 local head1 = CreateHead(0, 0, 0.5, -0.27, true,0);
 head1[1].SetParent(torso);
 head1[1].x = -6.5;
@@ -171,28 +180,28 @@ local function PositionHead(head, target, dispX, dispY, rotOffset)
 	if (head == nil)then
 		DEBUG("No valid head has been passed through")
 	end
-	
+
 	head[1].rotation = target.rotation + rotOffset;
-	
+
 	local Cos = math.cos(math.rad(target.rotation));
 	local Sin = math.sin(math.rad(target.rotation));
-	
+
 	local x = dispX*Cos - dispY*Sin;
 	local y = dispY*Cos + dispX*Sin;
-	
+
 	head[1].MoveToAbs( target.xAbs + x, target.yAbs + y  );
 end
 
 
 local function UpdateSpring()
 	springTimer = springTimer - Time.dt;
-	
+
 	if(springTimer <=0)then
 		if(sprung ~= 0)then
 			springTimer = 0.5;
 			timeStart = Time.time;
 		end
-		
+
 	end
 end
 
@@ -229,21 +238,21 @@ local function AnimateBigPap()
 		torso.localRotation = math.sin(timeActive * math.pi *(76/60) /8 ) * 3;
 		--head1[1].localRotation = (math.sin(timeActive * math.pi *(76/60) /4 )+1) * 5;
 		armLoL.localRotation =  math.sin(timeActive * math.pi *(76/60)/3 ) * 6;
-		
+
 		armUp1.localRotation =  math.sin(timeActive * math.pi *(76/60)/5 ) * 8;
 		armLo1.localRotation =  math.sin(timeActive * math.pi *(76/60)/6 ) * 3;
-		
+
 		armUp2.localRotation =  armUp2Rot + (math.sin(timeActive * math.pi *(76/60)/3 )) * 8;
 		armLo2.localRotation =  armLo2Rot + math.sin(timeActive * math.pi *(76/60)/7 ) * 3;
-		
+
 		neck.localRotation =  math.sin(timeActive * math.pi *(76/60)/4 ) * 3;
-		
+
 		armNeckL.localRotation = armNeckLRot + math.sin(timeActive * math.pi *(76/60)/8 ) * 10;
-		
+
 		armNeckHiR.localRotation =  math.sin(timeActive * math.pi *(76/60)/4 ) * 6;
 		armNeckLoR.localRotation =  math.sin(timeActive * math.pi *(76/60)/9 ) * 2;
-		
-		
+
+
 	else
 		Recenter(torso);
 		Recenter(armLoL);
@@ -278,7 +287,7 @@ local function GentleSway()
 			Recenter(head1[1]);
 		end
 	end
-	
+
 	if(Input.Menu == 1)then
 		--swaying = not swaying;
 		--timeStart = Time.time;
@@ -296,13 +305,13 @@ function happyAnim.ToggleSway(newState)
 	else
 		swaying = newState;
 	end
-	
+
 end
 
 local function KillHeadLoc(head, yOffset, yOffsetJaw)
 	yOffset = yOffset or 0;
 	yOffsetJaw = yOffsetJaw or 0;
-	
+
 	--local positionX = head[1].xAbs;
 	--local positionY = head[1].yAbs;
 	head[1].SetParent(legs);
@@ -310,6 +319,11 @@ local function KillHeadLoc(head, yOffset, yOffsetJaw)
 	--head[1].xAbs = positionX;
 	--head[1].yAbs = positionY;
 	table.insert(looseHeadParts, {head[1],-15, 0, yOffset});
+
+	if(head[2]~= nil)then
+		head[2].Remove();
+	end
+
 	if(head[3] == nil)then
 		return;
 	end
@@ -344,7 +358,7 @@ function happyAnim.KillHead(index)
 	elseif(index == 7 and head7 ~= nil)then
 		KillHeadLoc(head7);
 		head7 = nil;
-	
+
 	end
 end
 
@@ -368,28 +382,28 @@ local function UpdateDeadItems()
 		local y = looseHeadParts[i][1].yAbs;
 		x = x + looseHeadParts[i][2] * Time.dt;
 		y = y + looseHeadParts[i][3] * Time.dt;
-		
+
 		--apply gravity for next update
 		looseHeadParts[i][3] = looseHeadParts[i][3] + (Time.dt * -100);
-		
+
 		--check if we need to invert gravity for bouncing
 		if(y < 240 + looseHeadParts[i][4])then
 			looseHeadParts[i][2] = looseHeadParts[i][2] / 3;
 			looseHeadParts[i][3] = -looseHeadParts[i][3] / 3;
 			y = 240 + looseHeadParts[i][4];
 		end
-		
+
 		--final move
 		looseHeadParts[i][1].MoveToAbs(x,y);
-		
+
 		local curVal = looseHeadParts[i][1].color[1];
 		if(curVal > generalVal /2)then
 			local v = curVal - Time.dt * generalVal
 			looseHeadParts[i][1].color = {v,v,v};
 		end
-		
+
 		--looseHeadParts[i][1].SendToBottom();
-		
+
 	end
 end
 
@@ -398,8 +412,8 @@ local eyeAnimationTimers = {-1,-1,-1,-1,-1,-1,-1};
 
 local function UpdateEye(eyeRef, index, isSmall)
 	isSmall = isSmall or true;
-	
-	
+
+
 	if(eyeAnimationTimers[index] > 0)then
 		eyeAnimationTimers[index] = eyeAnimationTimers[index] - Time.dt;
 	elseif(eyeState[index] == 1)then
@@ -408,7 +422,7 @@ local function UpdateEye(eyeRef, index, isSmall)
 		--DEBUG("Stopping anim");
 		if(isSmall)then
 			eyeRef.Set("Happy/tempSprites/eyes/eyeSmallOpen");
-			
+
 		else
 			eyeRef.Set("Happy/tempSprites/eyes/eyeOpen");
 		end
@@ -418,48 +432,55 @@ local function UpdateEye(eyeRef, index, isSmall)
 		--DEBUG("Stopping anim");
 		if(isSmall)then
 			eyeRef.Set("Happy/tempSprites/eyes/eyeSmallClosed");
-			
+
 		else
 			eyeRef.Set("Happy/tempSprites/eyes/eyeClosed");
 		end
 	end
 	--set;
-	
+
 	--basically the state when the eye is open, not animating.
 	if(eyeState[index] == 2)then
-	
+
 		--deduce direction
 		--get x and y
 		local x = Player.absx - eyeRef.absx;
 		local y = Player.absy - eyeRef.absy;
-		
+
 		--oh no another square root noooooooo
-		local length =  math.sqrt(x*x-y*y);
-		
+		local length =  math.sqrt(x*x+y*y);
+
 		local c = x/length; --cos get
 		local s = y/length; --sin get
-		
-		--oh no all the taxing operations y u do dis
-		local angle = math.atan2(s,c); --note : in rad
-		
-		angle = angle + math.pi/2; --rotate 90 degrees to check it properly
-		
-		angle = math.deg(angle) + eyeRef.rotation;
-		
+
+		--down is negative, but also facing direction for comparison
+		--DEBUG("S = "..s);
+		--DEBUG("C = "..c);
+		local angle = math.acos(-s);
+		if(c > 0)then
+			--angle = angle
+		else
+			angle = -angle;
+		end
+		--angle = angle + math.pi/2; --rotate 90 degrees to check it properly
+
+		angle = math.deg(angle) - eyeRef.rotation;
+		--DEBUG("Rot = " ..eyeRef.rotation);
 		--ensure it's in the right range
-		if(angle > 180)then
-			angle = 180;
-		end
 		if(angle < -180)then
-			angle = -180;
+			angle = angle + 360;
+		elseif(angle > 180)then
+			angle = angle - 360;
 		end
-		
+
+
+		--DEBUG("Angle of ".. index .." = " ..angle);
 		--Do some string shenanigans
 		local dir = "Open";
 		if(angle > 157.5)then
-			dir = "Open"
+			dir = "U"
 		elseif(angle > 112.5)then
-			dir = "Open"
+			dir = "UR"
 		elseif(angle > 67.5)then
 			dir = "R"
 		elseif(angle > 22.5)then
@@ -471,21 +492,21 @@ local function UpdateEye(eyeRef, index, isSmall)
 		elseif(angle > -112.5)then
 			dir = "L"
 		elseif(angle > -157.5)then
-			dir = "Open"
+			dir = "UL"
 		else
-			dir = "Open"
+			dir = "U"
 		end
-		
+
 		if(isSmall)then
 			dir = "Small" .. dir
 		end
-		
+
 		eyeRef.Set("Happy/tempSprites/eyes/eye" .. dir);
 	else
-		
+
 		if(isSmall)then
 			eyeRef.Set("Happy/tempSprites/eyes/eyeSmallClosed");
-			
+
 		else
 			eyeRef.Set("Happy/tempSprites/eyes/eyeClosed");
 		end
@@ -499,8 +520,12 @@ local function UpdateEyes()
 		eyeState[1] = 2;
 		torsEye.StopAnimation();
 		torsEye.Set("Happy/tempSprites/eyes/torsEyeOpen");
+	elseif(eyeState[1]==3)then
+		eyeState[1] = 2;
+		torsEye.StopAnimation();
+		torsEye.Set("Happy/tempSprites/eyes/torsEyeClosed");
 	end
-	
+
 	if(sprung > 5)then
 		if(head2 ~= nil)then
 			UpdateEye(head2[2],2);
@@ -525,9 +550,9 @@ end
 --NOTE TO SELF: index starts at 2
 local function ShowEyeLoc(eyeRef, index, isSmall)
 	isSmall = isSmall or true;
-	
+
 	if(eyeState[index] ~= 0) then return; end
-	
+
 	--DEBUG("Index ".. index);
 	if(isSmall)then
 		--eyeRef.Set("Happy/tempSprites/eyes/eyeOpen");
@@ -535,15 +560,15 @@ local function ShowEyeLoc(eyeRef, index, isSmall)
 				"Happy/tempSprites/eyes/eyeOpening1",
 				"Happy/tempSprites/eyes/eyeOpening2",
 				"Happy/tempSprites/eyes/eyeOpen",
-			});--plays 1 frame for 1/30 
-		eyeAnimationTimers[index] = 3/30;
+			});--plays 1 frame for 1/30
+		eyeAnimationTimers[index] = 30/30;
 	else
 		--eyeRef.Set("Happy/tempSprites/eyes/eyeOpen");
 		eyeRef.SetAnimation({
 				"Happy/tempSprites/eyes/eyeSmallOpening",
 				"Happy/tempSprites/eyes/eyeSmallOpen",
-			});--plays 1 frame for 1/30 
-		eyeAnimationTimers[index] = 2/30;
+			});--plays 1 frame for 1/30
+		eyeAnimationTimers[index] = 30/30;
 	end
 
 	eyeState[index] = 1;
@@ -562,40 +587,52 @@ function happyAnim.ShowEye(index)
 		eyeState[index] = 1;
 	elseif(index == 2)then
 		--DEBUG("ASDFSADF");
-		ShowEyeLoc(head2[2],2);
+		if(head2 ~= nil)then
+			ShowEyeLoc(head2[2],2,true);
+		end
 	elseif(index == 3)then
-		ShowEyeLoc(head3[2],3);
+		if(head3 ~= nil)then
+			ShowEyeLoc(head3[2],3,true);
+		end
 	elseif(index == 4)then
-		ShowEyeLoc(head4[2],4);
+		if(head4 ~= nil)then
+			ShowEyeLoc(head4[2],4,false);
+		end
 	elseif(index == 5)then
-		ShowEyeLoc(head5[2],5);
+		if(head5 ~= nil)then
+			ShowEyeLoc(head5[2],5,false);
+		end
 	elseif(index == 6) then
-		ShowEyeLoc(head6[2],6);
+		if(head6 ~= nil)then
+			ShowEyeLoc(head6[2],6,true);
+		end
 	elseif(index == 7) then
-		ShowEyeLoc(head7[2],7);
+		if(head7 ~= nil)then
+			ShowEyeLoc(head7[2],7,false);
+		end
 	end
 end
 
 local function HideEyeLoc(eyeRef, index, isSmall)
-	
+
 	isSmall = isSmall or true;
-	
+
 	if(eyeState[index] ~= 2) then return; end
-	
+
 	--DEBUG("Index ".. index);
 	if(isSmall)then
 		--eyeRef.Set("Happy/tempSprites/eyes/eyeOpen");
 		eyeRef.SetAnimation({
 				"Happy/tempSprites/eyes/eyeClosing1",
 				"Happy/tempSprites/eyes/eyeClosed",
-			});--plays 1 frame for 1/30 
+			});--plays 1 frame for 1/30
 		eyeAnimationTimers[index] = 2/30;
 	else
 		--eyeRef.Set("Happy/tempSprites/eyes/eyeOpen");
 		eyeRef.SetAnimation({
 				"Happy/tempSprites/eyes/eyeSmallClosing",
 				"Happy/tempSprites/eyes/eyeSmallClosed",
-			});--plays 1 frame for 1/30 
+			});--plays 1 frame for 1/30
 		eyeAnimationTimers[index] = 2/30;
 	end
 
@@ -608,23 +645,181 @@ function happyAnim.HideEye(index)
 	if(index == 1)then
 		torsEye.SetAnimation({"Happy/tempSprites/eyes/torsEyeOpening2",
 				"Happy/tempSprites/eyes/torsEyeOpening1",
-				"Happy/tempSprites/eyes/torsEyeClosed",});
+				"Happy/tempSprites/eyes/torsEyeClosed",}, 1/10);
 		--torsEye.Set("Happy/tempSprites/eyes/torsEyeOpen");
-		eyeAnimationTimers[index] = 3/30;
+		eyeAnimationTimers[index] = 3/10;
 		eyeState[index] = 3;
 	elseif(index == 2)then
-		HideEyeLoc(head2[2],2);
+		if(head2 ~= nil)then
+			HideEyeLoc(head2[2],2,true);
+		end
 	elseif(index == 3)then
-		HideEyeLoc(head3[2],3);
+		if(head3 ~= nil)then
+			HideEyeLoc(head3[2],3,true);
+		end
 	elseif(index == 4)then
-		HideEyeLoc(head4[2],4);
+		if(head4 ~= nil)then
+			HideEyeLoc(head4[2],4,false);
+		end
 	elseif(index == 5)then
-		HideEyeLoc(head5[2],5);
+		if(head5 ~= nil)then
+			HideEyeLoc(head5[2],5,false);
+		end
 	elseif(index == 6) then
-		HideEyeLoc(head6[2],6);
+		if(head6 ~= nil)then
+			HideEyeLoc(head6[2],6,true);
+		end
 	elseif(index == 7) then
-		HideEyeLoc(head7[2],7);
+		if(head7 ~= nil)then
+			HideEyeLoc(head7[2],7,false);
+		end
 	end
+end
+
+local function UpdateFade()
+	if(generalVal < fadeTarget)then
+		generalVal = generalVal + Time.dt * fadeSpeed;
+		if(generalVal > fadeTarget)then
+			generalVal = fadeTarget;
+		end
+
+	elseif(generalVal > fadeTarget)then
+		generalVal = generalVal - Time.dt * fadeSpeed;
+		if(generalVal < fadeTarget)then
+			generalVal = fadeTarget;
+		end
+	end
+
+	local col = {generalVal,generalVal,generalVal};
+	if(legs ~= nil)then
+		legs.color = col;
+	end
+	if(torso ~= nil)then
+		torso.color = col;
+	end
+	if(armLoL ~= nil)then
+		armLoL.color = col;
+	end
+	if(armUp1 ~= nil)then
+		armUp1.color = col;
+	end
+	if(armLo1 ~= nil)then
+		armLo1.color = col;
+	end
+	if(armUp2 ~= nil)then
+		armUp2.color = col;
+	end
+	if(armLo2 ~= nil)then
+		armLo2.color = col;
+	end
+	if(neck ~= nil)then
+		neck.color = col;
+	end
+	if(armNeckL ~= nil)then
+		armNeckL.color = col;
+	end
+	if(armNeckHiR ~= nil)then
+		armNeckHiR.color = col;
+	end
+	if(armNeckLoR ~= nil)then
+		armNeckLoR.color = col;
+	end
+	if(armNeckTop ~= nil)then
+		armNeckTop.color = col;
+	end
+	if(torsEye ~= nil)then
+		torsEye.color = col;
+	end
+	if(hand1 ~= nil)then
+		hand1.color = col;
+	end
+	if(hand2 ~= nil)then
+		hand2.color = col;
+	end
+
+	if(head1 ~= nil)then
+		if(head1[1] ~= nil)then
+			head1[1].color = col;
+		end
+		if(head1[2] ~= nil)then
+			head1[2].color = col;
+		end
+		if(head1[3] ~= nil)then
+			head1[3].color = col;
+		end
+	end
+	if(head2 ~= nil)then
+		if(head2[1] ~= nil)then
+			head2[1].color = col;
+		end
+		if(head2[2] ~= nil)then
+			head2[2].color = col;
+		end
+		if(head2[3] ~= nil)then
+			head2[3].color = col;
+		end
+	end
+	if(head3 ~= nil)then
+		if(head3[1] ~= nil)then
+			head3[1].color = col;
+		end
+		if(head3[2] ~= nil)then
+			head3[2].color = col;
+		end
+		if(head3[3] ~= nil)then
+			head3[3].color = col;
+		end
+	end
+	if(head4 ~= nil)then
+		if(head4[1] ~= nil)then
+			head4[1].color = col;
+		end
+		if(head4[2] ~= nil)then
+			head4[2].color = col;
+		end
+		if(head4[3] ~= nil)then
+			head4[3].color = col;
+		end
+	end
+	if(head5 ~= nil)then
+		if(head5[1] ~= nil)then
+			head5[1].color = col;
+		end
+		if(head5[2] ~= nil)then
+			head5[2].color = col;
+		end
+		if(head5[3] ~= nil)then
+			head5[3].color = col;
+		end
+	end
+	if(head6 ~= nil)then
+		if(head6[1] ~= nil)then
+			head6[1].color = col;
+		end
+		if(head6[2] ~= nil)then
+			head6[2].color = col;
+		end
+		if(head6[3] ~= nil)then
+			head6[3].color = col;
+		end
+	end
+	if(head7 ~= nil)then
+		if(head7[1] ~= nil)then
+			head7[1].color = col;
+		end
+		if(head7[2] ~= nil)then
+			head7[2].color = col;
+		end
+		if(head7[3] ~= nil)then
+			head7[3].color = col;
+		end
+	end
+
+	--I literally only use this value when fading out, sooo....
+	if(Darkness ~= nil)then
+		Darkness.alpha = 1-generalVal;
+	end
+
 end
 
 function happyAnim.Update()
@@ -637,7 +832,7 @@ function happyAnim.Update()
 	else
 		UpdateSpring();
 	end
-	
+
 	if(shakeTime > 0)then
 		local xOffset = math.random(-maxShakeOffset, maxShakeOffset ) * (shakeTime/maxShakeTime);
 		local yOffset = math.random(-maxShakeOffset, maxShakeOffset ) * (shakeTime/maxShakeTime);
@@ -649,16 +844,31 @@ function happyAnim.Update()
 	end
 
 	UpdateEyes();
-	
+	UpdateFade();
 	UpdateDeadItems();
+end
+
+function happyAnim.FadeToGrey(fade)
+	fadeSpeed = fade or 1;
+	fadeTarget = 0.5;
+end
+
+function happyAnim.FadeToWhite(fade)
+	fadeSpeed = fade or 1;
+	fadeTarget = 1;
+end
+
+function happyAnim.FadeToBlack(fade)
+	fadeSpeed = fade or 1;
+	fadeTarget = 0;
 end
 
 function happyAnim.SpringUp()
 
 	--DEBUG("Yo intro");
 	--LetShitGoDown();
-	if(sprung == 0)then 
-		sprung = 1; 
+	if(sprung == 0)then
+		sprung = 1;
 		swaying = true;
 		SetGlobal("isSprung", true);
 	end
@@ -670,20 +880,20 @@ function happyAnim.SpringUp()
 		neck.SetAnchor(0.425,0.579);
 		neck.SetPivot(0.3,0);
 		neck.MoveTo(0,0);
-		
+
 		armNeckTop = CreateSprite("Happy/tempSprites/armNeckTopTop")
 		armNeckTop.SetParent(neck);
 		armNeckTop.SetAnchor(0.17,0.8914);
 		armNeckTop.SetPivot(0.4729,0.0253);
 		armNeckTop.MoveTo(0,0);
-		
+
 		head4 = CreateHead(0,0, 0.5, -0.27, true,2); --neckTop
-		
+
 		PositionHead(head4, armNeckTop, 0, 20, 0);
-		
+
 		if(head1 ~= nil)then
 			head1[1].Remove();
-			head1[3].Remove();
+			--head1[3].Remove();
 			head1 = nil;
 		end
 	elseif(sprung ==2 )then
@@ -693,54 +903,54 @@ function happyAnim.SpringUp()
 		armLoL.SetAnchor(0.22,0.965)
 		armLoL.SetPivot(1,0.733);
 		armLoL.MoveTo(0.4,0);
-		
+
 		head2 = CreateHead(-64.6, 39.6, 0.5, 1, true); -- armLoL
-		
+
 		PositionHead(head2, armLoL,-45,-45, 0);
 	elseif(sprung ==3 )then
-		
+
 		armUp1 = CreateSprite("Happy/tempSprites/armUpper");
 		armUp1.SetParent(torso);
 		armUp1.SetAnchor(0.6792037, 0.3424562);
 		armUp1.SetPivot(0.5, 1);
 		armUp1.MoveTo(0,0);
-		
+
 		armLo1 = CreateSprite("Happy/tempSprites/armLower");
 		armLo1.SetParent(armUp1);
 		armLo1.SetAnchor(0.3888889, 0.06450538);
 		armLo1.SetPivot(0.06965858, 0.8420351);
 		armLo1.MoveTo(0,0);
-		
+
 		armUp2 = CreateSprite("Happy/tempSprites/armUpper2");
 		armUp2.SetParent(torso);
 		armUp2.SetAnchor(0.78, 0.52);
 		armUp2.SetPivot(0.5, 0.935167);
 		armUp2.MoveTo(-2.5,2);
 		armUp2.localRotation = armUp2Rot;
-		
+
 		armLo2 = CreateSprite("Happy/tempSprites/armLower2");
 		armLo2.SetParent(armUp2);
 		armLo2.SetAnchor(0.5, 0.14);
 		armLo2.SetPivot(0.5, 0.02837969);
 		armLo2.MoveTo(0,0);
 		armLo2.localRotation = armLo2Rot;
-		
+
 		hand1 = CreateSprite("Happy/tempSprites/hand1");
 		hand1.SetParent(armLo1);
 		hand1.SetAnchor(0.984, 0.495);
 		hand1.SetPivot(0.1571406, 0.17743);
 		hand1.MoveTo(0,0);
-		
+
 		hand2 = CreateSprite("Happy/tempSprites/hand2");
 		hand2.SetParent(armLo2);
 		hand2.SetAnchor(0.8, 0.948);
 		hand2.SetPivot(0.5, 0.06390622);
 		hand2.MoveTo(0,0);
 		hand2.localRotation = hand2Rot;
-		
+
 		head3 = CreateHead(0,0, 0.5, -0.27, true); --arm2
-		
-		
+
+
 		PositionHead(head3, hand2, 0, 3, 0);
 	elseif(sprung ==4 )then
 		armNeckL = CreateSprite("Happy/tempSprites/armNeckL")
@@ -749,36 +959,36 @@ function happyAnim.SpringUp()
 		armNeckL.SetPivot(0.994, 0.374);
 		armNeckL.MoveTo(0,0);
 		armNeckL.localRotation = armNeckLRot;
-		
+
 		head6 = CreateHead(0,0, 0.5, 0, false); --neckArmL
-		
-		
+
+
 		PositionHead(head6,armNeckL,-60,5,180);
 	elseif(sprung ==5 )then
-		
+
 		armNeckHiR = CreateSprite("Happy/tempSprites/armNeckUpperR")
 		armNeckHiR.SetParent(neck);
 		armNeckHiR.SetAnchor(0.8943, 0.9286);
 		armNeckHiR.SetPivot(0.171, 0.0798);
 		armNeckHiR.MoveTo(0,0);
-		
+
 		head5 = CreateHead(0,0, 0.5, -0.27, true); --neckarmRTop
-		
-		
+
+
 		armNeckLoR = CreateSprite("Happy/tempSprites/armNeckLowerR")
 		armNeckLoR.SetParent(neck);
 		armNeckLoR.SetAnchor(0.93939, 0.8914);
 		armNeckLoR.SetPivot(0.10067, 0.9942);
 		armNeckLoR.MoveTo(0,0);
-		
+
 		head7 = CreateHead(0,0, 0.5, 0, false); --neckArmRBot
-		
-		
-		
-		
+
+
+
+
 		PositionHead(head5,armNeckHiR,25,30,-60);
 		PositionHead(head7,armNeckLoR,25,-15,-20);
-		
+
 		Audio.LoadFile("Happy_Loop");
 	end
 	sprung = sprung + 1;
