@@ -33,12 +33,12 @@ public class MusicManager
 		manager.PlaySound(name,volume);
 	}
 
-	public static void StartSound(string name, float volume = 0.65f, float fadeTime = 0)
+	public static void StartSound(string name, float volume = 0.65f, float fadeTime = 0.0f)
 	{
 		manager.StartSound(name, volume,fadeTime);
 	}
 
-	public static void StopSound(string name, float fadeTime = 0)
+	public static void StopSound(string name, float fadeTime = 0.0f)
 	{
 		manager.StopSound(name, fadeTime);
 	}
@@ -53,18 +53,19 @@ public class MusicManager
 		manager.ActiveSource.FadeOut(time);
 	}
 
-    public static void Pitch(double value)
+    public static void Pitch(float value)
     {
 		//Mathf.Clamp((float)value,-3,3);
-		manager.pitch = (float)value;
+		manager.pitch = value;
     }
 
-    public static void Volume(double value)
+    public static void Volume(float value)
     {
         //Mathf.Clamp01((float)value);
-        manager.basevolume = (float)value;
+        manager.basevolume = value;
     }
 
+	//note float defaults have to be float, otherwise the lua compiler complains
 	public static void Crossfade(string name, float time = 0.5f)
 	{
 		manager.PlayMusic(name, time, false);

@@ -1042,6 +1042,22 @@ public class UIController : MonoBehaviour
             }
         }
 
+		if(state == UIState.DIALOGRESULT)
+		{
+			if (textmgr.canAutoSkip()&& textmgr.lineComplete())
+			{
+				if (!textmgr.allLinesComplete() )
+				{
+					textmgr.nextLine();
+				}
+				else
+				{
+					textmgr.destroyText();
+					SwitchState(stateAfterDialogs);
+				}
+			}
+		}
+
         if (state == UIState.DEFENDING)
         {
             if (!encounter.waveInProgress())

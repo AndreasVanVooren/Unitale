@@ -34,7 +34,6 @@ public class AudioFader : MonoBehaviour
 		{
 			fadeAlpha = 1;
 			fadeTime = 1;
-
 		}
 
 	}
@@ -84,7 +83,11 @@ public class AudioFader : MonoBehaviour
 			}
 		}
 
-		if (fadeTimer == 0) return;
+		if (fadeTimer == 0) 
+		{
+			src.volume = isFadingIn ? baseVolume : 0;
+			return;
+		}
 		fadeAlpha = Mathf.Clamp01(fadeTime / fadeTimer);
 
 		if (isFadingOut)

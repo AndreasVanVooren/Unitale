@@ -376,7 +376,11 @@ public class TextManager : MonoBehaviour
                 letterSound.clip = oldClip;
                 break;
 
-            case "effect":
+			case "starnovoice":
+				letterSound.clip = null;
+				break;
+
+			case "effect":
                 switch (cmds[1].ToUpper())
                 {
                     case "NONE":
