@@ -59,7 +59,7 @@ local generalVal = 1;
 local fadeTarget = 1;
 local fadeSpeed = 1;
 
-local Darkness = CreateSprite("darkness");
+local Darkness = CreateSprite("darkness2");
 Darkness.layer = "Default";
 Darkness.MoveTo(320,240);
 Darkness.color = {0,0,0};
@@ -873,6 +873,8 @@ function happyAnim.SpringUp()
 		SetGlobal("isSprung", true);
 	end
 	--play sound
+	Audio.PlaySound("chack");
+	--Audio.PlaySound("bones");
 	if(sprung == 1)then
 		--neck
 		neck = CreateSprite("Happy/tempSprites/neckBone");

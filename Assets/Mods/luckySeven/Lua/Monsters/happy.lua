@@ -255,6 +255,6 @@ function NeutralEnding()
 				"[noskip][waitall:4][starcolor:d0d0d0][color:d0d0d0]You're disappearing.\r[color:c0c0c0]You're no longer relevant.\r[color:b0b0b0]You're useless.",
 				"[noskip][waitall:4][starcolor:909090][color:909090]...",
 				"[noskip][waitall:5][starcolor:707070][color:707070]There's nothing more you can do.\r\rIt's time to reset.",
-				"[noskip][starcolor:000000][func:State,DONE]"});
+				"[noskip][starcolor:000000][starnovoice][func:State,DONE]"});
 	--State("DONE");
 end

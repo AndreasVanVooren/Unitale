@@ -155,7 +155,8 @@ function Update()
 		--PlaySeparate();
 		--Player.hp = 20;
 		if(consumeAnim ~= nil)then
-			consumeAnim.StartConsume();
+			fullSuccess = true;
+			PlayConsume();
 		end
 
 	end
@@ -426,7 +427,7 @@ function HandleMercy(mercyID)
 		BattleDialog({
 					"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
 					"...you reach for the SOULS.",
-						"[noskip][novoice][func:State,DONE]"--playseparate
+						"[noskip][novoice][func:PlayConsume]"--playseparate
 				});
 	end
 
@@ -614,7 +615,7 @@ function NeutralEnding()
 		"[noskip][waitall:4][starcolor:d0d0d0][color:d0d0d0]You're disappearing.\r[color:c0c0c0]You're no longer relevant.\r[color:b0b0b0]You're useless.",
 		"[noskip][waitall:4][starcolor:909090][color:909090]...",
 		"[noskip][waitall:5][starcolor:707070][color:707070]There's nothing more you can do.\r\rIt's time to reset.",
-		"[noskip][starcolor:000000][func:State,DONE]"});
+		"[noskip][starcolor:000000][starnovoice][func:State,DONE]"});
 	--State("DONE");
 end
 
@@ -622,4 +623,9 @@ function FadeOutShit()
 	DEBUG("ASFDS");
 	happyAnim.FadeToBlack(0.1);
 	Audio.FadeOut(1);
+end
+
+function PlayConsume()
+	happyAnim.FadeToBlack(20);
+	consumeAnim.StartConsume(fullSuccess);
 end

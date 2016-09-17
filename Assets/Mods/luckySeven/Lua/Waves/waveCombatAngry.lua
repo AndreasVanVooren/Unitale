@@ -125,6 +125,8 @@ function Finalize()
 	end
 	Encounter.Call("HideEyes");
 	EndWave();
+
+	Audio.StopSound("laser");
 end
 
 function CreateHandProjectile(initX,initY)
@@ -181,6 +183,7 @@ function InitLasers(side)
 		beamInitY = Arena.height/8*3 - 10;
 	end
 
+	Audio.StartSound("laser");
 
 	head = CreateProjectile(initSprite,initX,initY);
 	--head.SendToBottom();
@@ -614,6 +617,7 @@ function UpdateWaveBoneBurst(bulletArr,travelDistance,travelTime,targetYMin,targ
 										20);
 		end
 		bulletArr[bStateI] = 2;
+		Audio.StartSound("rumble");
 	elseif(data == 2)then
 		local timer = bulletArr[b2TimerI] + Time.dt;
 		bulletArr[b2TimerI] = timer;
@@ -625,6 +629,14 @@ function UpdateWaveBoneBurst(bulletArr,travelDistance,travelTime,targetYMin,targ
 				local arm = bulletArr[index+1];
 				arm[1].MoveTo( bulletArr[index], arm[1].y + travelDistance * Time.dt/travelTime );
 				arm[2].MoveTo( bulletArr[index], arm[2].y + travelDistance * Time.dt/travelTime );
+
+				if(arm[1].y > -Arena.height/2)then
+					Audio.StopSound("rumble");
+					if(arm[1].GetVar("SoundPlayed") ~= true)then
+						arm[1].SetVar("SoundPlayed",true);
+						Audio.PlaySound("chack");
+					end
+				end
 			end
 
 		elseif(timer > travelTime + 1.0)then
@@ -754,7 +766,7 @@ function UpdateWaves(waveBullets, waveType)
 			1.1,					--base timer
 			0.08,					--counter time decrease
 			0.3, 					--random factor
-			1,
+			0.5,
 			5,
 			Player.absx,
 			Player.absy,
@@ -969,6 +981,7 @@ function OnHitProjectile(bullet,other)
 				end
 			end
 		end
+		Audio.PlaySound("ding");
 
 		waveState = 999;
 		waveTimer = 0;

@@ -54,7 +54,7 @@ function consume.StartConsume(kojimaSuccess)
         conBigHeartChunks[i].sprite.alpha = 0;
     end
 
-    conSmallHeart = CreateProjectileAbs("separate/ut-heart",320,100);
+    conSmallHeart = CreateProjectileAbs("ut-heart",320,100);
     --conSmallHeart.canCollideWithProjectiles = true;
     conSmallHeart.sprite.layer = "Default";
     conSmallHeart.sprite.color = {1,0,0};
@@ -62,7 +62,7 @@ function consume.StartConsume(kojimaSuccess)
 
     eventStarted = true;
 
-    nextwaves = {"waveNull"}
+    nextwaves = {"waveNullBig"}
 	wavetimer = 99999999999999999;
 
 	State("DEFENDING");
@@ -77,12 +77,28 @@ local firstText = nil;
 
 local chara = nil;
 
-function consume.SpawnChara()
-
+local function SpawnCharaLoc()
+    chara = CreateSprite("chara");
+    chara.layer = "Default";
+    --that 319 is a value that accounts for point filtering
+    chara.MoveToAbs(319.94,320);
 end
 
-local function SpawnCharaLoc()
-    consume.SpawnChara();
+function consume.SpawnChara()
+    SpawnCharaLoc();
+end
+
+function Chara_CreepyMusic()
+    --DEBUG("ASDFSADFSAF");
+    Audio.LoadFile("mus_zzz_c");
+    Audio.Pitch(1);
+end
+
+function Chara_EndChara()
+    chara.Remove();
+    chara = nil;
+    Audio.Stop();
+    Audio.StopSound("noiseLong");
 end
 
 --state 0, fade in, move heart up.
@@ -94,6 +110,7 @@ local function ChangeStatePrep(x)
     eventTimer = 0;
     if(x == 1)then
         --flag some shit? set wavetimer to 0;
+        Audio.FadeOut(2.0);
         canMoveHeart = false;
         initNumChunks = #conBigHeartChunks;
     elseif(x == 2)then
@@ -106,15 +123,41 @@ local function ChangeStatePrep(x)
 
         conBigHeartChunks = nil;
 
-        firstText = CreateSprite("separate/text2");
-        firstText.SetPivot(0.5,1);
-        firstText.MoveToAbs(320,480);
-        firstText.layer = "Default";
+        --firstText = CreateSprite("separate/text2");
+        --firstText.SetPivot(0.5,1);
+        --firstText.MoveToAbs(320,480);
+        --firstText.layer = "Default";
     elseif(x == 3)then
         --create chara sprite, submit battledialog, go to battledialog;
+        back.Remove();
+        SpawnCharaLoc();
         BattleDialog({
-            "[noskip][novoice][starcolor:000000]Sup bitch, I'm Chara,\ryou're a great partner,\rbladibladiyeehaw.",
-            "[noskip][func:State,DONE]"
+            "[noskip][starnovoice][starcolor:000000][waitall:3]Greetings.[w:80][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3][func:Chara_CreepyMusic]It's been a while,[w:3]\rhasn't it, partner?[w:80][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]You may not remember,[w:10]\rbut in the near past...[w:45][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]...a version of you and one of I,[w:15]\reradicated the enemy[w:15]\rand became [w:10]strong.[w:80][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]And then... this world,\ralong with its endless variants...[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]...were erased.[w:45]\rDestroyed.[w:45]\rObliterated.[w:80][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]But now, everything has collapsed.\rThere was too much nothing\rto balance everything.[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]Everything merged\rinto one confusing amalgamation\rof pseudo-realities.[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]And those who were unfortunate\renough to stay in the dark...[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]...they could never touch\rthe new world.\rOnly communicate with it.[w:80][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]I know that there are\rothers of me out there.[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]Versions of me who are not\rresiding in the abyss...[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]More caring...\rMore compassionate...\rAnd weaker...[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]Only we know the true meaning\rof being human, don't we?[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]...[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]Partner,[w:45]\rI have a favor to ask you.[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]Despite the circumstances,\ryou went out of your way\rto reach out to me.[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]You have proven our alliance\rhas not been forgotten.[w:60]\rSo I must implore you.[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]Continue your work.[w:45]\rPurify the corruption\rthat came to be.[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]Make this the prime universe,\rand erase every bit of existence.[w:120][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]You don't need to answer now.[w:45]\rWe have all the time\rin the universe,[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]and a lot of friends\rto keep us company.[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]So take your time\rto make your decision.[w:60][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:3]But remember...\ryour defiance may be...[w:80][next]",
+            "[noskip][starnovoice][starcolor:000000][waitall:6][func:Chara_EndChara][color:ff0000]unfavorable.[w:60][next]",
+            "[noskip][starnovoice][func:State,DONE]"
         });
     end
 end
@@ -168,32 +211,31 @@ local function UpdateState0()
     UpdateHeartPos();
 end
 
-local timeToEat = 1.5;
+local timeToEat = 2.5;
 local firstBite = true;
 local function EatUpdate()
     local xScale = conGradient.xscale;
     if(xScale < 1)then
-        xScale = xScale + Time.dt * 0.08 * (#conBigHeartChunks)/initNumChunks;
+        xScale = xScale + Time.dt * 0.1;
     end
     conGradient.xscale = xScale;
 
     if(eventTimer > timeToEat)then
-        timeToEat = math.random(1.2,1.8);
+        --timeToEat = math.random(1.5,2);
+        Audio.PlaySound("chack");
+        timeToEat = 1.25;
         eventTimer = 0;
         firstBite = false;
         local index = math.random(#conBigHeartChunks);
         conBigHeartChunks[index].Remove();
         table.remove(conBigHeartChunks,index);
         if(#conBigHeartChunks <= 0)then
-            if(misterKojimaSan)then
-                --DEBUG("Yiss");
-                ChangeStatePrep(3);
-            else
-                --DEBUG("Naw");
-                ChangeStatePrep(2);
-            end
+            --DEBUG("Naw");
+            ChangeStatePrep(2);
         end
-        conGradient.xscale = (#conBigHeartChunks)/initNumChunks;
+        if(conGradient ~= nil)then
+            conGradient.xscale = (#conBigHeartChunks)/initNumChunks;
+        end
     end
 
 
@@ -205,10 +247,11 @@ local function EatUpdate()
         end
         local xOffset = bigHeartX + math.random(-7.5,7.5) * shakeDelta;
         local yOffset = bigHeartY + math.random(-7.5,7.5) * shakeDelta;
-
-        for i=1,#conBigHeartChunks do
-            if(conBigHeartChunks[i] ~= nil)then
-                conBigHeartChunks[i].MoveToAbs(xOffset,yOffset);
+        if(conBigHeartChunks ~= nil)then
+            for i=1,#conBigHeartChunks do
+                if(conBigHeartChunks[i] ~= nil)then
+                    conBigHeartChunks[i].MoveToAbs(xOffset,yOffset);
+                end
             end
         end
     end
@@ -312,33 +355,38 @@ end
 local spawnedHeartacle = false;
 local function HeartAche()
     --  2r x 6u
-    local shakeDelay = 0.5;
-    local timeToBurst = 1.5;
-    local shakeEnd = 2.0;
-    local hideTime = 2.5;
-    local endState = 3.5;
+    local shakeDelay = 1.5;
+    local timeToBurst = 3;
+    local shakeEnd = 3.5;
+    local hideTime = 5;
+    local endState = 7;
 
     if(eventTimer < timeToBurst)then
-        local shakeFrac =  math.min(eventTimer - shakeDelay, 0) / (timeToBurst - shakeDelay);
+        local shakeFrac =  math.max(eventTimer - shakeDelay, 0) / (timeToBurst - shakeDelay);
+        --DEBUG(shakeFrac);
         local x = bigHeartX + math.random(-3, 3) * shakeFrac;
         local y = bigHeartY + math.random(-3, 3) * shakeFrac;
         conSmallHeart.MoveToAbs(x,y);
     elseif(eventTimer < hideTime)then
+        --DEBUG("gjoiasdiojfois");
         if(not spawnedHeartacle)then
             spawnedHeartacle = true;
             --was gonna remove it, but setting the sprite is more efficient than destroying and reinstantiating.S
-            conSmallHeart.Set("ut-heart-tentacle");
+            conSmallHeart.sprite.Set("ut-heart-tentacle");
+            Audio.PlaySound("nom");
             conSmallHeart.MoveToAbs(bigHeartX + 2, bigHeartY + 6);
         end
 
-        local shakeFrac = 1 - ( math.min(eventTimer - timeToBurst, 0) / (shakeEnd - timeToBurst) );
-        local x = bigHeartX + 2 + math.random(-3, 3) * shakeFrac;
-        local y = bigHeartY + 6 + math.random(-3, 3) * shakeFrac;
+        local shakeFrac = 1 - math.min( math.max(eventTimer - timeToBurst, 0) / (shakeEnd - timeToBurst), 1);
+        local x = bigHeartX + 2 + math.random(-5, 5) * shakeFrac;
+        local y = bigHeartY + 6 + math.random(-5, 5) * shakeFrac;
         conSmallHeart.MoveToAbs(x,y);
     elseif(eventTimer > hideTime and conSmallHeart ~= nil)then
+        --DEBUG("husiahfiuhai");
         conSmallHeart.Remove();
         conSmallHeart = nil;
     elseif(eventTimer > endState)then
+        --DEBUG("yuri is cool i guess");
         if(misterKojimaSan)then
             ChangeStatePrep(3);
         else
@@ -347,8 +395,44 @@ local function HeartAche()
     end
 end
 
+local inGlitch = false;
+local glitchTimer = 1.8;
+
 local function CharaUpdate()
     --basically, get the chara sprite, and add some noise.
+    --alpha flux
+    if(chara ~= nil)then
+        local alpha = 1 + (math.sin(eventTimer * 80)-1) * 0.05;
+        chara.alpha = alpha;
+        glitchTimer = glitchTimer - Time.dt;
+        if(glitchTimer < 0)then
+
+            if(inGlitch)then
+                chara.StopAnimation();
+                glitchTimer = math.random() * 3.6 + 1.2;
+                inGlitch = false;
+                Audio.StopSound("noiseLong");
+            else
+                local glitchKind = math.random() * 7;
+                if(glitchKind < 6.5)then
+                    chara.SetAnimation({"charaglitch1","charaglitch2","charaglitch1","chara","charaglitch2","charaglitch1","chara"})
+                    glitchTimer = math.random() * 20/30 + 5/30;
+                    Audio.StartSound("noiseLong");
+                else
+                    chara.SetAnimation({"charaevil","charaevilglitch"});
+                    glitchTimer = 2/30;
+                    Audio.PlaySound("noisescream");
+                end
+                inGlitch = true;
+
+            end
+
+        end
+
+
+    end
+    --glitch
+
 
 end
 
