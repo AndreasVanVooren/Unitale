@@ -1013,7 +1013,7 @@ public class UIController : MonoBehaviour
         {
             return;
         }
-        Camera.main.GetComponent<AudioSource>().Stop();
+        MusicManager.Stop();
         ActionDialogResult(new RegularMessage("YOU WON!\nYou earned 0 XP and 0 gold."), UIState.DONE);
         victory = true;
     }

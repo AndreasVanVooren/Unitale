@@ -81,7 +81,7 @@ public class FightUIController : MonoBehaviour
         gameObject.SetActive(true);
         line.StopAnimation();
         line.img.gameObject.SetActive(true);
-        line.img.enabled = true;
+        line.img.RendererEnabled = true;
         lifeBar.setVisible(false);
         finishingFade = false;
         enemy = target;
@@ -172,7 +172,7 @@ public class FightUIController : MonoBehaviour
         if (!finishingFade)
         {
             finishingFade = true;
-            line.img.enabled = false;
+            line.img.RendererEnabled = false;
             line.StopAnimation();
             slice.StopAnimation();
             // Arena resizes to a small default size in most regular battles before entering actual defense state

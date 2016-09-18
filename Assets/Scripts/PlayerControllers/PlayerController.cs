@@ -259,8 +259,8 @@ public class PlayerController : MonoBehaviour
     {
         self = GetComponent<SpriteLayoutBase>();
         selfImg = GetComponent<SpriteLayoutImage>();
-//        playerAbs = new Rect(0, 0, selfImg.sprite.texture.width - hitboxInset * 2, selfImg.sprite.texture.height - hitboxInset * 2);
-        selfImg.AttachCollider(ColliderType.Circle);
+		//        playerAbs = new Rect(0, 0, selfImg.sprite.texture.width - hitboxInset * 2, selfImg.sprite.texture.height - hitboxInset * 2);
+		selfImg.AttachCircleCollider(0.0f, 0.0f, 7.95f);
         instance = this;
         playerAudio = GetComponent<AudioSource>();
         hurtSound = AudioClipRegistry.GetSound("hurtsound");

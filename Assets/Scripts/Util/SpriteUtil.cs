@@ -184,7 +184,9 @@ public static class SpriteUtil
             SwapSpriteFromFile(i, filename);
         }
         i.transform.SetParent(GameObject.Find("SpriteParent").transform, true); //TODO layering
+		i.LocalPosition = new Vector2(320, 240);
         i.SortingLayerName = layer;
+		i.SendToTop();
         return new LuaSpriteController(i);
     }
 
