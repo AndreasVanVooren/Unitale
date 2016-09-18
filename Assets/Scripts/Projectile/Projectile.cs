@@ -166,7 +166,7 @@ public abstract class Projectile : MonoBehaviour
         {
 			var projectile = other.GetComponent<Projectile>();
 			//and the other projectile has collision enabled as well
-			if (projectile.canCollideWithOtherProjectiles)
+			if (projectile && projectile.canCollideWithOtherProjectiles)
 			{
 				OnProjectileHitProjectile(projectile);
 			}

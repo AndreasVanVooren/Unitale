@@ -99,6 +99,7 @@ public class ProjectileController
 
 	public void SetCircleColliderSize(float r)
 	{
+		Debug.Log("bAy lmao");
 		var coll = p.self.GetComponent<CircleCollider2D>();
 		if(coll == null)
 		{
@@ -110,6 +111,7 @@ public class ProjectileController
 
 	public void SetColliderOffset(float x, float y)
 	{
+		Debug.LogFormat("Ay lmao {0}, {1}",x,y);
 		var coll = p.self.GetComponent<Collider2D>();
 		if (coll == null)
 		{
@@ -142,7 +144,29 @@ public class ProjectileController
 		}
 	}
 
-    public void Remove()
+	public void SetCircleCollider(float rad = 1.0f,float xOff = 0.0f, float yOff = 0.0f)
+	{
+		var image = ((SpriteLayout.SpriteLayoutImage)p.self);
+		if (image == null)
+		{
+			UnitaleUtil.displayLuaError("", "Projectile has no image part");
+		}
+		image.RemoveColliders();
+		image.AttachCircleCollider(xOff, yOff, rad);
+	}
+
+	public void SetRectCollider(float xSize = 1.0f, float ySize = 1.0f, float xOff = 0.0f, float yOff = 0.0f)
+	{
+		var image = ((SpriteLayout.SpriteLayoutImage)p.self);
+		if (image == null)
+		{
+			UnitaleUtil.displayLuaError("", "Projectile has no image part");
+		}
+		image.RemoveColliders();
+		image.AttachRectCollider(xOff,yOff,xSize, ySize);
+	}
+
+	public void Remove()
     {
         if (active)
         {

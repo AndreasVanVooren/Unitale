@@ -45,7 +45,10 @@ public class GameOverBehavior : MonoBehaviour {
 		var playerImage = GetComponent<SpriteLayoutImage>();
         heartPos = playerImage.Position;
         heartColor = playerImage.Color;
+		playerImage.RendererEnabled = true;
 		playerImage.SetParent(GameObject.Find("PseudoCanvas").transform);
+		var controller = GetComponent<PlayerController>();
+		controller.enabled = false;
         gameOverMusic = Camera.main.GetComponent<AudioSource>();
         started = true;
     }
