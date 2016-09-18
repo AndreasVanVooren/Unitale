@@ -131,9 +131,7 @@ end
 
 function CreateHandProjectile(initX,initY)
 	local hand = CreateProjectileAbs("Happy/tempSprites/hand1",initX,initY);
-	hand.SetCollider("Circle");
-	hand.SetCircleColliderSize(9.65);
-	hand.SetColliderOffset(-0.76,-2.33);
+	hand.SetCircleCollider(8.75,0,-2.5);
 	hand.sprite.SetPivot(0.1571406, 0.17743);
 	hand.sprite.Scale(1.6,1.6);
 	hand.sprite.layer = "AbovePlayer"
@@ -184,6 +182,7 @@ function InitLasers(side)
 	end
 
 	Audio.StartSound("laser");
+	Audio.PlaySound("gasterBlast");
 
 	head = CreateProjectile(initSprite,initX,initY);
 	--head.SendToBottom();
@@ -431,6 +430,8 @@ function UpdateWaveBoneExtrude(
 			y = y + math.sin( math.rad(curRot) )*lengths[i];
 			hand.MoveToAbs(x,y);
 
+			Audio.PlaySound("boneExtrude2");
+
 			bulletTable[eBoneCI] = counter + 1;
 			local newTime = baseTimer - (counterTimeDecrease*(counter+1));
 			if(newTime < 0.0)then
@@ -445,10 +446,13 @@ function UpdateWaveBoneExtrude(
 		end
 	else
 		if(timer > timerlimit)then
+
 			if(counter <= 1)then
 				--do end wave stuff
 				return true;
 			end
+			
+			Audio.PlaySound("boneRetract2");
 
 			local bone = bulletTable[eBoneStartI + counter - 1];
 			hand.MoveToAbs(bone.absx, bone.absy);
@@ -460,6 +464,7 @@ function UpdateWaveBoneExtrude(
 			bulletTable[eRotVI] = 0;
 
 			bone.Remove();
+
 
 			bulletTable[eBoneCI] = counter - 1;
 			bulletTable[eTimeI] = 0;

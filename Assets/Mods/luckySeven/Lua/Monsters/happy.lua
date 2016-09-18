@@ -1,11 +1,22 @@
 -- A basic monster script skeleton you can copy and modify for your own creations.
 comments = {
+	"The silence is unnerving...",
+	"It's cold...",
+	"Always alone...",
+	"It undulates quietly...",
+	"Smells like rotting meat...",
+}
+comments2 = {
 	"It's tearing at itself.",
 	"Piercing screams echo through\rthe area.",
 	"It undulates rhythmically.",
 	"Smells like rotting meat.",
 	"The snow is falling."
 };
+
+function SwitchToNewComments()
+	comments = comments2;
+end
 
 commands = {"Check","Bathe", "Run", "Hug"};
 randomdialogue = {"[font:sans][voice:v_sans]why even\nbother?\n\nwhy even\nbother?"};
@@ -188,10 +199,14 @@ function Cheat()
 	end
 end
 
+function BackToNormal()
+	Audio.Crossfade("Happy_Intro",1);
+end
+
 -- This handles the commands; all-caps versions of the commands list you have above.
 function HandleCustomCommand(command)
 	if command == "CHECK" then
-		BattleDialog({"???_??? ATK -"..math.random(100000000,999999999) ..math.random(100000000,999999999)..math.random(100000000,999999999).."\nLooks tasty."});
+		BattleDialog({"???_??? ATK -"..math.random(100000000,999999999) ..math.random(100000000,999999999)..math.random(100000000,999999999).."\nLooks tasty..."});
     elseif command == "BATHE" then
 		if(isHugged) then
 
@@ -202,7 +217,7 @@ function HandleCustomCommand(command)
 			elseif(batheCount == 2)then
 				BattleDialog({"You bathe It some more.\rYou scrub the inside\rof Its skulls.", "It's standing a bit\rmore straight."});
 			elseif(batheCount == 3)then
-				BattleDialog({"You bathe it even more.\rIts bones sparkle like diamonds.","It looks more... friendly?","The Papalgamate is content."});
+				BattleDialog({"You bathe it even more.\rIts bones sparkle like diamonds.","It looks more... friendly?","[noskip][func:BackToNormal]The Papalgamate is content."});
 				if(headKilled == false)then
 					Encounter.Call("AddMercy","Separate");
 				end
@@ -220,7 +235,7 @@ function HandleCustomCommand(command)
 		elseif(hasDied == true and headHealth[1] > 0)then
 			NeutralEnding();
 		else
-			BattleDialog({"Can't run."});
+			BattleDialog({"You try to run...", "But there's no escape..."});
 		end
     elseif command == "HUG" then
 		if(GetGlobal("isSprung") == true)then
@@ -244,12 +259,12 @@ function OnDeath()
 	AddMercy("Consume");
 end
 
-function DoTheBooty()
-	Encounter.Call("FadeOutShit");
+function EncounterCall()
+	Encounter.Call("FadeAway");
 end
 
 function NeutralEnding()
-	BattleDialog({"[noskip][func:DoTheBooty]There's nothing more you can do.\rYou can only run.",
+	BattleDialog({"[noskip][func:EncounterCall]There's nothing more you can do.\rYou can only run.",
 				"[noskip][waitall:2]You run as far as you can.\rAway from the memories.\rAway from the pain.",
 				"[noskip][waitall:3][starcolor:f0f0f0][color:f0f0f0]You run until your legs give out.\r[color:e0e0e0]Until your legs disappear.",
 				"[noskip][waitall:4][starcolor:d0d0d0][color:d0d0d0]You're disappearing.\r[color:c0c0c0]You're no longer relevant.\r[color:b0b0b0]You're useless.",

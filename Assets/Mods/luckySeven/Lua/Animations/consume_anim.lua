@@ -16,10 +16,12 @@ local eventTimer = 0;
 local eventState = 0;
 
 local misterKojimaSan = false;
+local killSelf = false;
 
-function consume.StartConsume(kojimaSuccess)
+function consume.StartConsume(kojimaSuccess, kill)
     if(eventStarted) then return end
     misterKojimaSan = false or kojimaSuccess;
+    killSelf = false or kill;
 
     Audio.LoadFile("SEPARATE");
     Audio.Pitch(0.5);
@@ -50,7 +52,11 @@ function consume.StartConsume(kojimaSuccess)
     for i=1,#conBigHeartChunks do
         --conBigHeartChunks[i].canCollideWithProjectiles = true;
         conBigHeartChunks[i].sprite.layer = "Default";
-        conBigHeartChunks[i].sprite.color = {0,0,0};
+        if(killSelf)then
+            conBigHeartChunks[i].sprite.color = {0.5,0,0};
+        else
+            conBigHeartChunks[i].sprite.color = {0,0,0};
+        end
         conBigHeartChunks[i].sprite.alpha = 0;
     end
 
@@ -122,6 +128,12 @@ local function ChangeStatePrep(x)
         conGradient = nil;
 
         conBigHeartChunks = nil;
+
+        if(killSelf)then
+            Player.hp = -54648;
+            Player.SetControlOverride(false);
+            Player.MoveToAbs(conSmallHeart.absx,conSmallHeart.absy,true);
+        end
 
         --firstText = CreateSprite("separate/text2");
         --firstText.SetPivot(0.5,1);
@@ -222,6 +234,7 @@ local function EatUpdate()
 
     if(eventTimer > timeToEat)then
         --timeToEat = math.random(1.5,2);
+
         Audio.PlaySound("chack");
         timeToEat = 1.25;
         eventTimer = 0;
@@ -352,6 +365,7 @@ local function PostConsumeStandard()
     end
 end
 
+local rumbleStarted = false;
 local spawnedHeartacle = false;
 local function HeartAche()
     --  2r x 6u
@@ -367,6 +381,11 @@ local function HeartAche()
         local x = bigHeartX + math.random(-3, 3) * shakeFrac;
         local y = bigHeartY + math.random(-3, 3) * shakeFrac;
         conSmallHeart.MoveToAbs(x,y);
+
+        if(not rumbleStarted and eventTimer > shakeDelay)then
+            Audio.StartSound("rumble");
+        end
+
     elseif(eventTimer < hideTime)then
         --DEBUG("gjoiasdiojfois");
         if(not spawnedHeartacle)then
@@ -375,6 +394,7 @@ local function HeartAche()
             conSmallHeart.sprite.Set("ut-heart-tentacle");
             Audio.PlaySound("nom");
             conSmallHeart.MoveToAbs(bigHeartX + 2, bigHeartY + 6);
+            Audio.StopSound("rumble");
         end
 
         local shakeFrac = 1 - math.min( math.max(eventTimer - timeToBurst, 0) / (shakeEnd - timeToBurst), 1);

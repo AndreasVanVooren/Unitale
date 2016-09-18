@@ -1,6 +1,5 @@
--- An animation demo with a rotating Sans head.
 music = "Happy_Intro" --Always OGG. Extension is added automatically. Remove the first two lines for custom music.
-encountertext = "[effect:none]Everything's H A P P Y ." --Modify as necessary. It will only be read out in the action select screen.
+encountertext = "It." --Modify as necessary. It will only be read out in the action select screen.
 nextwaves = {"waveNull"}
 wavetimer = 0.0
 arenasize = {260, 130}
@@ -19,7 +18,7 @@ possible_attacks = {"waveNull"}
 
 hasSpeech = false;
 
-happyIntro = "[waitall:3][noskip]Everything's [waitall:8][func:Spring]H [func:Spring]A [func:Spring]P [func:Spring]P [func:Spring]Y .";
+happyIntro = "[waitall:3][noskip]Everything's [waitall:8][novoice][func:Spring]H [func:Spring]A [func:Spring]P [func:Spring]P [func:Spring]Y .";
 
 function EnteringState(newState, oldState)
 	if(oldState == "ITEMMENU") then
@@ -58,6 +57,11 @@ function EnteringState(newState, oldState)
 	--DEBUG(encountertext);
 end
 
+function Bisicle()
+	local possibilities = {"ERR_","Tran","N-","4D-","Muon"};
+	return possibilities[ math.random(#possibilities) ];
+
+end
 
 function EncounterStarting()
     --Include the animation Lua file. It's important you do this in EncounterStarting, because you can't create sprites before the game's done loading.
@@ -76,6 +80,15 @@ function EncounterStarting()
 	local name = 4;
 	--Player.lv = 1;
 	maxhp = 16 + 4 * Player.lv;
+
+	AddItem("LOCKET","INV_LOCKET");
+	AddItem("CREAM","DiceCream");
+	AddItem("DOGTEST2","CidrSpidr");
+	AddItem("POP",	Bisicle() .. "sicle");
+	AddItem("SIN","SinBun");
+	AddItem("DOGTEST6","HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA");
+	AddItem("DOGTEST7","Bees");
+	AddItem("DOGTEST4","CndyMnstr");
 end
 
 successes = 0;
@@ -123,6 +136,7 @@ function Konami()
 		--DEBUG("Konami");
 		successes = 11;
 		fullSuccess = true;
+		Audio.PlaySound("success");
 		--AddItem("CHARA", "OtherItm");
 	elseif((
 	Input.Up == 1 or
@@ -153,11 +167,11 @@ function Update()
 	if(Input.Menu == 1)then
 		--enemies[1].Call("Cheat");
 		--PlaySeparate();
-		--Player.hp = 20;
-		if(consumeAnim ~= nil)then
-			fullSuccess = true;
-			PlayConsume();
-		end
+		--Player.hp = 0;
+		--if(consumeAnim ~= nil)then
+		--	fullSuccess = true;
+		--	PlayConsume();
+		--end
 
 	end
 
@@ -197,10 +211,16 @@ function PlayMusic(name)
 		end
 end
 
+local regenTurns = 0;
+
 function DefenseEnding() --This built-in function fires after the defense round ends.
 
 	encountertext = RandomEncounterText() --This built-in function gets a random encounter text from a random enemy.
 
+	if(regenTurns > 0)then
+		regenTurns = regenTurns - 1;
+		Heal(2);
+	end
 end
 
 function HandleSpare()
@@ -210,19 +230,15 @@ function HandleSpare()
 end
 
 items = {}; --use items like dictionary : items["KEY"] = "Value"
-items["LOCKET"] = "INV_LOCKET";
+--items["LOCKET"] = "INV_LOCKET";
+--items["CREAM"] = "DiceCream";
+--items["CREAM"] = "DiceCream";
+local sicleCount = 0;
 
 function HandleItem(ItemID)
 
 	if(ItemID == "LOCKET")then
-		--Locket, this is how you end battle.
-		--music ="the locket"
-		--Audio.LoadFile(music);
 
-		--PlayMusic("the locket")
-
-		--PlaySeparate();
-		--return;
 		StartTempMusic("the locket");
 		--still in first phase
 		if(GetGlobal("isSprung") == false)then
@@ -253,14 +269,54 @@ function HandleItem(ItemID)
 			BattleDialog({"The locket whispers to you...\r[waitall:4][color:ffffa0]So alone... So cold...","[func:StopTempMusic][func:State,ENEMYDIALOGUE]"});
 		end
 
-		--State("ACTIONSELECT")
-			--encountertext = "The Sanstrosity seems content."
-		--BattleDialog({
-		--	"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
-		--	"...you reach out to the SOULS.",
-		--	"[noskip][novoice][func:PlaySeparate]"
-		--});
+	elseif(ItemID == "CREAM")then
+		local randChance = math.random();
+		if(randChance < Player.hp/maxhp)then
+			BattleDialog({
+				"[noskip]You eat the Dice cream.\r[waitall:2]You feel it rolling\raround in your stomach.",
+				"[noskip][waitall:2]Suddenly, [w:8]you feel a sharp [func:SafeHurt,15]pain\rthroughout your entire body."
+			});
+		else
+			BattleDialog({
+				"[noskip]You eat the Dice cream.\r[waitall:2]You feel it rolling\raround in your stomach.",
+				"[noskip][waitall:2]Suddenly, [w:8]you feel the pain in\ryour body ease away.",
+				"[noskip][waitall:8]...[waitall:2]Your HP[waitall:8]...[func:Heal,15]"
+			});
+		end
+	elseif(ItemID == "POP")then
+		if(Player.hp < maxhp) then
+			if(sicleCount < 3)then
+				sicleCount = sicleCount + 1;
+				local pop = Bisicle() .. "sicle";
+				BattleDialog({
+					"[noskip]You eat the " .. Bisicle() .. "sicle\r" .. math.random()*3 .. " times...",
+					"[noskip][waitall:3]The remains turn\rinto a ".. pop..".",
+					"[noskip][waitall:8]...[waitall:2]Your HP[waitall:8]...[func:Heal,11]"
+				});
+				RemoveItem("POP");
+				AddItem("POP",pop);
+			else
+				BattleDialog({
+					"[noskip]You eat the " .. Bisicle() .. "sicle\r" .. math.random()*3 .. " times...",
+					"[noskip][waitall:3]The remains evaporate\rbefore your eyes.",
+					"[noskip][waitall:8]...[waitall:2]Your HP[waitall:8]...[func:Heal,11]"
+				});
+				RemoveItem("POP");
+			end
 
+		else
+			BattleDialog({"It's not the time\rfor quantum physics jokes\rand quantum joke physics..."});
+			toItems = true;
+		end
+	elseif(ItemID == "SIN")then
+		if(Player.hp < maxhp) then
+			BattleDialog({"You eat the sin bunny.\rYou feel your sins\rcrawling in your skin.","But time heals all wounds..."});
+			regenTurns = 5;
+			RemoveItem(ItemID);
+		else
+			BattleDialog({"Better not..."});
+			toItems = true;
+		end
 	elseif(ItemID == "DOGTEST2")then
 		--Generic healing item (Spider cider equivalent)
 		if(Player.hp < maxhp) then
@@ -280,55 +336,31 @@ function HandleItem(ItemID)
 
 	elseif(ItemID == "DOGTEST3")then
 		--Generic healing item (Spider Donut equivalent)
-		if(itemUsed[3] == false) then
-			if(Player.hp < maxhp) then
-				BattleDialog({
-					"You look through the hole\rof the Donut Donut.",
-					"[waitall:2]You notice only darkness...\r[color:1A0000][novoice][waitall:0]HELP ME HELP ME HELP ME HELP ME\r[voice:default][waitall:2][color:ffffff]dark, yet darker.",
-					"[waitall:4]You gaze into the abyss...\nThe abyss gazes back.",
-					"[noskip][waitall:8]...[waitall:2]Your HP[waitall:8]...[func:Heal,24]"
-				});
-				itemUsed[3] = true;
-			else
-				BattleDialog("You cannot yet comprehend\rthe form of the Donut Donut.")
-				toItems = true;
-			end
-		else
-			if(Player.hp < maxhp) then
+		if(Player.hp < maxhp) then
 			BattleDialog({
-				"You shout into the\rDonut Donut for help.",
-				"But nobody came..."
+				"You look through the hole\rof the Donut Donut.",
+				"[waitall:2]You notice only darkness...\r[color:1A0000][novoice][waitall:0]HELP ME HELP ME HELP ME HELP ME\r[voice:default][waitall:2][color:ffffff]dark, yet darker.",
+				"[waitall:4]You gaze into the abyss...\nThe abyss gazes back.",
+				"[noskip][waitall:8]...[waitall:2]Your HP[waitall:8]...[func:Heal,24]"
 			});
-			else
-				BattleDialog("You do not yet desire\rthe darkness.")
-
-			end
+			itemUsed[3] = true;
+		else
+			BattleDialog("You cannot yet comprehend\rthe form of the Donut Donut.")
 			toItems = true;
 		end
 	elseif(ItemID == "DOGTEST4")then
 		--Generic healing item (Monster Candy equivalent)
-		if(itemUsed[4] == false) then
 			if(Player.hp < maxhp) then
 				BattleDialog({
 					"[noskip]You eat the Candy Monster.\n[w:4][func:Heal,10]It was delicious!",
 					"A faint screaming is heard from\rinside your stomach.\n[w:4][func:Hurt,1]It's less delicious!",
 
 				});
-				itemUsed[4] = true;
+				RemoveItem(ItemID);
 			else
 				BattleDialog("The Candy Monster looks\rtoo adorable.[w:4]\nYou don't eat the Candy Monster.")
 				toItems = true;
 			end
-		else
-			--if(Player.hp < maxhp) then
-			BattleDialog({
-				"The Candy Monster is goop now."
-			});
-			toItems = true;
-			--else
-				--BattleDialog("You do not yet desire\rthe darkness.")
-			--end
-		end
 	elseif(ItemID == "DOGTEST5")then
 		--Do stuff
 		if(itemUsed[5] == false) then
@@ -354,25 +386,29 @@ function HandleItem(ItemID)
 		end
 	elseif(ItemID == "DOGTEST6")then
 		--It is I, DIO!!!
-		if(itemUsed[6] == false) then
-			if(Player.hp < maxhp) then
-				BattleDialog(
-				{
-					"You ingest your laughter.",
-					"[waitall:2]Tastes like lies...[w:6]\rand [waitall:4][color:ff0000]determination.",
-					"[noskip][waitall:8]...[waitall:2]Your HP[waitall:8]...[func:Heal,666]"
-				});
-				itemUsed[6] = true;
-			else
-				BattleDialog("You can still muster a chuckle.");
-				toItems = true;
-			end
-		else
-			BattleDialog({
-				"[noskip][waitall:4][func:DisableSpecials][func:FadeToGrey][func:StopVibrating]How can you consume your soul...",
-				"[novoice][noskip][func:DarknessCometh][waitall:6][color:ff0000]When you don't have one?[w:40][func:DieDark]"
+		if(Player.hp < maxhp) then
+			BattleDialog(
+			{
+				"You ingest your laughter.",
+				"[waitall:2]Tastes like lies...[w:6]\rand [waitall:4][color:ff0000]determination.",
+				"[noskip][waitall:8]...[waitall:2]Your HP[waitall:8]...[func:Heal,666]"
 			});
+			RemoveItem("DOGTEST6");
+			AddItem("DEAD","...");
+		else
+			BattleDialog("You can still muster a chuckle.");
+			toItems = true;
 		end
+	elseif(ItemID == "DEAD")then
+		PlayMusic("the locket")
+		Audio.Pitch(0.5);
+		--PlaySeparate();
+		--return;
+		BattleDialog({
+					"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
+					"...you reach out for your SOUL?",
+						"[starcolor:000000][noskip][starnovoice][func:PlayConsume,yes]"--playseparate
+				});
 	elseif(ItemID == "DOGTEST7")then
 		--Kills you.
 
@@ -419,7 +455,7 @@ function HandleMercy(mercyID)
 		BattleDialog({
 					"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
 					"...you reach out to the SOULS.",
-						"[noskip][novoice][func:PlaySeparate]"--playseparate
+						"[starcolor:000000][noskip][starnovoice][func:PlaySeparate]"--playseparate
 				});
 
 	elseif(mercyID == "Consume")then
@@ -427,7 +463,7 @@ function HandleMercy(mercyID)
 		BattleDialog({
 					"You hold the Locket in the air.\r[w:8]\nWith a deep breath...",
 					"...you reach for the SOULS.",
-						"[noskip][novoice][func:PlayConsume]"--playseparate
+						"[starcolor:000000][noskip][starnovoice][func:PlayConsume]"--playseparate
 				});
 	end
 
@@ -449,6 +485,16 @@ function Hurt(amount)
 	--DEBUG("OK" .. amount)
 	Audio.PlaySound("hurtsound");
 	Player.hp = Player.hp - amount;
+end
+
+function SafeHurt(amount)
+	--DEBUG("OK" .. amount)
+	Audio.PlaySound("hurtsound");
+	if(Player.hp > 1 and Player.hp - amount < 1)then
+		Player.hp = 1;
+	else
+		Player.hp = Player.hp - amount;
+	end
 end
 
 function Heal(amount)
@@ -564,11 +610,8 @@ function GetLivingHeads()
 end
 
 function Spring()
-	--DEBUG("sadfasdf");
 	happyAnim.SpringUp();
-	--change attacks, set wave timer
-	--wavetimer = 999;	--gonna manually end wave;
-	--possible_attacks = {"waveCombatAngry"};
+	enemies[1].Call("SwitchToNewComments");
 end
 
 function KillHead(index)
@@ -609,7 +652,7 @@ function StopTempMusic()
 end
 
 function NeutralEnding()
-	BattleDialog({"[noskip][func:FadeOutShit]There's nothing more you can do.\rYou can only run.",
+	BattleDialog({"[noskip][func:FadeAway]There's nothing more you can do.\rYou can only run.",
 		"[noskip][waitall:2]You run as far as you can.\rAway from the memories.\rAway from the pain.",
 		"[noskip][waitall:3][starcolor:f0f0f0][color:f0f0f0]You run until your legs give out.\r[color:e0e0e0]Until your legs disappear.",
 		"[noskip][waitall:4][starcolor:d0d0d0][color:d0d0d0]You're disappearing.\r[color:c0c0c0]You're no longer relevant.\r[color:b0b0b0]You're useless.",
@@ -619,13 +662,22 @@ function NeutralEnding()
 	--State("DONE");
 end
 
-function FadeOutShit()
+function FadeAway()
 	DEBUG("ASFDS");
 	happyAnim.FadeToBlack(0.1);
 	Audio.FadeOut(1);
 end
 
-function PlayConsume()
+function DarknessCometh()
+	happyAnim.FadeToBlack(100);
+end
+
+function PlayConsume(killSelf)
+	if(killSelf == "yes")then
+		killSelf = true;
+	else
+		killSelf = false;
+	end
 	happyAnim.FadeToBlack(20);
-	consumeAnim.StartConsume(fullSuccess);
+	consumeAnim.StartConsume(fullSuccess,killSelf);
 end
