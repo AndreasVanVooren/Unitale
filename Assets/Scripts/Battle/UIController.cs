@@ -1,7 +1,8 @@
 ﻿using System;
 using MoonSharp.Interpreter;
 using UnityEngine;
-using UnityEngine.UI;
+//using UnityEngine.UI;
+using SpriteLayout;
 
 /// <summary>
 /// The class responsible for making some people lose faith in the project. In very dire need of refactoring, 
@@ -19,20 +20,30 @@ public class UIController : MonoBehaviour
     public static UIController instance;
     internal TextManager textmgr;
 
+	
+	public GameObject FightUIGO;
+
+    private static Sprite actB0;
+    private static Sprite fightB0;
+    private static Sprite itemB0;
+    private static Sprite mercyB0;
     private static Sprite actB1;
     private static Sprite fightB1;
     private static Sprite itemB1;
     private static Sprite mercyB1;
-    private Image actBtn;
+    private SpriteLayoutImage fightBtn;
+    private SpriteLayoutImage actBtn;
+    private SpriteLayoutImage itemBtn;
+    private SpriteLayoutImage mercyBtn;
+
     private Actions action = Actions.FIGHT;
+
     private GameObject arenaParent;
     private GameObject canvasParent;
+
     internal LuaEnemyEncounter encounter;
-    private Image fightBtn;
     private FightUIController fightUI;
     private Vector2 initialHealthPos = new Vector2(250, -10); // initial healthbar position for target selection
-    private Image itemBtn;
-    private Image mercyBtn;
 
     private TextManager[] monDialogues;
 
@@ -153,11 +164,11 @@ public class UIController : MonoBehaviour
         {
             textmgr.destroyText();
             PlayerController.instance.SetPosition(320, 160, false);
-            PlayerController.instance.GetComponent<Image>().enabled = true;
-            fightBtn.overrideSprite = null;
-            actBtn.overrideSprite = null;
-            itemBtn.overrideSprite = null;
-            mercyBtn.overrideSprite = null;
+            PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = true;
+            fightBtn.OverrideSprite = null;
+            actBtn.OverrideSprite = null;
+            itemBtn.OverrideSprite = null;
+            mercyBtn.OverrideSprite = null;
             textmgr.setPause(true);
         }
 
@@ -178,13 +189,13 @@ public class UIController : MonoBehaviour
         {
             case UIState.ATTACKING:
                 textmgr.destroyText();
-                PlayerController.instance.GetComponent<Image>().enabled = false;
+                PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = false;
                 fightUI.Init(encounter.enabledEnemies[selectedEnemy]);
                 break;
 
             case UIState.ACTIONSELECT:
                 PlayerController.instance.setControlOverride(true);
-                PlayerController.instance.GetComponent<Image>().enabled = true;
+                PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = true;
                 setPlayerOnAction(action);
                 textmgr.setPause(ArenaSizer.instance.isResizeInProgress());
                 textmgr.setCaller(encounter.script); // probably not necessary due to ActionDialogResult changes
@@ -216,7 +227,7 @@ public class UIController : MonoBehaviour
 
             case UIState.MERCYMENU:
                 selectedMercy = 0;
-                string[] mercyopts = new string[1 + (encounter.CanRun ? 1 : 0)];
+                string[] mercyopts = new string[1 + (encounter.CanRun ? 1 : 0) + encounter.customMercy.Count];
                 mercyopts[0] = "Spare";
                 foreach (EnemyController enemy in encounter.enabledEnemies)
                 {
@@ -226,10 +237,21 @@ public class UIController : MonoBehaviour
                         break;
                     }
                 }
+				int index = 1;
                 if (encounter.CanRun)
                 {
-                    mercyopts[1] = "Flee";
+                    mercyopts[index] = "Flee";
+					++index;
                 }
+				for (int i = 0; i < encounter.customMercy.Count; i++)
+				{
+					if(index + i >= 3)
+					{
+						Debug.LogWarningFormat("Exceeding max spare options, culling options from {0}", encounter.customMercy[i]);
+						break;
+					}
+					mercyopts[index + i] = encounter.customMercy[i];
+				}
                 setPlayerOnSelection(0);
                 textmgr.setText(new SelectMessage(mercyopts, true));
                 break;
@@ -262,9 +284,9 @@ public class UIController : MonoBehaviour
                     {
                         LifeBarController lifebar = Instantiate(Resources.Load<LifeBarController>("Prefabs/HPBar"));
                         lifebar.transform.SetParent(textmgr.transform);
-                        RectTransform lifebarRt = lifebar.GetComponent<RectTransform>();
-                        lifebarRt.anchoredPosition = new Vector2(maxWidth, initialHealthPos.y - i * textmgr.Charset.LineSpacing);
-                        lifebarRt.sizeDelta = new Vector2(90, lifebarRt.sizeDelta.y);
+                        SpriteLayoutBase lifebarRt = lifebar.GetComponent<SpriteLayoutBase>();
+                        lifebarRt.LocalPosition = new Vector2(maxWidth, initialHealthPos.y - i * textmgr.Charset.LineSpacing);
+                        lifebarRt.Dimensions = new Vector2(90, lifebarRt.Height);
                         lifebar.setFillColor(Color.green);
                         float hpFrac = (float)encounter.enabledEnemies[i].HP / (float)encounter.enabledEnemies[i].getMaxHP();
                         lifebar.setInstant(hpFrac);
@@ -284,11 +306,11 @@ public class UIController : MonoBehaviour
                 break;
 
             case UIState.DIALOGRESULT:
-                PlayerController.instance.GetComponent<Image>().enabled = false;
+                PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = false;
                 break;
 
             case UIState.ENEMYDIALOGUE:
-                PlayerController.instance.GetComponent<Image>().enabled = true;
+                PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = true;
                 ArenaSizer.instance.Resize(155, 130);
                 encounter.CallOnSelfOrChildren("EnemyDialogueStarting");
                 monDialogues = new TextManager[encounter.enabledEnemies.Length];
@@ -302,16 +324,17 @@ public class UIController : MonoBehaviour
                         break;
                     }
                     GameObject speechBub = Instantiate(SpriteFontRegistry.BUBBLE_OBJECT);
-                    RectTransform enemyRt = encounter.enabledEnemies[i].GetComponent<RectTransform>();
+					SpriteLayoutBase speechBubTransform = speechBub.GetComponent<SpriteLayoutBase>();
+                    SpriteLayoutBase enemyRt = encounter.enabledEnemies[i].GetComponent<SpriteLayoutBase>();
                     TextManager sbTextMan = speechBub.GetComponent<TextManager>();
                     monDialogues[i] = sbTextMan;
                     sbTextMan.setCaller(encounter.enabledEnemies[i].script);
-                    Image speechBubImg = speechBub.GetComponent<Image>();
+                    SpriteLayoutImage speechBubImg = speechBub.GetComponent<SpriteLayoutImage>();
                     SpriteUtil.SwapSpriteFromFile(speechBubImg, encounter.enabledEnemies[i].DialogBubble);
-                    Sprite speechBubSpr = speechBubImg.sprite;
-                    // TODO improve position setting/remove hardcoding of position setting
-                    speechBub.transform.SetParent(encounter.enabledEnemies[i].transform);
-                    speechBub.GetComponent<RectTransform>().anchoredPosition = encounter.enabledEnemies[i].DialogBubblePosition;
+                    Sprite speechBubSpr = speechBubImg.Sprite;
+					// TODO improve position setting/remove hardcoding of position setting
+					speechBubTransform.SetParent(encounter.enabledEnemies[i].transform);
+					speechBubTransform.LocalPosition = encounter.enabledEnemies[i].DialogBubblePosition;
                     sbTextMan.setOffset(speechBubSpr.border.x, -speechBubSpr.border.w);
                     sbTextMan.setFont(SpriteFontRegistry.Get(SpriteFontRegistry.UI_MONSTERTEXT_NAME));
                     sbTextMan.setEffect(new RotatingEffect(sbTextMan));
@@ -323,7 +346,7 @@ public class UIController : MonoBehaviour
                     }
 
                     sbTextMan.setTextQueue(monMsgs);
-                    speechBub.GetComponent<Image>().enabled = true;
+                    speechBub.GetComponent<SpriteLayoutImage>().RendererEnabled = true;
                 }
                 break;
 
@@ -342,6 +365,11 @@ public class UIController : MonoBehaviour
 
     private void Awake()
     {
+        fightB0 = SpriteRegistry.Get("UI/Buttons/fightbt_0");
+        actB0 = SpriteRegistry.Get("UI/Buttons/actbt_0");
+        itemB0 = SpriteRegistry.Get("UI/Buttons/itembt_0");
+        mercyB0 = SpriteRegistry.Get("UI/Buttons/mercybt_0");
+
         fightB1 = SpriteRegistry.Get("UI/Buttons/fightbt_1");
         actB1 = SpriteRegistry.Get("UI/Buttons/actbt_1");
         itemB1 = SpriteRegistry.Get("UI/Buttons/itembt_1");
@@ -351,7 +379,7 @@ public class UIController : MonoBehaviour
         sndConfirm = AudioClipRegistry.GetSound("menuconfirm");
 
         arenaParent = GameObject.Find("arena_border_outer");
-        canvasParent = GameObject.Find("Canvas");
+        canvasParent = GameObject.Find("PseudoCanvas");
         uiAudio = GetComponent<AudioSource>();
         uiAudio.clip = sndSelect;
 
@@ -592,9 +620,9 @@ public class UIController : MonoBehaviour
 
                     encounter.CallOnSelfOrChildren("HandleSpare");
                 }
-                else if (selectedMercy == 1)
+                else if (selectedMercy == 1 && encounter.CanRun)
                 {
-                    PlayerController.instance.GetComponent<Image>().enabled = false;
+                    PlayerController.instance.GetComponent<SpriteLayoutImage>().RendererEnabled = false;
                     AudioClip yay = AudioClipRegistry.GetSound("runaway");
                     AudioSource.PlayClipAtPoint(yay, Camera.main.transform.position);
                     string fittingLine = "";
@@ -651,6 +679,14 @@ public class UIController : MonoBehaviour
                     musicPausedFromRunning = true;
                     runawayattempts++;
                 }
+				else
+				{
+					//Debug.Log(selectedMercy - (encounter.CanRun ? 2 : 1));
+					if (!encounter.CustomMercy(encounter.customMercy[selectedMercy - (encounter.CanRun?2:1)]))
+					{
+						Debug.LogWarningFormat("No CustomMercy for {0}", encounter.customMercy[selectedMercy - (encounter.CanRun ? 2 : 1)]);
+					}
+				}
                 playSound(sndConfirm);
                 break;
 
@@ -676,10 +712,10 @@ public class UIController : MonoBehaviour
                 if (!left && !right)
                     break;
 
-                fightBtn.overrideSprite = null;
-                actBtn.overrideSprite = null;
-                itemBtn.overrideSprite = null;
-                mercyBtn.overrideSprite = null;
+                fightBtn.OverrideSprite = null;
+                actBtn.OverrideSprite = null;
+                itemBtn.OverrideSprite = null;
+                mercyBtn.OverrideSprite = null;
 
                 int actionIndex = (int)action;
 
@@ -814,12 +850,12 @@ public class UIController : MonoBehaviour
                 }
                 if (encounter.CanRun)
                 {
-                    selectedMercy = Math.mod(selectedMercy, 2);
+                    selectedMercy = Math.mod(selectedMercy, Mathf.Min(2+encounter.customMercy.Count,3));
                 }
                 else
                 {
-                    selectedMercy = 0;
-                }
+					selectedMercy = Math.mod(selectedMercy, Mathf.Min(1 + encounter.customMercy.Count, 3));
+				}
                 setPlayerOnSelection(selectedMercy * 2);
                 break;
         }
@@ -904,22 +940,22 @@ public class UIController : MonoBehaviour
         switch (action)
         {
             case Actions.FIGHT:
-                fightBtn.overrideSprite = fightB1;
+                fightBtn.OverrideSprite = fightB1;
                 PlayerController.instance.SetPosition(48, 25, true);
                 break;
 
             case Actions.ACT:
-                actBtn.overrideSprite = actB1;
+                actBtn.OverrideSprite = actB1;
                 PlayerController.instance.SetPosition(202, 25, true);
                 break;
 
             case Actions.ITEM:
-                itemBtn.overrideSprite = itemB1;
+                itemBtn.OverrideSprite = itemB1;
                 PlayerController.instance.SetPosition(361, 25, true);
                 break;
 
             case Actions.MERCY:
-                mercyBtn.overrideSprite = mercyB1;
+                mercyBtn.OverrideSprite = mercyB1;
                 PlayerController.instance.SetPosition(515, 25, true);
                 break;
         }
@@ -941,21 +977,26 @@ public class UIController : MonoBehaviour
     private void Start()
     {
         textmgr = GameObject.Find("TextManager").GetComponent<TextManager>();
+		if(textmgr == null)
+		{
+			Debug.LogError("NO TEXTMANAGER");
+			return;
+		}
         textmgr.setEffect(new TwitchEffect(textmgr));
         encounter = FindObjectOfType<LuaEnemyEncounter>();
 
-        fightBtn = GameObject.Find("FightBt").GetComponent<Image>();
-        fightBtn.sprite = SpriteRegistry.Get("UI/Buttons/fightbt_0");
-        actBtn = GameObject.Find("ActBt").GetComponent<Image>();
-        actBtn.sprite = SpriteRegistry.Get("UI/Buttons/actbt_0");
-        itemBtn = GameObject.Find("ItemBt").GetComponent<Image>();
-        itemBtn.sprite = SpriteRegistry.Get("UI/Buttons/itembt_0");
-        mercyBtn = GameObject.Find("MercyBt").GetComponent<Image>();
-        mercyBtn.sprite = SpriteRegistry.Get("UI/Buttons/mercybt_0");
+        fightBtn = GameObject.Find("FightBt").GetComponent<SpriteLayoutImage>();
+        fightBtn.Sprite = SpriteRegistry.Get("UI/Buttons/fightbt_0");
+        actBtn = GameObject.Find("ActBt").GetComponent<SpriteLayoutImage>();
+        actBtn.Sprite = SpriteRegistry.Get("UI/Buttons/actbt_0");
+        itemBtn = GameObject.Find("ItemBt").GetComponent<SpriteLayoutImage>();
+        itemBtn.Sprite = SpriteRegistry.Get("UI/Buttons/itembt_0");
+        mercyBtn = GameObject.Find("MercyBt").GetComponent<SpriteLayoutImage>();
+        mercyBtn.Sprite = SpriteRegistry.Get("UI/Buttons/mercybt_0");
 
         ArenaSizer.instance.ResizeImmediate(ArenaSizer.UIWidth, ArenaSizer.UIHeight);
         PlayerController.instance.setControlOverride(true);
-        fightUI = GameObject.Find("FightUI").GetComponent<FightUIController>();
+        fightUI = FightUIGO.GetComponent<FightUIController>();
         fightUI.gameObject.SetActive(false);
 
         bindEncounterScriptInteraction();
@@ -972,7 +1013,7 @@ public class UIController : MonoBehaviour
         {
             return;
         }
-        Camera.main.GetComponent<AudioSource>().Stop();
+        MusicManager.Stop();
         ActionDialogResult(new RegularMessage("YOU WON!\nYou earned 0 XP and 0 gold."), UIState.DONE);
         victory = true;
     }
@@ -1000,6 +1041,22 @@ public class UIController : MonoBehaviour
                 }
             }
         }
+
+		if(state == UIState.DIALOGRESULT)
+		{
+			if (textmgr.canAutoSkip()&& textmgr.lineComplete())
+			{
+				if (!textmgr.allLinesComplete() )
+				{
+					textmgr.nextLine();
+				}
+				else
+				{
+					textmgr.destroyText();
+					SwitchState(stateAfterDialogs);
+				}
+			}
+		}
 
         if (state == UIState.DEFENDING)
         {

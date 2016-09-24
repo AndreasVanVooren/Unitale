@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
+using SpriteLayout;
 
 /// <summary>
 /// The fairly hacky and somewhat unmaintainable Game Over behaviour class. Written in a hurry as it probably wasn't going to get replaced anytime soon.
@@ -12,8 +12,8 @@ public class GameOverBehavior : MonoBehaviour {
     private GameObject heartShardPrefab;
     private string[] heartShardAnim = new string[] { "UI/Battle/heartshard_0", "UI/Battle/heartshard_1", "UI/Battle/heartshard_2", "UI/Battle/heartshard_3" };
     private TextManager gameOverTxt;
-    private Image gameOverImage;
-    private RectTransform[] heartShardInstances = new RectTransform[0];
+    private SpriteLayoutImage gameOverImage;
+    private SpriteLayoutBase[] heartShardInstances = new SpriteLayoutBase[0];
     private Vector2[] heartShardRelocs;
     private LuaSpriteController[] heartShardCtrl;
 
@@ -24,7 +24,7 @@ public class GameOverBehavior : MonoBehaviour {
     private float breakHeartAfter = 1.0f;
     private float explodeHeartAfter = 2.5f;
     private float gameOverAfter = 4.5f;
-    private float fluffybunsAfter = 6.5f;
+    private float fluffybunsAfter = 7.0f;
     private float internalTimer = 0.0f;
     private float gameOverFadeTimer = 0.0f;
     private bool started = false;
@@ -41,10 +41,14 @@ public class GameOverBehavior : MonoBehaviour {
         gameOverTxt = GameObject.Find("TextParent").GetComponent<TextManager>();
         heartbreak = AudioClipRegistry.GetSound("heartbeatbreaker");
         heartsplode = AudioClipRegistry.GetSound("heartsplosion");
-        gameOverImage = GameObject.Find("GameOver").GetComponent<Image>();
-        heartPos = gameObject.GetComponent<RectTransform>().position;
-        heartColor = gameObject.GetComponent<Image>().color;
-        gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
+        gameOverImage = GameObject.Find("GameOver").GetComponent<SpriteLayoutImage>();
+		var playerImage = GetComponent<SpriteLayoutImage>();
+        heartPos = playerImage.Position;
+        heartColor = playerImage.Color;
+		playerImage.RendererEnabled = true;
+		playerImage.SetParent(GameObject.Find("PseudoCanvas").transform);
+		var controller = GetComponent<PlayerController>();
+		controller.enabled = false;
         gameOverMusic = Camera.main.GetComponent<AudioSource>();
         started = true;
     }
@@ -52,7 +56,7 @@ public class GameOverBehavior : MonoBehaviour {
     void Awake()
     {
         Application.LoadLevel("GameOver");
-        this.gameObject.GetComponent<Image>().enabled = true; // abort the blink animation if it was playing
+        this.gameObject.GetComponent<SpriteLayoutImage>().enabled = true; // abort the blink animation if it was playing
     }
 
 	// Update is called once per frame
@@ -66,27 +70,28 @@ public class GameOverBehavior : MonoBehaviour {
         {
             AudioSource.PlayClipAtPoint(heartbreak, Camera.main.transform.position, 0.75f);
             brokenHeartPrefab = Instantiate(brokenHeartPrefab);
-            brokenHeartPrefab.transform.SetParent(this.gameObject.transform);
-            brokenHeartPrefab.GetComponent<RectTransform>().position = heartPos;
-            brokenHeartPrefab.GetComponent<Image>().color = heartColor;
-            gameObject.GetComponent<Image>().enabled = false;
+			var brokenHeartImage = brokenHeartPrefab.GetComponent<SpriteLayoutImage>();
+			brokenHeartImage.SetParent(this.gameObject.transform);
+			brokenHeartImage.Position = heartPos;
+			brokenHeartImage.Color = heartColor;
+            gameObject.GetComponent<SpriteLayoutImage>().RendererEnabled = false;
             breakHeartAfter = 999.0f;
         }
 
         if (internalTimer > explodeHeartAfter)
         {
             AudioSource.PlayClipAtPoint(heartsplode, Camera.main.transform.position, 0.75f);
-            brokenHeartPrefab.GetComponent<Image>().enabled = false;
-            heartShardInstances = new RectTransform[6];
+            brokenHeartPrefab.GetComponent<SpriteLayoutImage>().RendererEnabled = false;
+            heartShardInstances = new SpriteLayoutBase[6];
             heartShardRelocs = new Vector2[6];
             heartShardCtrl = new LuaSpriteController[6];
             for (int i = 0; i < heartShardInstances.Length; i++)
             {
-                heartShardInstances[i] = Instantiate(heartShardPrefab).GetComponent<RectTransform>();
-                heartShardCtrl[i] = new LuaSpriteController(heartShardInstances[i].GetComponent<Image>());
-                heartShardInstances[i].transform.SetParent(this.gameObject.transform);
-                heartShardInstances[i].GetComponent<RectTransform>().position = heartPos;
-                heartShardInstances[i].GetComponent<Image>().color = heartColor;
+                heartShardInstances[i] = Instantiate(heartShardPrefab).GetComponent<SpriteLayoutBase>();
+                heartShardCtrl[i] = new LuaSpriteController(heartShardInstances[i].GetComponent<SpriteLayoutImage>());
+                heartShardInstances[i].SetParent(this.gameObject.transform);
+                heartShardInstances[i].GetComponent<SpriteLayoutBase>().Position = heartPos;
+                heartShardInstances[i].GetComponent<SpriteLayoutImage>().Color = heartColor;
                 heartShardRelocs[i] = UnityEngine.Random.insideUnitCircle * 100.0f;
                 heartShardCtrl[i].Set(heartShardAnim[0]);
                 heartShardCtrl[i].SetAnimation(heartShardAnim, 1 / 5f);
@@ -104,34 +109,38 @@ public class GameOverBehavior : MonoBehaviour {
         {
             gameOverTxt.setHorizontalSpacing(7);
             gameOverTxt.setTextQueue(new TextMessage[]{
-                new TextMessage("", false, false), // initial blank message to force pressing Z
+                //new TextMessage("", false, false), // initial blank message to force pressing Z
                 new TextMessage("[color:ffffff][voice:v_fluffybuns][waitall:2]You cannot give\nup just yet...", false, false),
                 new TextMessage("[color:ffffff][voice:v_fluffybuns][waitall:2]" + PlayerCharacter.Name + "!\n[w:15]Stay determined...", false, false),
                 new TextMessage("", false, false), // ending with a double blank message, because the text manager is considered complete
-                new TextMessage("", false, false) // when you're on the last line, and the last line is done writing out too - we fade at this point
+                //new TextMessage("", false, false) // when you're on the last line, and the last line is done writing out too - we fade at this point
+
+				//NOTE : Removed unnecessary blank lines. Fluffybuns auto plays in the original game, and fading happens immediately after text is done.
             });
             fluffybunsAfter = 999.0f;
         }
 
         for (int i = 0; i < heartShardInstances.Length; i++)
         {
-            heartShardInstances[i].position += (Vector3)heartShardRelocs[i]*Time.deltaTime;
+            heartShardInstances[i].Position += (Vector3)heartShardRelocs[i]*Time.deltaTime;
             heartShardRelocs[i].y -= 100f * Time.deltaTime;
         }
 
         if (!done)
         {
-            gameOverImage.color = new Color(1, 1, 1, gameOverFadeTimer);
-            if (gameOverAfter >= 999.0f && gameOverFadeTimer < 1.0f)
+            gameOverImage.Color = new Color(1, 1, 1, gameOverFadeTimer);
+			if (gameOverAfter >= 999.0f && gameOverFadeTimer < 1.0f)
             {
                 gameOverFadeTimer += Time.deltaTime / 2;
-                if (gameOverFadeTimer >= 1.0f)
-                {
-                    gameOverFadeTimer = 1.0f;
-                    done = true;
-                }
             }
             internalTimer += Time.deltaTime; // this is actually dangerous because done can be true before everything's done if timers are modified
+
+			//check post timer thing if everything is done
+			if (gameOverAfter > 900.0f && fluffybunsAfter > 900.0f && gameOverFadeTimer >= 1.0f) 
+			{
+				gameOverFadeTimer = 1.0f;
+				done = true;
+			}
         }
         else if (!exiting && !gameOverTxt.allLinesComplete())
         {
@@ -148,7 +157,7 @@ public class GameOverBehavior : MonoBehaviour {
         }
         else if (exiting && gameOverFadeTimer > 0.0f)
         {
-            gameOverImage.color = new Color(1, 1, 1, gameOverFadeTimer);
+            gameOverImage.Color = new Color(1, 1, 1, gameOverFadeTimer);
             if (gameOverFadeTimer > 0.0f)
             {
                 gameOverFadeTimer -= Time.deltaTime / 2;

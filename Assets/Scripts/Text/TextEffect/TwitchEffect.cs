@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using SpriteLayout;
 
 public class TwitchEffect : TextEffect
 {
@@ -19,7 +20,7 @@ public class TwitchEffect : TextEffect
     {
         // move back last character
         if (prevChar >= 0 && textMan.letterReferences.Length > prevChar && textMan.letterReferences[prevChar] != null)
-            textMan.letterReferences[prevChar].GetComponent<RectTransform>().anchoredPosition = textMan.letterPositions[prevChar];
+            textMan.letterReferences[prevChar].GetComponent<SpriteLayoutBase>().LocalPosition = textMan.letterPositions[prevChar];
         prevChar = -1;
 
         // don't make it happen too often
@@ -35,8 +36,8 @@ public class TwitchEffect : TextEffect
         float xWig = Mathf.Sin(random) * intensity;
         float yWig = Mathf.Cos(random) * intensity;
         nextWigInFrames = minWigFrames + (int)(wigFrameVariety * UnityEngine.Random.value);
-        RectTransform rt = textMan.letterReferences[selectedChar].GetComponent<RectTransform>();
-        rt.anchoredPosition = new Vector2(textMan.letterPositions[selectedChar].x + xWig, textMan.letterPositions[selectedChar].y + yWig);
+		SpriteLayoutBase rt = textMan.letterReferences[selectedChar].GetComponent<SpriteLayoutBase>();
+        rt.LocalPosition = new Vector2(textMan.letterPositions[selectedChar].x + xWig, textMan.letterPositions[selectedChar].y + yWig);
         prevChar = selectedChar;
     }
 }

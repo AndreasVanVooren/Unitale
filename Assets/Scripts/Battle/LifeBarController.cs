@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
+using SpriteLayout;
 
 /// <summary>
 /// Controller for all the lifebars in the game. To be used with the HPBar prefab.
@@ -8,8 +8,8 @@ public class LifeBarController : MonoBehaviour
 {
     public Color fillColor;
     public Color backgroundColor;
-    public Image fill;
-    public Image background;
+    public SpriteLayoutImage fill;
+    public SpriteLayoutImage background;
 
     private float currentFill = 1.0f;
     private float oldFill = 1.0f;
@@ -22,11 +22,12 @@ public class LifeBarController : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        background.color = backgroundColor;
-        fill.color = fillColor;
+        background.Color = backgroundColor;
+        fill.Color = fillColor;
         // ensure proper layering because tinkering with the prefab screws it up
-        background.transform.SetAsLastSibling(); 
-        fill.transform.SetAsLastSibling();
+        //background.transform.SetAsLastSibling(); 
+        //fill.transform.SetAsLastSibling();
+        fill.SortingOrder = background.SortingOrder + 1;
     }
 
     /// <summary>
@@ -37,7 +38,10 @@ public class LifeBarController : MonoBehaviour
     {
         currentFill = fillvalue;
         desiredFill = fillvalue;
-        fill.fillAmount = fillvalue;
+
+        var scale = fill.LocalScale;
+        scale.x = fillvalue;
+        fill.LocalScale = scale;
     }
 
     /// <summary>
@@ -69,7 +73,7 @@ public class LifeBarController : MonoBehaviour
     public void setFillColor(Color c)
     {
         fillColor = c;
-        fill.color = c;
+        fill.Color = c;
     }
 
     /// <summary>
@@ -79,7 +83,7 @@ public class LifeBarController : MonoBehaviour
     public void setBackgroundColor(Color c)
     {
         backgroundColor = c;
-        background.color = c;
+        background.Color = c;
     }
 
     /// <summary>
@@ -88,9 +92,9 @@ public class LifeBarController : MonoBehaviour
     /// <param name="visible">True for visible, false for hidden.</param>
     public void setVisible(bool visible)
     {
-        foreach (Image img in GetComponentsInChildren<Image>())
+        foreach (SpriteLayoutImage img in GetComponentsInChildren<SpriteLayoutImage>())
         {
-            img.enabled = visible;
+            img.RendererEnabled = visible;
         }
     }
 
@@ -103,7 +107,10 @@ public class LifeBarController : MonoBehaviour
             return;
 
         currentFill = Mathf.Lerp(oldFill, desiredFill, fillTimer / fillLinearTime);
-        fill.fillAmount = currentFill;
+        //fill. = currentFill;
+        var scale = fill.LocalScale;
+        scale.x = currentFill;
+        fill.LocalScale = scale;
         fillTimer += Time.deltaTime;
     }
 }

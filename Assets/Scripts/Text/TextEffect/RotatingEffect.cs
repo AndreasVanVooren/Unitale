@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using SpriteLayout;
 
 public class RotatingEffect : TextEffect
 {
@@ -18,9 +19,9 @@ public class RotatingEffect : TextEffect
         {
             if (textMan.letterReferences[i] == null)
                 continue;
-            RectTransform rt = textMan.letterReferences[i].GetComponent<RectTransform>();
+			SpriteLayoutBase rt = textMan.letterReferences[i].GetComponent<SpriteLayoutBase>();
             float iDiv = sinTimer * rotSpeed + (i / 3.0f);
-            rt.anchoredPosition = new Vector2(textMan.letterPositions[i].x + intensity * -Mathf.Sin(iDiv), textMan.letterPositions[i].y + intensity * Mathf.Cos(iDiv));
+            rt.LocalPosition = new Vector2(textMan.letterPositions[i].x + intensity * -Mathf.Sin(iDiv), textMan.letterPositions[i].y + intensity * Mathf.Cos(iDiv));
         }
 
         sinTimer += Time.deltaTime;

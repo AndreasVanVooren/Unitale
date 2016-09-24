@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
 using UnityEngine;
+using SpriteLayout;
 
 internal class LuaEnemyEncounter : EnemyEncounter
 {
@@ -9,6 +10,8 @@ internal class LuaEnemyEncounter : EnemyEncounter
     internal static ScriptWrapper script_ref;
     private Script[] waves;
     private string[] waveNames;
+
+	public List<string> customMercy = new List<string>();
 
     public override Vector2 ArenaSize
     {
@@ -57,6 +60,8 @@ internal class LuaEnemyEncounter : EnemyEncounter
         script.Bind("CreateProjectileAbs", (Func<Script, string, float, float, DynValue>)CreateProjectileAbs);
 		script.Bind("AddItem", (Action<string,string>)AddItem);
 		script.Bind("RemoveItem", (Action<string>)RemoveItem);
+		script.Bind("AddMercy", (Action<string>)AddMercy);
+		script.Bind("RemoveMercy", (Action<string>)RemoveMercy);
 		script_ref = script;
         return true;
     }
@@ -65,11 +70,19 @@ internal class LuaEnemyEncounter : EnemyEncounter
     {
         LuaProjectile projectile = (LuaProjectile)BulletPool.instance.Retrieve();
         SpriteUtil.SwapSpriteFromFile(projectile, sprite);
+		var img = (SpriteLayoutImage)projectile.self;
+		img.Color = Color.white;
+		img.SortingLayerName = "BulletLayer";
+		projectile.ctrl.SetCollider("rect");
+		projectile.ctrl.SetRectColliderSize( projectile.self.Width, projectile.self.Height );
+		projectile.ctrl.canCollideWithProjectiles = false;
+		projectile.ctrl.sprite.Scale (1, 1);
+		projectile.ctrl.SendToTop();
         projectile.owner = s;
         projectile.gameObject.SetActive(true); 
         projectile.ctrl.MoveToAbs(xpos, ypos);
         //projectile.ctrl.z = Projectile.Z_INDEX_NEXT; //doesn't work yet, thanks unity UI
-        projectile.transform.SetAsLastSibling();
+        //projectile.transform.SetAsLastSibling();	//honestly this isn't necessary since sendtotop does this for us.
         projectile.ctrl.UpdatePosition();
         DynValue projectileController = UserData.Create(projectile.ctrl);
         return projectileController;
@@ -119,16 +132,22 @@ internal class LuaEnemyEncounter : EnemyEncounter
         {
             loadEnemiesAndPositions();
         }
-        CanRun = true;
+        //CanRun = true;
     }
 
     protected override void loadEnemiesAndPositions()
     {
-        AudioSource musicSource = Camera.main.GetComponent<AudioSource>();
         EncounterText = script.GetVar("encountertext").String;
         DynValue enemyScriptsLua = script.GetVar("enemies");
         DynValue enemyPositionsLua = script.GetVar("enemypositions");
         string musicFile = script.GetVar("music").String;
+		
+		DynValue runVal = script.GetVar("canRun");
+		if(runVal != null)
+		{
+			CanRun = runVal.Boolean;
+		}
+		
 
         try
         {
@@ -160,8 +179,7 @@ internal class LuaEnemyEncounter : EnemyEncounter
         {
             try
             {
-                AudioClip music = AudioClipRegistry.GetMusic(musicFile);
-                musicSource.clip = music;
+				MusicManager.LoadFile(musicFile);
             }
             catch (Exception)
             {
@@ -170,7 +188,7 @@ internal class LuaEnemyEncounter : EnemyEncounter
         }
         else
         {
-            musicSource.clip = AudioClipRegistry.GetMusic("mus_battle1");
+			MusicManager.LoadFile("mus_battle1");
         }
 
         // Instantiate all the enemy objects
@@ -188,9 +206,9 @@ internal class LuaEnemyEncounter : EnemyEncounter
             enemies[i] = enemyInstances[i].GetComponent<LuaEnemyController>();
             enemies[i].scriptName = enemyScriptsLua.Table.Get(i + 1).String;
             if (i < enemyPositions.Length)
-                enemies[i].GetComponent<RectTransform>().anchoredPosition = enemyPositions[i];
+                enemies[i].GetComponent<SpriteLayoutBase>().LocalPosition = enemyPositions[i];
             else
-                enemies[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 1);
+                enemies[i].GetComponent<SpriteLayoutBase>().LocalPosition = new Vector2(0, 1);
         }
 
         // Attach the controllers to the encounter's enemies table
@@ -203,7 +221,7 @@ internal class LuaEnemyEncounter : EnemyEncounter
             luaEnemyTable.Set(i + 1, UserData.Create(enemies[i].script));
         }
         script.SetVar("enemies", DynValue.NewTable(luaEnemyTable));
-        musicSource.Play(); // play that funky music
+        //musicSource.Play(); // play that funky music
 
 		//TEMP : Items in enemy script
 		try
@@ -218,10 +236,23 @@ internal class LuaEnemyEncounter : EnemyEncounter
 						break;
 				}
 			}
+			else
+			{
+				Inventory.LoadDefaultInventory();
+			}
+
+			Table spares = script.GetVar("customMercy").Table;
+			if(spares != null)
+			{
+				foreach (var item in spares.Pairs)
+				{
+					customMercy.Add(item.Value.String);
+				}
+			}
 		}
 		catch (Exception)
 		{
-			Debug.LogWarning("No items found?");
+			Debug.LogWarning("Exception with items, or mercies?");
 		}
 		
 	}
@@ -234,6 +265,16 @@ internal class LuaEnemyEncounter : EnemyEncounter
 	private void RemoveItem(string id)
 	{
 		Inventory.RemoveItem(id);
+	}
+
+	private void AddMercy(string mercy)
+	{
+		customMercy.Add(mercy);
+	}
+
+	private void RemoveMercy(string mercy)
+	{
+		customMercy.Remove(mercy);
 	}
 
 	public override void HandleItem(UnderItem item)
@@ -310,12 +351,17 @@ internal class LuaEnemyEncounter : EnemyEncounter
         base.HandleSpare();
     }
 
-    // /<summary>
-    // /Overrideable item handler on a per-encounter basis. Should return true if a custom action is executed for the given item.
-    // /</summary>
-    // /<param name="item">Item to be checked for custom action</param>
-    // /<returns>true if a custom action should be executed for given item, false if the default action should happen</returns>
-    protected override bool CustomItemHandler(UnderItem item)
+	public override bool CustomMercy(string custom)
+	{
+		return CallOnSelfOrChildren("HandleMercy", new DynValue[] { DynValue.NewString(custom) });
+	}
+
+	// /<summary>
+	// /Overrideable item handler on a per-encounter basis. Should return true if a custom action is executed for the given item.
+	// /</summary>
+	// /<param name="item">Item to be checked for custom action</param>
+	// /<returns>true if a custom action should be executed for given item, false if the default action should happen</returns>
+	protected override bool CustomItemHandler(UnderItem item)
     {
         return CallOnSelfOrChildren("HandleItem", new DynValue[] { DynValue.NewString(item.ID) });
     }

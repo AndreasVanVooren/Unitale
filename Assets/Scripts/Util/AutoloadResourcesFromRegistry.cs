@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
+using SpriteLayout;
 
 /// <summary>
 /// Behaviour that retrieves resources from the built-in registry rather than setting them on the components in the Unity Editor.
@@ -34,13 +34,14 @@ class AutoloadResourcesFromRegistry : MonoBehaviour
     void LateStart()
     {
         if(!string.IsNullOrEmpty(SpritePath)){
-            Image img = GetComponent<Image>();
+            SpriteLayoutImage img = GetComponent<SpriteLayoutImage>();
             if (img != null)
             {
-                img.sprite = SpriteRegistry.Get(SpritePath);
+				//Debug.Log(SpritePath);
+                img.Sprite = SpriteRegistry.Get(SpritePath);
                 if (SetNativeSize)
                 {
-                    img.SetNativeSize();
+                    img.Dimensions = img.Sprite.bounds.size;
                 }
             }
 

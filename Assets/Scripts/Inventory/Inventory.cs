@@ -6,17 +6,23 @@
 public static class Inventory
 {
 	public const int MAX_ITEMS = 8;
-    public static List<UnderItem> container = new List<UnderItem>(
-        new UnderItem[]{
-            new UnderItem(),
-            new UnderItem(),
-            new UnderItem(),
-            new UnderItem(),
-            new UnderItem(),
-            new UnderItem(),
-            new UnderItem()
-        }
-    );
+    public static List<UnderItem> container = new List<UnderItem>();
+
+	public static void LoadDefaultInventory()
+	{
+		container.Clear();
+		container = new List<UnderItem>(
+		new UnderItem[]{
+			new UnderItem("DOGTEST1","TestDog1"),
+			new UnderItem("DOGTEST2","TestDog2"),
+			new UnderItem("DOGTEST3","TestDog3"),
+			new UnderItem("DOGTEST4","TestDog4"),
+			new UnderItem("DOGTEST5","TestDog5"),
+			new UnderItem("DOGTEST6","TestDog6"),
+			new UnderItem("DOGTEST7","TestDog7")
+		}
+		);
+	}
 
 	public static bool TryAdd(UnderItem item)
 	{

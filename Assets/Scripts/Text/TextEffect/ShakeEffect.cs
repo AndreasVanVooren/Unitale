@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using SpriteLayout;
 
 internal class ShakeEffect : TextEffect
 {
@@ -26,8 +27,8 @@ internal class ShakeEffect : TextEffect
             float random = UnityEngine.Random.value * 2.0f * Mathf.PI;
             float xWig = Mathf.Sin(random) * intensity;
             float yWig = Mathf.Cos(random) * intensity;
-            RectTransform rt = textMan.letterReferences[i].GetComponent<RectTransform>();
-            rt.anchoredPosition = new Vector2(textMan.letterPositions[i].x + xWig, textMan.letterPositions[i].y + yWig);
+            SpriteLayoutBase rt = textMan.letterReferences[i].GetComponent<SpriteLayoutBase>();
+            rt.LocalPosition = new Vector2(textMan.letterPositions[i].x + xWig, textMan.letterPositions[i].y + yWig);
         }
         skipNextFrame = true;
     }

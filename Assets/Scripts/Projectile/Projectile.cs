@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using SpriteLayout;
 
 // The base projectile class. All projectiles, including new/combined types, should inherit from this.
 public abstract class Projectile : MonoBehaviour
@@ -23,18 +24,18 @@ public abstract class Projectile : MonoBehaviour
     private static float zIndexCurrent = Z_INDEX_INITIAL;
      */
 
-    protected internal RectTransform self; // RectTransform of this projectile
+    protected internal SpriteLayoutBase self; // RectTransform of this projectile
     protected internal ProjectileController ctrl; // come to think of it protected internal is pretty useless atm
-    protected Rect selfAbs; // Rectangle containing position and size of this projectile
+    //protected Rect selfAbs; // Rectangle containing position and size of this projectile
 
     private bool currentlyVisible = true; // Used to keep track of whether this object is currently visible to potentially save time in SetRenderingActive().
-
+	protected internal bool canCollideWithOtherProjectiles = false;
     /// <summary>
     /// Built-in Unity function run for initialization
     /// </summary>
     private void Awake()
     {
-        self = GetComponent<RectTransform>();
+        self = GetComponent<SpriteLayoutBase>();
         ctrl = new ProjectileController(this);
     }
 
@@ -43,15 +44,16 @@ public abstract class Projectile : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
-        Image img = GetComponent<Image>();
-        img.color = Color.white;
-        img.rectTransform.eulerAngles = Vector3.zero;
+		SpriteLayoutImage img = GetComponent<SpriteLayoutImage>();
+        img.Color = Color.white;
+        img.EulerAngles = Vector3.zero;
         Vector2 half = new Vector2(0.5f, 0.5f);
-        img.rectTransform.anchorMax = half;
-        img.rectTransform.anchorMin = half;
-        img.rectTransform.pivot = half;
-        self.sizeDelta = img.sprite.rect.size;
-        selfAbs = new Rect(self.anchoredPosition.x - self.rect.width / 2, self.anchoredPosition.y - self.rect.height / 2, self.sizeDelta.x, self.sizeDelta.y);
+        img.Anchor = half;
+        img.Pivot = half;
+		if(!img.GetComponent<Collider2D>())
+			img.AttachCollider (ColliderType.Rect);
+        self.Dimensions = img.Sprite.rect.size;
+        //selfAbs = new Rect(self.anchoredPosition.x - self.rect.width / 2, self.anchoredPosition.y - self.rect.height / 2, self.sizeDelta.x, self.sizeDelta.y);
 		ctrl.sprite.Reset();		//ensure correct size, if all goes right, this will break it code completely.
         OnStart();
     }
@@ -73,7 +75,7 @@ public abstract class Projectile : MonoBehaviour
         OnUpdate();
         if (HitTest())
         {
-            OnProjectileHit();
+            OnProjectileHitPlayer();
         }
     }
 
@@ -90,18 +92,23 @@ public abstract class Projectile : MonoBehaviour
     /// <summary>
     /// Overrideable method that executes when player is hit. Usually, this calls Hurt() on the player in some way.
     /// </summary>
-    public virtual void OnProjectileHit()
+    public virtual void OnProjectileHitPlayer()
     {
         PlayerController.instance.Hurt();
     }
+
+	public virtual void OnProjectileHitProjectile(Projectile other)
+	{
+		
+	}
 
     /// <summary>
     /// Updates the projectile's hitbox.
     /// </summary>
     public virtual void UpdateHitRect()
     {
-        selfAbs.x = self.position.x - self.rect.width / 2;
-        selfAbs.y = self.position.y - self.rect.height / 2;
+        //selfAbs.x = self.position.x - self.rect.width / 2;
+        //selfAbs.y = self.position.y - self.rect.height / 2;
     }
 
     /// <summary>
@@ -110,7 +117,7 @@ public abstract class Projectile : MonoBehaviour
     /// <returns>The rectangle surrounding this projectile.</returns>
     public Rect getRect()
     {
-        return selfAbs;
+        return Rect.MinMaxRect(-1, -1, 1, 1);//selfAbs;
     }
 
     /// <summary>
@@ -141,8 +148,28 @@ public abstract class Projectile : MonoBehaviour
     public virtual bool HitTest()
     {
         UpdateHitRect();
-        if (selfAbs.Overlaps(PlayerController.instance.playerAbs))
-            return true;
+        //if (selfAbs.Overlaps(PlayerController.instance.playerAbs))
+        //   return true;
         return false;
+    }
+
+    void OnTriggerStay2D(Collider2D other)
+    {
+        //if it is the player
+        if (other.gameObject.CompareTag("Player"))
+        {
+			OnProjectileHitPlayer();
+
+		}
+        //if it is another projectile
+        else if(canCollideWithOtherProjectiles)
+        {
+			var projectile = other.GetComponent<Projectile>();
+			//and the other projectile has collision enabled as well
+			if (projectile && projectile.canCollideWithOtherProjectiles)
+			{
+				OnProjectileHitProjectile(projectile);
+			}
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.UI;
+using SpriteLayout;
 
 public class PlayerController : MonoBehaviour
 {
@@ -19,13 +19,13 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// the RectTransform of the inner box of the battle arena - set using Unity Inspector
     /// </summary>
-    public RectTransform arenaBounds;
+    public SpriteLayoutBase arenaBounds;
 
     /// <summary>
     /// absolute position of the player on screen, used mainly by projectiles for collision detection
     /// </summary>
-    [HideInInspector]
-    public Rect playerAbs;
+//    [HideInInspector]
+//    public Rect playerAbs;
 
     /// <summary>
     /// take a wild guess
@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// the player's RectTransform
     /// </summary>
-    internal RectTransform self;
+    internal SpriteLayoutBase self;
 
     /// <summary>
     /// how long does it take to do a full blink (appear+disappear), in seconds
@@ -85,7 +85,7 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// the Image of the player
     /// </summary>
-    private Image selfImg;
+    private SpriteLayoutImage selfImg;
 
     /// <summary>
     /// contains a Soul type that affects what player movement does
@@ -184,8 +184,8 @@ public class PlayerController : MonoBehaviour
     // modify absolute player position, accounting for walls
     public void ModifyPosition(float xMove, float yMove, bool ignoreBounds)
     {
-        float xPos = self.anchoredPosition.x + xMove;
-        float yPos = self.anchoredPosition.y + yMove;
+        float xPos = self.LocalPosition.x + xMove;
+        float yPos = self.LocalPosition.y + yMove;
 
         SetPosition(xPos, yPos, ignoreBounds);
     }
@@ -197,8 +197,8 @@ public class PlayerController : MonoBehaviour
         soulDir *= Time.deltaTime;
 
         // reusing the direction Vector2 for position to save ourselves the creation of a new object
-        float oldXPos = self.anchoredPosition.x;
-        float oldYPos = self.anchoredPosition.y;
+        float oldXPos = self.LocalPosition.x;
+        float oldYPos = self.LocalPosition.y;
         ModifyPosition(soulDir.x, soulDir.y, false);
         MovementDelta(oldXPos, oldYPos);
     }
@@ -215,35 +215,35 @@ public class PlayerController : MonoBehaviour
         // check if new position would be out of arena bounds, and modify accordingly if it is
         if (!ignoreBounds)
         {
-            if (xPos < arenaBounds.position.x - arenaBounds.sizeDelta.x / 2 + self.rect.size.x / 2)
+            if (xPos < arenaBounds.Position.x - arenaBounds.Width / 2 + self.Width / 2)
             {
-                xPos = arenaBounds.position.x - arenaBounds.sizeDelta.x / 2 + self.rect.size.x / 2;
+                xPos = arenaBounds.Position.x - arenaBounds.Width/ 2 + self.Width / 2;
             }
-            else if (xPos > arenaBounds.position.x + arenaBounds.sizeDelta.x / 2 - self.rect.size.x / 2)
+            else if (xPos > arenaBounds.Position.x + arenaBounds.Width/ 2 - self.Width / 2)
             {
-                xPos = arenaBounds.position.x + arenaBounds.sizeDelta.x / 2 - self.rect.size.x / 2;
+                xPos = arenaBounds.Position.x + arenaBounds.Width / 2 - self.Width / 2;
             }
 
-            if (yPos < arenaBounds.position.y - arenaBounds.sizeDelta.y / 2 + self.rect.size.y / 2)
+            if (yPos < arenaBounds.Position.y - arenaBounds.Height / 2 + self.Height / 2)
             {
-                yPos = arenaBounds.position.y - arenaBounds.sizeDelta.y / 2 + self.rect.size.y / 2;
+                yPos = arenaBounds.Position.y - arenaBounds.Height / 2 + self.Height / 2;
             }
-            else if (yPos > arenaBounds.position.y + arenaBounds.sizeDelta.y / 2 - self.rect.size.y / 2)
+            else if (yPos > arenaBounds.Position.y + arenaBounds.Height / 2 - self.Height / 2)
             {
-                yPos = arenaBounds.position.y + arenaBounds.sizeDelta.y / 2 - self.rect.size.y / 2;
+                yPos = arenaBounds.Position.y + arenaBounds.Height / 2 - self.Height / 2;
             }
         }
 
         // set player position on screen
-        self.anchoredPosition = new Vector2(xPos, yPos);
-        // modify the player rectangle position so projectiles know where it is
-        playerAbs.x = self.anchoredPosition.x - self.rect.size.x / 2 + hitboxInset;
-        playerAbs.y = self.anchoredPosition.y - self.rect.size.y / 2 + hitboxInset;
+          self.LocalPosition = new Vector2(xPos, yPos);
+//        // modify the player rectangle position so projectiles know where it is
+//        playerAbs.x = self.anchoredPosition.x - self.rect.size.x / 2 + hitboxInset;
+//        playerAbs.y = self.anchoredPosition.y - self.rect.size.y / 2 + hitboxInset;
     }
 
     public void SetSoul(AbstractSoul s)
     {
-        selfImg.color = s.color;
+        selfImg.Color = s.color;
         soul = s;
         // if still holding X keep the slow applied
         if (InputUtil.Held(GlobalControls.input.Cancel))
@@ -257,9 +257,10 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        self = GetComponent<RectTransform>();
-        selfImg = GetComponent<Image>();
-        playerAbs = new Rect(0, 0, selfImg.sprite.texture.width - hitboxInset * 2, selfImg.sprite.texture.height - hitboxInset * 2);
+        self = GetComponent<SpriteLayoutBase>();
+        selfImg = GetComponent<SpriteLayoutImage>();
+		//        playerAbs = new Rect(0, 0, selfImg.sprite.texture.width - hitboxInset * 2, selfImg.sprite.texture.height - hitboxInset * 2);
+		selfImg.AttachCircleCollider(0.0f, 0.0f, 7.95f);
         instance = this;
         playerAudio = GetComponent<AudioSource>();
         hurtSound = AudioClipRegistry.GetSound("hurtsound");
@@ -331,8 +332,8 @@ public class PlayerController : MonoBehaviour
 
     private void MovementDelta(float oldX, float oldY)
     {
-        float xDelta = self.anchoredPosition.x - oldX;
-        float yDelta = self.anchoredPosition.y - oldY;
+        float xDelta = self.LocalPosition.x - oldX;
+        float yDelta = self.LocalPosition.y - oldY;
 
         // if the position is the same, the player hasnt moved - by doing it like this we account
         // for things like being moved by external factors like being shoved by boundaries
@@ -374,15 +375,15 @@ public class PlayerController : MonoBehaviour
             invulTimer -= Time.deltaTime;
             if (invulTimer % blinkCycleSeconds > blinkCycleSeconds / 2.0f)
             {
-                selfImg.enabled = false;
+                selfImg.RendererEnabled = false;
             }
             else
             {
-                selfImg.enabled = true;
+                selfImg.RendererEnabled = true;
             }
 
             if (invulTimer <= 0.0f)
-                selfImg.enabled = true;
+                selfImg.RendererEnabled = true;
         }
     }
 }

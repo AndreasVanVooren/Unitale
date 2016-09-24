@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+
+using SpriteLayout;
+
 using UnityEngine;
 using UnityEngine.UI;
 
 public static class SpriteUtil
 {
-    public const float PIXELS_PER_UNIT = 100.0f;
+    public const float PIXELS_PER_UNIT = 1.0f;
     public static void SwapSpriteFromFile(MonoBehaviour target, string filename)
     {
         try
@@ -18,16 +21,19 @@ public static class SpriteUtil
                 newSprite = fromFile(FileLoader.pathToModFile("Sprites/" + filename + ".png"));
                 SpriteRegistry.Set(filename, newSprite);
             }
-
-            Image img = target.GetComponent<Image>();
-            img.sprite = newSprite;
+            SpriteLayoutImage img = target.GetComponent<SpriteLayoutImage>();
+			if(img == null)
+			{
+				throw new NullReferenceException("COULDN'T FIND SPRITELAYOUTIMAGE");
+			}
+            img.Sprite = newSprite;
             //enemyImg.SetNativeSize();
-            img.rectTransform.sizeDelta = new Vector2(newSprite.texture.width, newSprite.texture.height);
+            img.ResetDimensions( newSprite.bounds.size);
         }
         catch (Exception e)
         {
             // TODO do something I guess
-            Debug.LogError("Error loading sprite");
+            Debug.LogError("Error loading sprite",target);
             Debug.LogException(e);
         }
     }
@@ -47,10 +53,10 @@ public static class SpriteUtil
                 }
             }
 
-            Image img = target.GetComponent<Image>();
-            img.sprite = newSprite;
+            SpriteLayoutImage img = target.GetComponent<SpriteLayoutImage>();
+            img.Sprite = newSprite;
             //enemyImg.SetNativeSize();
-            img.rectTransform.sizeDelta = new Vector2(newSprite.texture.width, newSprite.texture.height);
+            img.ResetDimensions (newSprite.bounds.size);
         }
         catch (Exception e)
         {
@@ -124,7 +130,7 @@ public static class SpriteUtil
         SpriteTexture.LoadImage(FileLoader.getBytesFrom(filename));
         SpriteTexture.filterMode = FilterMode.Point;
         SpriteTexture.wrapMode = TextureWrapMode.Clamp;
-        newSprite = Sprite.Create(SpriteTexture, new Rect(0, 0, SpriteTexture.width, SpriteTexture.height), new Vector2(0, 0), PIXELS_PER_UNIT);
+        newSprite = Sprite.Create(SpriteTexture, new Rect(0, 0, SpriteTexture.width, SpriteTexture.height), new Vector2(0.5f, 0.5f),  PIXELS_PER_UNIT);
         //optional XML loading
         FileInfo fi = new FileInfo(Path.ChangeExtension(filename, "xml"));
         if (fi.Exists)
@@ -146,7 +152,7 @@ public static class SpriteUtil
         SpriteTexture.LoadImage(FileLoader.getBytesFrom(filename));
         SpriteTexture.filterMode = FilterMode.Point;
         SpriteTexture.wrapMode = TextureWrapMode.Clamp;
-        newSprite = Sprite.Create(SpriteTexture, new Rect(0, 0, SpriteTexture.width, SpriteTexture.height), new Vector2(0, 0), PIXELS_PER_UNIT);
+        newSprite = Sprite.Create(SpriteTexture, new Rect(0, 0, SpriteTexture.width, SpriteTexture.height), new Vector2(0.5f, 0.5f),  PIXELS_PER_UNIT);
         //definitive XML loading
         FileInfo fi = new FileInfo(Path.ChangeExtension(filename, "xml"));
         if (fi.Exists)
@@ -165,25 +171,34 @@ public static class SpriteUtil
         return null;
     }
 
-    public static LuaSpriteController MakeIngameSprite(string filename)
+	public static LuaSpriteController MakeIngameSprite(string filename)
+	{
+		return MakeIngameSprite(filename, "BelowArena");
+	}
+	
+	public static LuaSpriteController MakeIngameSprite(string filename, string layer)
     {
-        Image i = GameObject.Instantiate<Image>(SpriteRegistry.GENERIC_SPRITE_PREFAB);
+        SpriteLayoutImage i = GameObject.Instantiate<SpriteLayoutImage>(SpriteRegistry.GENERIC_SPRITE_PREFAB);
         if (!string.IsNullOrEmpty(filename))
         {
             SwapSpriteFromFile(i, filename);
         }
-        i.transform.SetParent(GameObject.Find("BelowArenaLayer").transform, true); //TODO layering
+        i.transform.SetParent(GameObject.Find("SpriteParent").transform, true); //TODO layering
+		i.LocalPosition = new Vector2(320, 240);
+        i.SortingLayerName = layer;
+		i.SendToTop();
         return new LuaSpriteController(i);
     }
 
-    public static LuaSpriteController MakeIngameSprite(string filename, string spritename)
+    public static LuaSpriteController MakeIngameSprite(string filename, string spritename, string layer)
     {
-        Image i = GameObject.Instantiate<Image>(SpriteRegistry.GENERIC_SPRITE_PREFAB);
+		SpriteLayoutImage i = GameObject.Instantiate<SpriteLayoutImage>(SpriteRegistry.GENERIC_SPRITE_PREFAB);
         if (!string.IsNullOrEmpty(filename) && !string.IsNullOrEmpty(spritename))
         {
             SwapSpriteFromFile(i, filename, spritename);
         }
-        i.transform.SetParent(GameObject.Find("BelowArenaLayer").transform, true); //TODO layering
+        i.transform.SetParent(GameObject.Find("SpriteParent").transform, true); //TODO layering
+        i.SortingLayerName = layer;
         return new LuaSpriteController(i);
     }
 }

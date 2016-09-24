@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
+using SpriteLayout;
 
 /// <summary>
 /// Script to attach to gameobjects with UnityEngine.UI.Image components, used to dissolve them into particles.
@@ -14,7 +14,7 @@ public class ParticleDuplicator : MonoBehaviour
     public void Activate()
     {
         ps = FindObjectOfType<ParticleSystem>();
-        source = GetComponent<Image>().sprite;
+        source = GetComponent<SpriteLayoutImage>().Sprite;
 
         //Emit particles from particle system and retrieve into particles array
         particles = new ParticleSystem.Particle[source.texture.width * source.texture.height];
@@ -22,13 +22,13 @@ public class ParticleDuplicator : MonoBehaviour
         ps.GetParticles(particles);
 
         //Get sprite viewport coordinates and pixel width/height on display
-        RectTransform rt = GetComponent<RectTransform>();
-        Vector2 bottomLeft = new Vector2((rt.position.x - rt.rect.width / 2) / (float)Screen.width, (rt.position.y) / (float)Screen.height);
-        Vector2 topRight = new Vector2((rt.position.x + rt.rect.width / 2) / (float)Screen.width, (rt.position.y + rt.rect.height) / (float)Screen.height);
+        SpriteLayoutBase rt = GetComponent<SpriteLayoutBase>();
+        Vector2 bottomLeft = new Vector2((rt.Position.x - rt.Width / 2) / (float)Screen.width, (rt.Position.y) / (float)Screen.height);
+        Vector2 topRight = new Vector2((rt.Position.x + rt.Width / 2) / (float)Screen.width, (rt.Position.y + rt.Height) / (float)Screen.height);
         Vector2 vpbl = Camera.main.ViewportToWorldPoint(bottomLeft);
         Vector2 vptr = Camera.main.ViewportToWorldPoint(topRight);
-        float pxWidth = (vptr.x - vpbl.x) / rt.rect.width;
-        float pxHeight = (vptr.y - vpbl.y) / rt.rect.height;
+        float pxWidth = (vptr.x - vpbl.x) / rt.Width;
+        float pxHeight = (vptr.y - vpbl.y) / rt.Height;
 
         //Modify particle placement to reform the original sprite, and put back into particle system
         int particleCount = 0;
@@ -41,14 +41,14 @@ public class ParticleDuplicator : MonoBehaviour
                 if (c.a == 0.0f || (c.r + c.b + c.g) == 0.0f)
                     continue;
                 particles[particleCount].position = new Vector3(vpbl.x + x * pxWidth, vpbl.y + y * pxHeight, -5.0f);
-                particles[particleCount].color = c;
-                particles[particleCount].size = pxWidth; // we have to assume a square aspect ratio for pixels here
+                particles[particleCount].startColor = c;
+                particles[particleCount].startSize = pxWidth; // we have to assume a square aspect ratio for pixels here
                 particles[particleCount].lifetime = yFrac * 1.5f + UnityEngine.Random.value * 0.3f;
                 particles[particleCount].startLifetime = particles[particleCount].lifetime;
                 particleCount++;
             }
         }
         ps.SetParticles(particles, particleCount);
-        GetComponent<Image>().enabled = false;
+        GetComponent<SpriteLayoutImage>().RendererEnabled = false;
     }
 }

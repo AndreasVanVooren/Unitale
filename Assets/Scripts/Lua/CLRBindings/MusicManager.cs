@@ -5,13 +5,13 @@
 /// </summary>
 public class MusicManager
 {
-    internal static AudioSource src;
+    internal static AudioManager manager;
 
     public static float playtime
     {
         get
         {
-            return src.time;
+            return manager.playtime;
         }
     }
 
@@ -19,57 +19,75 @@ public class MusicManager
     {
         get
         {
-            return src.clip.length;
+            return manager.totaltime;
         }
     }
 
     public static void LoadFile(string name)
     {
-        src.Stop();
-        src.clip = AudioClipRegistry.GetMusic(name);
-        src.Play();
+		manager.PlayMusic(name,0);
+	}
+
+    public static void PlaySound(string name, float volume = 0.65f)
+    {
+		manager.PlaySound(name,volume);
+	}
+
+	public static void StartSound(string name, float volume = 0.65f, float fadeTime = 0.0f)
+	{
+		manager.StartSound(name, volume,fadeTime);
+	}
+
+	public static void StopSound(string name, float fadeTime = 0.0f)
+	{
+		manager.StopSound(name, fadeTime);
+	}
+
+	public static void FadeIn(float time)
+	{
+		manager.ActiveSource.FadeIn(time);
+	}
+
+	public static void FadeOut(float time)
+	{
+		manager.ActiveSource.FadeOut(time);
+	}
+
+    public static void Pitch(float value)
+    {
+		//Mathf.Clamp((float)value,-3,3);
+		manager.pitch = value;
     }
 
-    public static void PlaySound(string name)
+    public static void Volume(float value)
     {
-        AudioSource.PlayClipAtPoint(AudioClipRegistry.GetSound(name), Camera.main.transform.position, 0.65f);
+        //Mathf.Clamp01((float)value);
+        manager.basevolume = value;
     }
 
-    public static void Pitch(double value)
-    {
-        if (value < -3)
-            value = -3;
-        if (value > 3)
-            value = 3;
-        src.pitch = (float)value;
-    }
-
-    public static void Volume(double value)
-    {
-        if (value < 0)
-            value = 0;
-        if (value > 1)
-            value = 1;
-        src.volume = (float)value;
-    }
+	//note float defaults have to be float, otherwise the lua compiler complains
+	public static void Crossfade(string name, float time = 0.5f)
+	{
+		manager.PlayMusic(name, time, false);
+	}
 
     public static void Play()
     {
-        src.Play();
+		manager.Play();
     }
 
     public static void Stop()
     {
-        src.Stop();
+		manager.Stop();
     }
 
     public static void Pause()
     {
-        src.Pause();
+		manager.Pause();
     }
 
     public static void Unpause()
     {
-        src.UnPause();
+		manager.UnPause();
     }
 }

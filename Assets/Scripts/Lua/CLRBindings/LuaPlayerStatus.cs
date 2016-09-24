@@ -22,7 +22,7 @@ public class LuaPlayerStatus
     public LuaPlayerStatus(PlayerController p)
     {
         this.player = p;
-        spr = new LuaSpriteController(p.GetComponent<UnityEngine.UI.Image>());
+        spr = new LuaSpriteController(p.GetComponent<SpriteLayout.SpriteLayoutImage>());
     }
 
     /// <summary>
@@ -32,7 +32,7 @@ public class LuaPlayerStatus
     {
         get
         {
-            return player.self.anchoredPosition.x - ArenaSizer.arenaCenter.x;
+            return player.self.LocalPosition.x - ArenaSizer.arenaCenter.x;
         }
     }
 
@@ -43,7 +43,7 @@ public class LuaPlayerStatus
     {
         get
         {
-            return player.self.anchoredPosition.y - ArenaSizer.arenaCenter.y;
+            return player.self.LocalPosition.y - ArenaSizer.arenaCenter.y;
         }
     }
 
@@ -54,7 +54,7 @@ public class LuaPlayerStatus
     {
         get
         {
-            return player.self.anchoredPosition.x;
+            return player.self.LocalPosition.x;
         }
     }
 
@@ -65,7 +65,7 @@ public class LuaPlayerStatus
     {
         get
         {
-            return player.self.anchoredPosition.y;
+            return player.self.LocalPosition.y;
         }
     }
 

@@ -67,6 +67,11 @@ public class EnemyEncounter : MonoBehaviour
         // TODO: taking them out of fight, play sound
     }
 
+	public virtual bool CustomMercy(string custom)
+	{
+		return true;
+	}
+
     // <summary>
     // Overrideable item handler on a per-encounter basis. Should return true if a custom action is executed for the given item.
     // </summary>

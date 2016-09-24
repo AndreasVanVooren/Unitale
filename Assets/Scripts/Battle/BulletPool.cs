@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using SpriteLayout;
+using System.Collections;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// The bullet pool where Projectiles are drawn from for performance reasons.
@@ -17,14 +21,18 @@ public class BulletPool : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        instance = this;
+		Stopwatch watch = new Stopwatch(); //benchmarking terrible loading times
+		watch.Start();
+		instance = this;
         bPrefab = Resources.Load<LuaProjectile>("Prefabs/LUAProjectile");
         pool.Clear();
         for (int i = 0; i < POOLSIZE; i++)
         {
             createPooledBullet();
         }
-    }
+		watch.Stop();
+		Debug.Log("Projectile pool creation time: " + watch.ElapsedMilliseconds + "ms");
+	}
 
     /// <summary>
     /// Creates a new Projectile and adds it to the pool. Used during instantion and when the pool is empty.
@@ -33,7 +41,7 @@ public class BulletPool : MonoBehaviour
     {
         Projectile lp = Instantiate(bPrefab);
         lp.transform.SetParent(transform);
-        lp.GetComponent<RectTransform>().position = new Vector2(-999, -999); // move offscreen to be safe, but shouldn't be necessary
+        lp.GetComponent<SpriteLayoutBase>().Position = new Vector2(-999, -999); // move offscreen to be safe, but shouldn't be necessary
         pool.Enqueue(lp);
         lp.gameObject.SetActive(false);
     }
@@ -57,7 +65,7 @@ public class BulletPool : MonoBehaviour
     /// <param name="p">Projectile to return</param>
     public void Requeue(Projectile p)
     {
-        p.GetComponent<RectTransform>().position = new Vector2(-999, -999);
+        p.GetComponent<SpriteLayoutBase>().Position = new Vector2(-999, -999);
         p.gameObject.SetActive(false);
         pool.Enqueue(p);
     }

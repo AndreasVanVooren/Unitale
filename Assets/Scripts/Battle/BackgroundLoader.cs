@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.UI;
+using SpriteLayout;
 
 /// <summary>
 /// Extremely lazy background loader which is only slightly better than not having a background.
@@ -9,19 +9,19 @@ using UnityEngine.UI;
 /// </summary>
 public class BackgroundLoader : MonoBehaviour
 {
-    Image bgImage;
+    SpriteLayoutImage bgImage;
     // Use this for initialization
     private void Start()
     {
-        bgImage = GetComponent<Image>();
+        bgImage = GetComponent<SpriteLayoutImage>();
         try
         {
             Sprite bg = SpriteUtil.fromFile(FileLoader.pathToModFile("Sprites/bg.png"));
             if (bg != null)
             {
                 bg.texture.filterMode = FilterMode.Point;
-                bgImage.sprite = bg;
-                bgImage.color = Color.white;
+                bgImage.Sprite = bg;
+                bgImage.Color = Color.white;
             }
         }
         catch (Exception e)
