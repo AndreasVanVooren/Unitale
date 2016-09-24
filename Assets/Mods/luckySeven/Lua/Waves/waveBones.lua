@@ -19,7 +19,7 @@ function Update()
 		if(bulletTimer > warningDelay) then 
 			--spawn warning sign
 			Audio.PlaySound("Beep");
-			warning = CreateProjectile("empty",0,0);
+			warning = CreateProjectile("It/danger1",0,0);	--bug : anim != src dim;
 			--DEBUG(warning.sprite.xscale)
 			warning.sprite.SetAnimation({"It/danger1", "It/danger2"})
 			
@@ -32,7 +32,7 @@ function Update()
 				warning.Move( -Arena.width/2, -Arena.height/2 );
 			end
 			--DEBUG(warning.sprite.xscale)
-			warning.sprite.Scale(2.5,3.25);
+			--warning.sprite.Scale(2.5,3.25);
 			--DEBUG(warning.sprite.xscale)
 			
 			--reset timers

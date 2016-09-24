@@ -296,7 +296,7 @@ function GasterMove()
 	end
 	
 	--if at the end
-	if(math.abs(gasters[1].y) > Arena.height/2-(16+5))then
+	if(math.abs(gasters[1].y) > Arena.height/2-(16+9) or math.abs(gasters[3].x) > Arena.width/2-(16+9))then
 		EndWave();
 	end
 end

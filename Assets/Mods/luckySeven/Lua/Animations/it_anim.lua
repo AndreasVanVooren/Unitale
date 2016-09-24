@@ -5,7 +5,7 @@ baseDimensions = 308;
 eyeHeight = 98;
 eyeDiff = 29;
 scale = 1.5;
-rimScale = scale * 1.1;
+rimScale = 1.1;
 
 --Screen height is 480, character should be spawned at 360
 itCenter = CreateSprite("It/center");
@@ -29,19 +29,18 @@ itRim.x = 0;
 itEye = CreateSprite("It/eye");
 itEye.SetParent(itCenter);	--makes more sense to set center as main parent, but oh well
 itEye.x = 0;
-itEye.y = eyeDiff * scale;	--add scale to take into account that it scales globally
+itEye.y = eyeDiff;	--add scale to take into account that it scales globally
 
-itRim.Scale(rimScale,rimScale);
 itCenter.Scale(scale,scale);
-itEye.Scale(scale,scale);
+itRim.Scale(rimScale,rimScale);
 
 --GOOD. FINE. 
 disableSpecials = false;
 
 local itSkull = nil;
 
-local skullX = 5 * scale;
-local skullY = 12 * scale;
+local skullX = 5 ;
+local skullY = 12 ;
 local skullXOffset = 0;
 local skullYOffset = 0;
 
@@ -66,7 +65,7 @@ local function HandleSkull()
 			itSkull.SetParent(itCenter);
 			itSkull.x = skullX;
 			itSkull.y = skullY;
-			itSkull.Scale(scale,scale);
+			itSkull.Scale(1,1);
 			skullTimer = math.random()/2 + 0.25 ;
 			
 				Audio.PlaySound("scream");
@@ -91,7 +90,7 @@ end
 local itGlitch = nil;
 
 local glitchX = 0;
-local glitchY = 7 * scale;
+local glitchY = 7;
 --local glitchXOffset = 0;
 
 local glitchTimer = 16;
@@ -111,7 +110,7 @@ local function HandleGlitch()
 			itGlitch.SetParent(itCenter);
 			itGlitch.x = glitchX;
 			itGlitch.y = glitchY;
-			itGlitch.Scale(scale,scale);
+			itGlitch.Scale(1,1);
 			
 			if(glitchPhase < 2)then
 				glitchTimer = 0.2;
